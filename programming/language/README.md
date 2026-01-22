@@ -1,6 +1,0 @@
----
-icon: subtitles
----
-
-# Language
-
