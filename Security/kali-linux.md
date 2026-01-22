@@ -1,0 +1,3 @@
+# Kali Linux
+
+<table data-view="cards"><thead><tr><th>Title</th><th data-card-target data-type="content-ref">Target</th></tr></thead><tbody><tr><td>칼리 리눅스 설치 방법</td><td><a href="https://greensul.tistory.com/277">https://greensul.tistory.com/277</a></td></tr><tr><td>Kali IP Setup</td><td><a href="/broken/pages/2c27c07cbbdb8e28e403bcbad1426d7ebcaba30b">Broken link</a></td></tr><tr><td>DDoS</td><td><a href="/broken/pages/b9d767986828787ff63384631c1a2609c7334768">Broken link</a></td></tr><tr><td>Wireshark</td><td><a href="file:///2237607/network/Wireshark.md">file:///2237607/network/Wireshark.md</a></td></tr><tr><td>kali 한글</td><td><a href="/broken/pages/7a7d503ce3722682cf5366b51d78f36e31c7730d">Broken link</a></td></tr></tbody></table>
