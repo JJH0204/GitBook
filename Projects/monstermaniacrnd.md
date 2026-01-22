@@ -1,0 +1,63 @@
+# MonsterManiacRnD
+
+{% hint style="warning" %}
+⚠ Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠\
+You can decompress Drawing data with the command palette: 'Decompress current Excalidraw file'. For more info check in plugin settings under 'Saving'
+{% endhint %}
+
+## Excalidraw Data
+
+### Text Elements
+
+* 발칸포 공격 1 ^1W412j0C
+* 머신건 공격 1 ^i0Iqf4L1
+* 에너지 블래스터 공격 1 ^wjxuDnVF
+* 근접 무기 ^wb5a0mCj
+* 몬스터 ^6D0ZEvKF
+* 플레이어의 위치를 방향으로 직선 범위 공격 ^6doFlzhp
+* 몬스터 ^Olmz18jH
+* 플레이어 위치를 기준으로 지역(범위) 공격 ^nQ9x9c5U
+* 스테이지 ^qBafTwMc
+* 몬스터 ^AVRdLR4F
+* 몬스터 주변 외 모든 범위 피해 ^QiIX2cLp
+* 몬스터의 몸체에 미사일 슈터를 장착했다. (Cube Mesh) ^UiPvUJP8
+* 큐브 슈터 앞에 미사일 발사지점을 설정할 게임 오브젝트를 추가 ^s48rcods
+* 발사할 미사일의 프리팹을 등록 받는다. ^XkaK9Jhz
+* 발사할 지점과 공격 타겟을 지정해 둔다. ^88SfB4nv
+
+### Embedded Files
+
+* a15e63c27efb8c543f97eca68c9c55f1452ef8a9: \[\[topics/assets/images/Pasted Image 20250702091957\_752.png]]
+* 91f669eae7a200bdbed8d89ab9023da385b7940b: \[\[topics/assets/images/스크린샷 2025-07-02 오전 10.48.10.png]]
+* 68d438e64be96c3d4f3d49c83d7b876f9f18220a: \[\[topics/assets/images/스크린샷 2025-07-02 오전 10.49.23.png]]
+* 8e383610b1827d32c2a54c2a3a136d1b0118d0b3: \[\[topics/assets/images/스크린샷 2025-07-02 오전 10.50.18.png]]
+
+### Drawing
+
+```compressed-json
+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
+
+... (compressed JSON content continues)
+```
