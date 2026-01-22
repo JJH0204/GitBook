@@ -1,0 +1,3 @@
+# RouterSetup
+
+<table data-view="cards"><thead><tr><th>Title</th><th data-card-target data-type="content-ref">Target</th></tr></thead><tbody><tr><td>ACL</td><td><a href="file:///2435498/linux_admin/ACL.md">file:///2435498/linux_admin/ACL.md</a></td></tr><tr><td>NAT</td><td><a href="/broken/pages/64eb5fd04036dded8cdc7e2ccac02bfc3db8d010">Broken link</a></td></tr><tr><td>FHRP</td><td><a href="/broken/pages/89f37e0e332c453e2d7f9a079e72ba85b52cad69">Broken link</a></td></tr><tr><td>DHCP</td><td><a href="/broken/pages/749e6fcf7fc54966eddc4773db25c105a0a5ace7">Broken link</a></td></tr></tbody></table>
