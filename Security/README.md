@@ -21,10 +21,14 @@ metaLinks:
 
 # Welcome
 
-Welcome to the GitBook starter template! Here you'll get an overview of all the amazing features GitBook offers to help you build beautiful, interactive documentation.
+보안 학습/실습 과정에서 정리한 노트 모음입니다.
 
-You'll see some of the best parts of GitBook in action — and find help on how you can turn this template into your own.
+원하는 주제를 빠르게 찾으려면 좌측 TOC 또는 검색을 쓰면 됩니다.
 
-### Jump right in
+### Start here
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-bolt">:bolt:</i></h4></td><td><strong>Quickstart</strong></td><td>Create your first site</td><td></td><td></td><td><a href="/broken/pages/7FvWQMF0kTK7HGhlQfmo">Broken link</a></td></tr><tr><td><h4><i class="fa-leaf">:leaf:</i></h4></td><td><strong>Editor basics</strong></td><td>Learn the basics of GitBook</td><td></td><td></td><td><a href="https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md">https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md</a></td></tr><tr><td><h4><i class="fa-globe-pointer">:globe-pointer:</i></h4></td><td><strong>Publish your docs</strong></td><td>Share your docs online</td><td></td><td></td><td><a href="/broken/pages/QPzbTvC6XsT5gERiU43E">Broken link</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th>섹션</th><th data-card-target data-type="content-ref">바로가기</th></tr></thead><tbody><tr><td>Security (이론/공격/방어/도구/리버싱)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/zzCDWAlCt0uqs42q0jar">Broken link</a></td></tr><tr><td>Labs (과제/리포트)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/UZMCJdRz9KFSNuQfkVqW">Broken link</a></td></tr><tr><td>CTF &#x26; Wargame (풀이 모음)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/YghTqihfrjafKyg72mF1">Broken link</a></td></tr><tr><td>Setup &#x26; Environments (실습 환경 구축)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/ODy4g6LZWV2XJIkYTob2">Broken link</a></td></tr><tr><td>DVWA / bWAPP (웹 취약점 실습)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/rIGAsvtp4dw1qVySgc3f">Broken link</a></td></tr><tr><td>Notes (잡다한 메모/레퍼런스)</td><td><a href="/broken/spaces/vNonyrOWWd6xfjX6YhKl/pages/RZTTVvNWeqVgDe7eRdDr">Broken link</a></td></tr></tbody></table>
+
+{% hint style="info" %}
+실습 결과물(스캔 로그 등)은 가능한 한 “Tools → Scan results”에 모아두었습니다.
+{% endhint %}
