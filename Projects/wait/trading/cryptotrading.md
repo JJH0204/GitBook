@@ -3,7 +3,7 @@
 * [install pyupbit](https://pypi.org/project/pyupbit/)
 * [How to make](https://hyojun.tistory.com/entry/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EC%BD%94%EC%9D%B8-%EC%9E%90%EB%8F%99%EB%A7%A4%EB%A7%A4-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8-%EB%A7%8C%EB%93%A4%EA%B8%B0-2-%EB%B0%B1%ED%85%8C%EC%8A%A4%ED%8C%85?category=1046904)
 * [조코딩git](https://github.com/youtube-jocoding/pyupbit-autotrade/tree/main)
-* [트레이딩 전략](/broken/pages/46a24eebba8d1d189c5d61f325a92b131e1d57c5)
+* [트레이딩 전략](undefined.md)
 
 ### 연습 코드
 
