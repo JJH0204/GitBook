@@ -1,0 +1,210 @@
+# ObjectDestructionDecision
+
+{% hint style="warning" %}
+⚠ Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document.\
+You can decompress drawing data with the command palette: "Decompress current Excalidraw file". For more info check in plugin settings under "Saving".
+{% endhint %}
+
+## Excalidraw Data
+
+### Text Elements
+
+```csharp
+public class GlobalGameObject : MonoBehaviour
+{
+    public event Action OnObjectDestroyed;
+    
+    private void OnDestroy()
+    {
+        // 오브젝트가 파괴되었음을 외부에 알림
+        Debug.Log(gameObject.name + "is Destroy");
+
+        OnObjectDestroyed?.Invoke();
+    }
+}
+```
+
+```csharp
+public class GasBarrel : GlobalGameObject
+{
+    // [SerializeField] private List<string> target;
+    [SerializeField] private List<string> target;
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        // Debug.Log("OnCollisionEnter called " + other.gameObject.name);
+        if (!CheckTriggerTarget(other)) return;
+        Debug.Log(other.gameObject.name);
+        Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Debug.Log("OnCollisionEnter called " + other.gameObject.name);
+        if (!CheckCollisionTarget(collision)) return;
+        Debug.Log(collision.gameObject.name);
+        Destroy(gameObject);
+    }
+
+    private bool CheckTriggerTarget(Collider collision)
+    {
+        foreach (var item in target)
+        {
+            if (collision.CompareTag(item))
+                return true;
+        }
+        return false;
+    }
+    
+    private bool CheckCollisionTarget(Collision collision)
+    {
+        foreach (var item in target)
+        {
+            if (collision.gameObject.CompareTag(item))
+                return true;
+        }
+        return false;
+    }
+}
+```
+
+```csharp
+public class IsDestroy : ProcessBase
+{
+    // 지정된 오브젝트가 파괴되었을 경우 알림
+    [SerializeField] private GlobalGameObject cach; // 파괴 여부를 참조할 객체
+
+    private void Start()
+    {
+        // 씬 시작 시 
+        if (cach is not null)
+        {
+            cach.OnObjectDestroyed += Execute;
+        }
+    }
+    
+    // 
+    public override void Execute()
+    {
+        Debug.Log("IsDestroy called");
+        if (IsOn) return;   // 한번도 함수가 호출되지 않았으면 실행
+        
+        IsOn = true;        // 함수 호출 여부를 수정
+    }
+}
+```
+
+1
+
+2
+
+3
+
+OnDestory 함수를 호출해 외부에 이벤트를 발생시킬 게임 오브젝트들은 GlobalGameObject를 상속받는다.\
+상속 받은 객체에서 또는 다른 주체에서 Destroy() 메서드를 호출한다.\
+파괴여부 이벤트를 참조할 객체에서 해당 객체가 파괴될 때 실행할 메서드를 작성 후 액션으로 등록\
+Invoke 메서드를 통해 파괴시 지정된 이벤트가 실행된다.
+
+***
+
+### Drawing
+
+<details>
+
+<summary>Compressed Excalidraw drawing data (click to expand)</summary>
+
+{% code title="drawing.json" %}
+```compressed-json
+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
+```
+{% endcode %}
+
+</details>
