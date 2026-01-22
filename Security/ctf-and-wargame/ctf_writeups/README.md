@@ -1,2 +1,0 @@
-# ctf\_writeups
-
