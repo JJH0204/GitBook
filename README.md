@@ -1,29 +1,30 @@
 ---
-coverY: 0
+icon: hand-wave
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: false
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: true
+  metadata:
+    visible: true
+metaLinks:
+  alternates:
+    - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/
 ---
 
-# J:Log
+# Welcome
 
-**지식은 기억보다 기록에 남는다.**
+Welcome to the GitBook starter template! Here you'll get an overview of all the amazing features GitBook offers to help you build beautiful, interactive documentation.
 
-개발을 하다 보면 수많은 문제를 마주하고, 해결하며 성장한다.
+You'll see some of the best parts of GitBook in action — and find help on how you can turn this template into your own.
 
-하지만 기억은 흐릿해지고, 같은 문제를 다시 만났을 때 처음처럼 막막할 때가 많다.
+### Jump right in
 
-이 블로그는 내가 배우고 경험한 것들을 정리하며 기록하는 공간이다.
-
-현재 [GitHub 저장소](https://github.com/JJH0204)에 남겨둔 기록들을 차근히 옮겨오고 있으며, 앞으로 배워 나갈 것들도 체계적으로 정리할 예정이다.
-
-기록은 단순한 메모가 아니라, 나 자신을 성장시키는 가장 강력한 도구라고 생각한다.
-
-이곳에서는 다음과 같은 내용을 다룰 것이다.
-
-• 문제를 해결한 과정
-
-• 새로운 기술을 익히며 깨달은 점
-
-• 프로젝트를 진행하며 얻은 인사이트
-
-배운 것들을 남기고 공유하며, 더 나은 개발자로 나아가고자 한다.
-
-기록하는 과정에서 더 깊이 이해하고, 함께 성장할 수 있길 바란다.
+<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-bolt">:bolt:</i></h4></td><td><strong>Quickstart</strong></td><td>Create your first site</td><td></td><td></td><td><a href="/broken/pages/7FvWQMF0kTK7HGhlQfmo">Broken link</a></td></tr><tr><td><h4><i class="fa-leaf">:leaf:</i></h4></td><td><strong>Editor basics</strong></td><td>Learn the basics of GitBook</td><td></td><td></td><td><a href="https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md">https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md</a></td></tr><tr><td><h4><i class="fa-globe-pointer">:globe-pointer:</i></h4></td><td><strong>Publish your docs</strong></td><td>Share your docs online</td><td></td><td></td><td><a href="/broken/pages/QPzbTvC6XsT5gERiU43E">Broken link</a></td></tr></tbody></table>
