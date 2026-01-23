@@ -1,3 +1,3 @@
 # Table of contents
 
-* [Changelog](README.md)
+* [Daylog](README.md)

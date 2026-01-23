@@ -20,90 +20,14 @@ metaLinks:
     - https://app.gitbook.com/s/euz6U9T9Ui1Un0dUKuuZ/
 ---
 
-# Changelog
+# Daylog
 
 {% updates format="full" %}
-{% update date="2025-12-03" %}
-## Product update
+{% update date="2026-01-23" %}
+## 블로그 페이지 준비 완료
 
-See what’s new and improved in our latest update.
+오늘(2026-01-23) 기준으로 블로그 페이지 준비가 완료되었습니다.
 
-### Product feature
-
-* Feature description
-* Feature description
-
-<a href="https://gitbook.com/" class="button primary">Read the documentation</a>
-
-<div align="left"><figure><img src="https://gitbookio.github.io/onboarding-template-images/placeholder.png" alt=""><figcaption></figcaption></figure></div>
-
-<details>
-
-<summary>Improved</summary>
-
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-
-</details>
-
-<details>
-
-<summary>Fixed</summary>
-
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-
-</details>
-{% endupdate %}
-
-{% update date="2025-11-28" %}
-## Product update
-
-See what’s new and improved in our latest update.
-
-### Product feature #1
-
-* Feature description
-* Feature description
-
-<a href="https://gitbook.com/" class="button primary">Read the documentation</a>
-
-### Product feature #2
-
-* Feature description
-* Feature description
-* Feature description
-
-<a href="https://gitbook.com/" class="button primary">Read the documentation</a>
-
-<details>
-
-<summary>Improved</summary>
-
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-
-</details>
-
-<details>
-
-<summary>Fixed</summary>
-
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-
-</details>
+<a href="https://krjaeh0.gitbook.io/j-log/" class="button primary">J:Log Blog pag</a>
 {% endupdate %}
 {% endupdates %}
