@@ -2,14 +2,23 @@
 
 * [Welcome](README.md)
 
-## WAIT
+## Complited
 
-* [Apps & Automation](wait/apps-and-automation/README.md)
-  * [IntegratedCalendarAppDevelopment](wait/apps-and-automation/integratedcalendarappdevelopment.md)
-  * [InterparkTicketingAutomation](wait/apps-and-automation/interparkticketingautomation.md)
-* [Trading](wait/trading/README.md)
-  * [CryptoTrading](wait/trading/cryptotrading.md)
-  * [트레이딩 전략](wait/trading/undefined.md)
+* [DevSecOps](complited/devsecops/README.md)
+  * [DevSecOpsHackingCompetition](complited/devsecops/devsecopshackingcompetition.md)
+  * [Nova](complited/devsecops/nova/README.md)
+    * [DevSecOpsProcess](complited/devsecops/nova/devsecopsprocess.md)
+    * [AgileDevelopment](complited/devsecops/nova/agiledevelopment.md)
+    * [DevSecOpsPlan](complited/devsecops/nova/devsecopsplan.md)
+    * [Task](complited/devsecops/nova/task.md)
+    * [KubernetesInfraIdea](complited/devsecops/nova/kubernetesinfraidea.md)
+    * [ELKStack](complited/devsecops/nova/elkstack.md)
+    * [TeamLeadMeeting](complited/devsecops/nova/teamleadmeeting.md)
+  * [Supernova](complited/devsecops/supernova.md)
+  * [DevSecOpsEngineerSeminar](complited/devsecops/devsecopsengineerseminar.md)
+  * [DevOpsEnvSetup](complited/devsecops/devopsenvsetup.md)
+  * [SVNSetupGuide](complited/devsecops/svnsetupguide.md)
+  * [ProjectScenario](complited/devsecops/projectscenario.md)
 
 ## Projects
 
@@ -35,20 +44,11 @@
     * [ObjectPoolingResearch](projects/machina/rnd/objectpoolingresearch.md)
     * [ObjectDestructionDecision](projects/machina/rnd/objectdestructiondecision.md)
 
-## Complited
+## WAIT
 
-* [DevSecOps](complited/devsecops/README.md)
-  * [DevSecOpsHackingCompetition](complited/devsecops/devsecopshackingcompetition.md)
-  * [Nova](complited/devsecops/nova/README.md)
-    * [DevSecOpsProcess](complited/devsecops/nova/devsecopsprocess.md)
-    * [AgileDevelopment](complited/devsecops/nova/agiledevelopment.md)
-    * [DevSecOpsPlan](complited/devsecops/nova/devsecopsplan.md)
-    * [Task](complited/devsecops/nova/task.md)
-    * [KubernetesInfraIdea](complited/devsecops/nova/kubernetesinfraidea.md)
-    * [ELKStack](complited/devsecops/nova/elkstack.md)
-    * [TeamLeadMeeting](complited/devsecops/nova/teamleadmeeting.md)
-  * [Supernova](complited/devsecops/supernova.md)
-  * [DevSecOpsEngineerSeminar](complited/devsecops/devsecopsengineerseminar.md)
-  * [DevOpsEnvSetup](complited/devsecops/devopsenvsetup.md)
-  * [SVNSetupGuide](complited/devsecops/svnsetupguide.md)
-  * [ProjectScenario](complited/devsecops/projectscenario.md)
+* [Apps & Automation](wait/apps-and-automation/README.md)
+  * [IntegratedCalendarAppDevelopment](wait/apps-and-automation/integratedcalendarappdevelopment.md)
+  * [InterparkTicketingAutomation](wait/apps-and-automation/interparkticketingautomation.md)
+* [Trading](wait/trading/README.md)
+  * [CryptoTrading](wait/trading/cryptotrading.md)
+  * [트레이딩 전략](wait/trading/undefined.md)
