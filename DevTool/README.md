@@ -1,5 +1,4 @@
 ---
-icon: hand-wave
 layout:
   width: default
   title:
@@ -19,12 +18,23 @@ metaLinks:
     - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/
 ---
 
-# Welcome
+# 개발 문서
 
-Welcome to the GitBook starter template! Here you'll get an overview of all the amazing features GitBook offers to help you build beautiful, interactive documentation.
+개발 환경/도구 설정을 빠르게 찾기 위한 문서입니다.
 
-You'll see some of the best parts of GitBook in action — and find help on how you can turn this template into your own.
+전체 목차는 [개발 가이드](/broken/spaces/WFk1hvXbKupnM9GSIBfC/pages/ab34039c904721f5ee12f4caeb8543cd3a403c50)에서 한 번에 봅니다.
 
-### Jump right in
+### 바로가기
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-bolt">:bolt:</i></h4></td><td><strong>Quickstart</strong></td><td>Create your first site</td><td></td><td></td><td><a href="/broken/pages/7FvWQMF0kTK7HGhlQfmo">Broken link</a></td></tr><tr><td><h4><i class="fa-leaf">:leaf:</i></h4></td><td><strong>Editor basics</strong></td><td>Learn the basics of GitBook</td><td></td><td></td><td><a href="https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md">https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md</a></td></tr><tr><td><h4><i class="fa-globe-pointer">:globe-pointer:</i></h4></td><td><strong>Publish your docs</strong></td><td>Share your docs online</td><td></td><td></td><td><a href="/broken/pages/QPzbTvC6XsT5gERiU43E">Broken link</a></td></tr></tbody></table>
+* [환경 설정](undefined-3/)
+* [VS Code](vs-code/)
+* [Git](git/)
+* [빌드 시스템](undefined/)
+* [컴파일러 · 디버깅](undefined-1/)
+* [문서 작성](undefined-2/)
+
+### 많이 쓰는 페이지
+
+* 빌드: [CMake](undefined/cmake.md), [Ninja](undefined/ninja.md), [CMakeLists.txt](undefined/cmakelists.txt.md)
+* Git: [GitSSHKey](git/gitsshkey.md), [How2UseGit](git/how2usegit.md)
+* VS Code: [VSCodeCPPDevelopment](vs-code/vscodecppdevelopment.md), [RunInTerminalSetup](vs-code/runinterminalsetup.md)
