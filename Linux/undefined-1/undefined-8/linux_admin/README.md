@@ -1,2 +1,0 @@
-# linux\_admin
-
