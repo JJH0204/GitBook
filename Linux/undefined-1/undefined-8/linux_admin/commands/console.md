@@ -61,4 +61,4 @@ document.body.innerHTML += '<h1>HI!</h1>';
 * Windows, macOS: ESC
 {% endhint %}
 
-![](../../../../.gitbook/assets/56a755c47938118f872fdcf6869cd532dd1fbb8a36b43dccc8d820b0a2121095.png)
+![](../../../../../Cloud/.gitbook/assets/56a755c47938118f872fdcf6869cd532dd1fbb8a36b43dccc8d820b0a2121095.png)
