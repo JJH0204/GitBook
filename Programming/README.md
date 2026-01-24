@@ -116,7 +116,7 @@ description: 공통 키워드 기반으로 정리한 문서 구조(IA)와 페이
 
 <summary><strong>Languages</strong></summary>
 
-* [ProgrammingLanguageOverview](languages/programminglanguageoverview.md)
+* [ProgrammingLanguageOverview](/broken/spaces/9SzhteQbqgKM0Ys83WW5/pages/2d4b90dfa2186df776aa62181c8024cf641cb646)
 
 </details>
 
@@ -140,13 +140,13 @@ description: 공통 키워드 기반으로 정리한 문서 구조(IA)와 페이
 
 <summary><strong>Practice Problems</strong></summary>
 
-* (Collection) [Programmers](practice-problems/programmers/programmers/)
-  * (Collection) [LV1](practice-problems/programmers/programmers/lv1/)
-    * [FlexibleWork](practice-problems/programmers/programmers/lv1/flexiblework.md)
-    * [PersonalityTypeTest](practice-problems/programmers/programmers/lv1/personalitytypetest.md)
-    * [PersonalDataRetention](practice-problems/programmers/programmers/lv1/personaldataretention.md)
-    * [MostReceivedGift](practice-problems/programmers/programmers/lv1/mostreceivedgift.md)
-    * [TakeOutParcelBox](practice-problems/programmers/programmers/lv1/takeoutparcelbox.md)
+* (Collection) [Programmers](practice-problems/programmers/)
+  * (Collection) [LV1](practice-problems/programmers/lv1/)
+    * [FlexibleWork](practice-problems/programmers/lv1/flexiblework.md)
+    * [PersonalityTypeTest](practice-problems/programmers/lv1/personalitytypetest.md)
+    * [PersonalDataRetention](practice-problems/programmers/lv1/personaldataretention.md)
+    * [MostReceivedGift](practice-problems/programmers/lv1/mostreceivedgift.md)
+    * [TakeOutParcelBox](practice-problems/programmers/lv1/takeoutparcelbox.md)
 
 </details>
 
@@ -160,7 +160,7 @@ description: 공통 키워드 기반으로 정리한 문서 구조(IA)와 페이
 * **Notes**
   * [HungarianNotation](reference-and-snippets/notes/hungariannotation.md)
 * **Legacy**
-  * [programming](reference-and-snippets/legacy/programming.md)
-  * [concepts](reference-and-snippets/legacy/concepts.md)
+  * [programming](/broken/spaces/9SzhteQbqgKM0Ys83WW5/pages/e3b187c7c7cebf6d0dd9e02e545412a4e70ee613)
+  * [concepts](/broken/spaces/9SzhteQbqgKM0Ys83WW5/pages/9aef67c48cbb7a9efe108c2317bebf1a0f29d6f9)
 
 </details>
