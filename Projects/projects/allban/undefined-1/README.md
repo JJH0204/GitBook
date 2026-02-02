@@ -1,3 +1,5 @@
 # 개발 및 배포
 
 > 기존 레거시 시스템(게토)의 폐쇄적인 환경을 극복하기 위해 역공학 기반의 데이터 스니핑 모델을 도입하며, IT 비숙련자도 즉시 운용 가능한 독립형 실행(Standalone) 환경을 구축하여 배포 안정성을 확보하고자 합니다.
+
+<table data-view="cards"><thead><tr><th data-type="content-ref"></th></tr></thead><tbody><tr><td><a href="queue.md">queue.md</a></td></tr><tr><td><a href="ui.md">ui.md</a></td></tr><tr><td><a href="mysql/">mysql</a></td></tr><tr><td><a href="embeddable-python.md">embeddable-python.md</a></td></tr><tr><td><a href="dart-python.md">dart-python.md</a></td></tr><tr><td><a href="inno-setup/">inno-setup</a></td></tr></tbody></table>
