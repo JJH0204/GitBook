@@ -46,7 +46,16 @@
 * [Allban](projects/allban/README.md)
   * [기획](projects/allban/undefined.md)
   * [UI/UX 디자인](projects/allban/ui-ux.md)
-  * [개발 및 배포](projects/allban/undefined-1.md)
+  * [개발 및 배포](projects/allban/undefined-1/README.md)
+    * [데이터 동기화 및 큐(Queue) 기반 비동기 전송](projects/allban/undefined-1/queue.md)
+    * [대시보드 실시간 로깅 및 UI 가시성 개선](projects/allban/undefined-1/ui.md)
+    * [네트워크 패킷 분석 및 MySQL 프로토콜 디코딩 문제](projects/allban/undefined-1/mysql/README.md)
+      * [get\_tshark\_interfaces()](projects/allban/undefined-1/mysql/get_tshark_interfaces.md)
+      * [실시간 출력 지연 문제](projects/allban/undefined-1/mysql/undefined.md)
+    * [임베디드 파이썬(Embeddable Python) 도입 및 런타임 최적화](projects/allban/undefined-1/embeddable-python.md)
+    * [다중 언어(Dart-Python) 프로세스 통합 및 생명주기 관리](projects/allban/undefined-1/dart-python.md)
+    * [배포 자동화 및 인스톨러(Inno Setup) 구축 문제](projects/allban/undefined-1/inno-setup/README.md)
+      * [neem.exe](projects/allban/undefined-1/inno-setup/neem.exe.md)
 
 ## WAIT
 
