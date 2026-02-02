@@ -32,15 +32,15 @@ description: UI/UX 디자인 초안
 
 #### 활용 예시
 
-<figure><img src="../../.gitbook/assets/Kapture 2026-01-29 at 17.56.03.gif" alt=""><figcaption><p>좌측 카테고리바 활용 예제</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Kapture 2026-01-29 at 17.56.03.gif" alt=""><figcaption><p>좌측 카테고리바 활용 예제</p></figcaption></figure>
 
-<figure><img src="../../.gitbook/assets/Kapture 2026-01-29 at 18.02.53.gif" alt=""><figcaption><p>검색 기능 예제</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Kapture 2026-01-29 at 18.02.53.gif" alt=""><figcaption><p>검색 기능 예제</p></figcaption></figure>
 
-<figure><img src="../../.gitbook/assets/Kapture 2026-01-29 at 18.32.16.gif" alt=""><figcaption><p>우측 주문현황바 사용 예제</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Kapture 2026-01-29 at 18.32.16.gif" alt=""><figcaption><p>우측 주문현황바 사용 예제</p></figcaption></figure>
 
-<figure><img src="../../.gitbook/assets/Kapture 2026-01-29 at 18.34.59.gif" alt=""><figcaption><p>레시피 확인 및 타이버 사용 예제</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Kapture 2026-01-29 at 18.34.59.gif" alt=""><figcaption><p>레시피 확인 및 타이버 사용 예제</p></figcaption></figure>
 
-<figure><img src="../../.gitbook/assets/Kapture 2026-01-29 at 18.40.17.gif" alt=""><figcaption><p>서버 프로그램 동작 예제</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Kapture 2026-01-29 at 18.40.17.gif" alt=""><figcaption><p>서버 프로그램 동작 예제</p></figcaption></figure>
 
 {% hint style="info" %}
 서버 프로그램의 경우 큰 디자인 틀만 만들어 두고 기능 개발 과정에서 필요한 것들을 각 항목에 맞게 추가할 예정
