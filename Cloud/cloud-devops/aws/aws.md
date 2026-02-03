@@ -1,3 +1,4 @@
 # AWS
 
-<figure><img src="../../.gitbook/assets/AWS.svg" alt=""><figcaption></figcaption></figure>
+<img src="../../.gitbook/assets/file.excalidraw.svg" alt="" class="gitbook-drawing">
+
