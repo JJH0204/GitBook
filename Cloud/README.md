@@ -133,10 +133,10 @@ description: 전체 문서의 공통 키워드 기반 IA(Information Architectur
 * [Cloud · DevOps 개요](cloud-devops/cloud-devops.md)
 * **AWS**
   * [AWS](cloud-devops/aws/)
-  * [aws](cloud-devops/aws/aws/)
-    * [AWS](cloud-devops/aws/aws/aws.md)
-    * [AWS\_Services](cloud-devops/aws/aws/aws_services.md)
-    * [AWS\_EC2](cloud-devops/aws/aws/aws_ec2.md)
+  * [aws](/broken/spaces/YPIWbzxCJ7vgiXOF76ir/pages/47c90ab814410d648ec1e442e9f7c06f4d36dc82)
+    * [AWS](cloud-devops/aws/aws.md)
+    * [AWS\_Services](cloud-devops/aws/aws_services.md)
+    * [AWS\_EC2](cloud-devops/aws/aws_ec2.md)
 * **Docker**
   * [Docker](cloud-devops/docker/)
   * [Docker](cloud-devops/docker/docker.md)
