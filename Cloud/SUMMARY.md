@@ -114,10 +114,9 @@
 
 * [Cloud · DevOps 개요](cloud-devops/cloud-devops.md)
 * [AWS](cloud-devops/aws/README.md)
-  * [aws](cloud-devops/aws/aws/README.md)
-    * [AWS](cloud-devops/aws/aws/aws.md)
-    * [AWS\_Services](cloud-devops/aws/aws/aws_services.md)
-    * [AWS\_EC2](cloud-devops/aws/aws/aws_ec2.md)
+  * [AWS](cloud-devops/aws/aws.md)
+  * [AWS\_Services](cloud-devops/aws/aws_services.md)
+  * [AWS\_EC2](cloud-devops/aws/aws_ec2.md)
 * [Docker](cloud-devops/docker/README.md)
   * [Docker](cloud-devops/docker/docker.md)
   * [DockerTheory](cloud-devops/docker/dockertheory.md)
