@@ -57,6 +57,7 @@
     * [다중 언어(Dart-Python) 프로세스 통합 및 생명주기 관리](projects/allban/undefined-1/dart-python.md)
     * [배포 자동화 및 인스톨러(Inno Setup) 구축 문제](projects/allban/undefined-1/inno-setup/README.md)
       * [neem.exe](projects/allban/undefined-1/inno-setup/neem.exe.md)
+* [OpenClaw AI Assistant (project lisa)](projects/openclaw-ai-assistant-project-lisa.md)
 
 ## WAIT
 
