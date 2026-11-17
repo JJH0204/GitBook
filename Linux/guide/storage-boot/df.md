@@ -1,130 +1,149 @@
 # 디스크 용량 확인 스크립트 (df)
 
-{% stepper %}
-{% step %}
-### 스크립트 생성 및 권한 설정
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-STB-006-MP |
+| 목적 | 루트(`/`) 파티션 사용률이 80%를 넘으면 메일을 보내는 스크립트를 만들고 cron으로 자동 실행한다 |
+| 적용 대상 | RHEL 계열 리눅스(Rocky Linux 등), root 또는 `sudo`, `mail` 명령과 MTA(sendmail 등) 설치됨 |
+| 소요 시간 | 약 20분 (더미 파일 생성 시간 포함) |
+| 확인 상태 | 미검증 (원본 페이지의 스크립트와 실행 결과를 정리한 것이며 이 문서로 다시 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [df 명령어 참조](df-command.md) | LNX-STB-007-REF | `df` 옵션과 출력 열 |
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양 | 비고 |
+|---|---|---|---|
+| 1 | 편집기 | `vi` | |
+| 2 | `mail` 명령 | s-nail 또는 mailx | 메일 전송에는 MTA(`/usr/sbin/sendmail`)도 필요하다 |
+| 3 | 여유 공간 | 약 7 GB | 테스트용 더미 파일 크기 |
+| 4 | 수신 메일 주소 | `<수신 메일 주소>` | |
+
+## 3. 안전 사항
+
+{% hint style="warning" %}
+CAUTION: 5-B의 더미 파일은 디스크를 7000 MB 채운다. 여유 공간이 부족한 시스템에서 실행하면 서비스가 멈출 수 있다. 운영 서버가 아닌 테스트 환경에서 수행하고, 5-D에서 반드시 삭제한다.
+{% endhint %}
+
+{% hint style="warning" %}
+CAUTION: `crontab -r`은 확인 없이 사용자의 crontab 전체를 삭제한다. 7절 복구에서만 쓰고, 다른 작업이 등록돼 있으면 `crontab -e`로 해당 줄만 지운다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | 현재 사용률을 확인한다: `df /` | `Use%`가 80% 미만이다 |
+| 2 | `mail` 명령이 있는지 확인한다: `which mail` | 경로가 출력된다 |
+| 3 | 스크립트를 둘 디렉터리를 정한다: `<스크립트 경로>` | 디렉터리가 존재한다 |
+
+## 5. 절차
+
+### A. 스크립트 생성
+
+1. (5-A-01) 파일을 연다: `vi <스크립트 경로>/disk_check.sh`
+2. (5-A-02) 아래 내용을 입력하고 저장한다.
 
 ```bash
-vi ./disk_check.sh
-###########################
 #!/bin/bash
 
-#Designation of e-mail address
-MAIL="<your mailaddress>"
+# 수신 메일 주소
+MAIL="<수신 메일 주소>"
 
 DVAL=`/bin/df / | /usr/bin/tail -1 | /bin/sed 's/^.* \([0-9]*\)%.*$/\1/'`
 
 if [ $DVAL -gt 80 ]; then
         echo "Disk usage alert: $DVAL %" | mail -s "Disk Space Alert in `hostname`" $MAIL
 fi
-###########################
-chmod 700 disk_check.sh
-```
-{% endstep %}
-
-{% step %}
-### 테스트를 위한 더미 파일 생성
-
-```shell
-dd if=/dev/zero of=dummyfile bs=1M count=7000
-
-## dd: 파일 생성 명령어
 ```
 
-df 출력 예시:
+3. (5-A-03) 실행 권한을 준다: `chmod 700 <스크립트 경로>/disk_check.sh` → 결과: `ls -l`에서 권한이 `-rwx------`다.
+
+스크립트는 `df /`의 마지막 줄에서 `Use%` 숫자만 뽑아 변수 `DVAL`에 넣고, 80을 넘으면 메일을 보낸다.
+
+### B. 테스트용 더미 파일 생성
+
+1. (5-B-01) 7000 MB 파일을 만든다: `dd if=/dev/zero of=dummyfile bs=1M count=7000` → 결과: `dummyfile`이 생긴다. (`dd`는 파일을 복사·생성하는 명령이다.)
+2. (5-B-02) 사용률을 확인한다: `df` → 결과: `/` 행의 `Use%`가 80%를 넘는다.
+
+원본 실행 예(루트 사용률 93%):
 
 ```
-df
 Filesystem          1K-blocks     Used Available Use% Mounted on
-devtmpfs                 4096        0      4096   0% /dev
-tmpfs                  909172        0    909172   0% /dev/shm
-tmpfs                  363672     5036    358636   2% /run
 /dev/mapper/rl-root  17756160 16500472   1255688  93% /
-/dev/sda1              983040   413228    569812  43% /boot
-tmpfs                  181832        0    181832   0% /run/user/0
 ```
-{% endstep %}
 
-{% step %}
-### 스크립트 실행
+### C. 스크립트 실행
 
-```shell
-./disk_check.sh
-#############################
-s-nail: Warning: $LOGNAME (test) not identical to user (root)!
-s-nail: Warning: $USER (test) not identical to user (root)!
+1. (5-C-01) 스크립트를 실행한다: `<스크립트 경로>/disk_check.sh` → 결과: 메일 전송 단계가 실행된다.
+
+원본 환경에는 MTA가 없어서 다음 오류가 나왔다.
+
+```
 s-nail: Cannot start /usr/sbin/sendmail: executable not found (adjust *mta* variable)
-/root/dead.letter 8/192
 s-nail: ... message not sent
-#############################
-```
-{% endstep %}
-
-{% step %}
-### 테스트 환경 정리
-
-```shell
-rm -rf dummyfile
 ```
 
-df 출력 예시:
+{% hint style="info" %}
+NOTE: 이 오류는 스크립트 조건이 맞아 메일 전송을 시도했다는 뜻이다. 실제로 메일을 받으려면 `sendmail`(또는 postfix 등)을 설치하고 설정한다.
+{% endhint %}
+
+### D. 테스트 환경 정리
+
+1. (5-D-01) 더미 파일을 삭제한다: `rm -f dummyfile` → 결과: `ls`에 `dummyfile`이 없다.
+2. (5-D-02) 사용률을 확인한다: `df` → 결과: `/` 행의 `Use%`가 원래 값(원본 예: 13%)으로 돌아온다.
+
+### E. cron 자동화
+
+1. (5-E-01) crontab 편집기를 연다: `crontab -e`
+2. (5-E-02) 다음 줄 중 하나를 추가한다.
 
 ```
-df
-##################################
-Filesystem          1K-blocks    Used Available Use% Mounted on
-devtmpfs                 4096       0      4096   0% /dev
-tmpfs                  909172       0    909172   0% /dev/shm
-tmpfs                  363672    5036    358636   2% /run
-/dev/mapper/rl-root  17756160 2164480  15591680  13% /
-/dev/sda1              983040  413228    569812  43% /boot
-tmpfs                  181832       0    181832   0% /run/user/0
-##################################
-```
-{% endstep %}
-
-{% step %}
-### cron 으로 자동화
-
-crontab 편집:
-
-```shell
-crontab -e
-######################
-0 0 * * * /var/www/system/disk_check.sh
-
-## 매일 새벽 0 시에 disk_check.sh를 실행해라
-* */2 * * * * /var/www/system/disk_check.sh
-
-## 2시간 마다 disk_check.sh를 실행해라
-######################
+0 0 * * * <스크립트 경로>/disk_check.sh
 ```
 
-현재 crontab 확인:
+→ 매일 0시 0분에 실행한다.
 
-```shell
-crontab -l
-#####################
-0 0 * * * /var/www/system/disk_check.sh
-#####################
 ```
-{% endstep %}
-
-{% step %}
-### 크론 로그 및 삭제
-
-크론 로그 확인:
-
-```shell
-# 크론 로그 확인
-cat /var/log/cron-20240920
+0 */2 * * * <스크립트 경로>/disk_check.sh
 ```
 
-사용자 crontab 삭제:
+→ 2시간마다 정각에 실행한다.
 
-```shell
-# 사용자의 crontab 삭제
-crontab -r 
-```
-{% endstep %}
-{% endstepper %}
+3. (5-E-03) 저장하고 종료한다. 
+4. (5-E-04) 등록을 확인한다: `crontab -l` → 결과: 추가한 줄이 출력된다.
+
+{% hint style="info" %}
+NOTE: 원본은 2시간 주기를 `* */2 * * * *`로 적었다. cron 시간 필드는 5개(분 시 일 월 요일)이므로 이 줄은 올바르지 않다. `0 */2 * * *`로 정정했다.
+{% endhint %}
+
+### F. cron 로그 확인
+
+1. (5-F-01) 로그 파일을 확인한다: `cat /var/log/cron-<날짜>` (RHEL 계열, 로그 순환 후 파일명에 날짜가 붙는다) → 결과: 스크립트 실행 기록이 있다.
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 사용률 80% 초과 상태에서 스크립트 실행 | 메일 전송 시도 | 메일이 수신되거나 5-C-01의 `sendmail` 오류가 보인다 |
+| 2 | 사용률 80% 이하 상태에서 스크립트 실행 | 출력 없음 | 출력이 없다 |
+| 3 | `crontab -l` | 등록한 줄 | 줄이 보인다 |
+
+## 7. 복구
+
+1. (7-01) cron 등록을 제거한다: `crontab -e`로 추가한 줄을 지운다. 이 사용자의 crontab에 다른 작업이 없을 때만 `crontab -r`을 써도 된다.
+2. (7-02) 스크립트를 삭제한다: `rm <스크립트 경로>/disk_check.sh`
+3. (7-03) 더미 파일이 남았는지 확인한다: `ls dummyfile` → 결과: 파일이 없다.
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지를 AMM 형식으로 재작성. cron 2시간 주기 표기를 정정하고 `df` 옵션 표를 `df-command.md`로 분리 |
