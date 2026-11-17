@@ -1,138 +1,80 @@
 # 트랜잭션 제어 언어 (TCL)
 
-## TCL (Transaction Control Language, 트랜잭션 제어 언어)란?
+## 작업 식별
 
-* 데이터베이스에서 트랜잭션의 실행을 제어하는 SQL 명령어
-* DML과 함께 사용되어 트랜잭션의 실행을 확정(COMMIT)하거나 취소(ROLLBACK)하는 역할을 수행
+| 항목 | 내용 |
+|---|---|
+| Task ID | DB-SQL-005-REF |
+| 유형 | REF (문법 표) |
+| 목적 | TCL 명령(COMMIT, ROLLBACK, SAVEPOINT)과 트랜잭션 개념을 참조한다 |
+| 확인 상태 | 미검증 (원본 페이지와 MariaDB/MySQL 문서 지식을 정리한 것이며 DB에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-{% hint style="info" %}
-✔️ 데이터의 일관성과 무결성을 보장하기 위해 사용된다.\
-✔️ 트랜잭션 단위로 데이터를 처리하여 원자성을 유지\
-✔️ TCL 명령어: COMMIT, ROLLBACK, SAVEPOINT
-{% endhint %}
+## 1. TCL이란
 
-***
+TCL(Transaction Control Language, 트랜잭션 제어 언어)은 DML로 바꾼 데이터를 확정하거나 취소하는 SQL 명령이다. 트랜잭션은 하나의 논리적 작업 단위로 묶인 SQL 문의 집합이다. 전부 성공하거나 전부 취소된다.
 
-## 트랜잭션(Transaction)이란?
+## 2. 명령 표
 
-* 데이터베이스에서 하나의 논리적인 작업 단위를 의미한다.
-* 여러 개의 SQL 연산이 하나의 트랜잭션으로 묶여서 실행되며, 트랜잭션이 완료되면 COMMIT, 오류 발생 시 ROLLBACK을 수행
-
-{% hint style="info" %}
-✔️ 트랜잭션은 원자성, 일관성, 독립성, 지속성을 보장해야 한다. (ACID 원칙)\
-✔️ TCL은 트랜잭션을 제어하여 데이터의 무결성을 유지하는 역할을 수행한다.
-{% endhint %}
-
-***
-
-## COMMIT (트랜잭션 확정)
-
-* 현재까지 실행된 트랜잭션의 변경 내용을 데이터베이스에 반영(확정)
-* DML 작업 후 COMMIT을 수행해야 변경 사항이 저장된다.
-* COMMIT이 실행되면 이후 ROLLBACK을 할 수 없다.
-
-{% code title="COMMIT 예시" %}
-```sql
-COMMIT;
-```
-{% endcode %}
-
-{% code title="COMMIT 사용 예" %}
-```sql
--- 고객 정보 추가
-INSERT INTO Customers (id, name, age) VALUES (1, '홍길동', 25);
-
--- 변경 사항 확정 (데이터베이스에 반영)
-COMMIT;
-```
-{% endcode %}
-
-{% hint style="success" %}
-변경사항 영구 저장, ROLLBACK 불가능
-{% endhint %}
-
-***
-
-## ROLLBACK (트랜잭션 취소)
-
-* 현재 트랜잭션의 변경 내용을 취소하고, 이전 상태로 되돌린다.
-* COMMIT 되지 않은 DML 작업을 모두 취소
-* ROLLBACK을 수행하면 트랜잭션이 시작되기 전 상태로 되돌린다.
-
-{% code title="ROLLBACK 예시" %}
-```sql
-ROLLBACK;
-```
-{% endcode %}
-
-{% code title="ROLLBACK 사용 예" %}
-```sql
--- 고객 정보 추가
-INSERT INTO Customers (id, name, age) VALUES (2, '김철수', 30);
-
--- 실수로 데이터를 삽입했으므로 롤백
-ROLLBACK;
-
--- 변경 사항이 취소되었으므로 데이터는 저장되지 않음
-SELECT * FROM Customers;
-```
-{% endcode %}
+| 명령 | 용도 | 문법 | 비고 |
+|---|---|---|---|
+| `START TRANSACTION` | 트랜잭션을 시작한다 | `START TRANSACTION;` 또는 `BEGIN;` | 이 명령 뒤의 DML은 `COMMIT`하기 전까지 확정되지 않는다 |
+| `COMMIT` | 변경을 확정한다 | `COMMIT;` | 확정 뒤에는 `ROLLBACK`으로 취소할 수 없다 |
+| `ROLLBACK` | 변경을 취소한다 | `ROLLBACK;` | 트랜잭션 시작 이후의 변경을 모두 취소한다 |
+| `SAVEPOINT` | 저장점을 만든다 | `SAVEPOINT <저장점 이름>;` | 트랜잭션 안에서만 쓴다 |
+| `ROLLBACK TO` | 저장점까지만 취소한다 | `ROLLBACK TO <저장점 이름>;` | 트랜잭션은 끝나지 않는다. 그 저장점 이후에 만든 저장점은 사라진다 |
+| `RELEASE SAVEPOINT` | 저장점을 지운다 | `RELEASE SAVEPOINT <저장점 이름>;` | 변경 내용은 취소되지 않는다 |
+| `SET autocommit` | 자동 커밋을 켜고 끈다 | `SET autocommit = 0;` | 기본값은 `1`(켜짐)이다 |
 
 {% hint style="warning" %}
-DML 실행 결과를 COMMIT 하지 않은 경우 복구 할 수 있다.
+CAUTION: MariaDB/MySQL의 기본값은 `autocommit=1`이다. `START TRANSACTION` 없이 실행한 DML은 문장마다 즉시 확정되어 `ROLLBACK`으로 되돌릴 수 없다. 트랜잭션을 쓰려면 먼저 `START TRANSACTION;`을 실행한다.
 {% endhint %}
 
-***
-
-## SAVEPOINT (트랜잭션 저장점 설정)
-
-* 트랜잭션 내에서 특정 지점을 저장, 부분적으로 롤백 기능 제공
-* ROLLBACK TO SAVEPOINT를 사용하면 특정 저장점 이후의 변경 사항만 취소 가능
-* 복잡한 트랜잭션에서 부분적인 오류 처리를 수행할 때 유용하다.
-
-{% code title="SAVEPOINT 설정" %}
-```sql
-SAVEPOINT 저장점_이름;
-```
-{% endcode %}
-
-{% code title="ROLLBACK TO SAVEPOINT" %}
-```sql
-ROLLBACK TO 저장점_이름;
-```
-{% endcode %}
-
-{% code title="SAVEPOINT 사용 예" %}
-```sql
--- 고객 정보 추가
-INSERT INTO Customers (id, name, age) VALUES (3, '이영희', 28);
-SAVEPOINT sp1;  -- 저장점 설정
-
--- 고객 정보 추가
-INSERT INTO Customers (id, name, age) VALUES (4, '박민수', 35);
-SAVEPOINT sp2;  -- 저장점 설정
-
--- 일부 데이터 롤백
-ROLLBACK TO sp1;
-
--- '이영희'는 남아있고, '박민수' 데이터는 롤백됨
-SELECT * FROM Customers;
-```
-{% endcode %}
+{% hint style="warning" %}
+CAUTION: 트랜잭션 안에서 DDL(`CREATE`, `ALTER`, `DROP`, `TRUNCATE`)을 실행하면 암묵적 커밋이 일어나 그때까지의 변경이 확정된다. 이후 `ROLLBACK`으로 되돌릴 수 없다.
+{% endhint %}
 
 {% hint style="info" %}
-SAVEPOINT를 사용하면 트랜잭션 내에서 특정 지점을 설정하여 부분적 ROLLBACK 가능
+NOTE: 롤백은 InnoDB처럼 트랜잭션을 지원하는 스토리지 엔진에서만 동작한다. MyISAM 테이블은 롤백되지 않는다. 미검증이다.
 {% endhint %}
 
-***
+## 3. 사용 예
 
-## ACID
+| 목적 | 명령 순서 |
+|---|---|
+| 변경을 확정한다 | `START TRANSACTION;` → `INSERT INTO Customers (name, age) VALUES ('홍길동', 25);` → `COMMIT;` |
+| 변경을 취소한다 | `START TRANSACTION;` → `INSERT INTO Customers (name, age) VALUES ('김철수', 30);` → `ROLLBACK;` |
+| 일부만 취소한다 | `START TRANSACTION;` → `INSERT ...;` → `SAVEPOINT sp1;` → `INSERT ...;` → `ROLLBACK TO sp1;` → `COMMIT;` |
 
-* 데이터베이스 트랜잭션의 ACID (Atomicity, Consistency, Isolation, Durability) 특성을 보장하기 위해 사용된다.
+{% hint style="danger" %}
+WARNING: `ROLLBACK`은 마지막 `COMMIT`이나 `START TRANSACTION` 이후의 모든 미확정 변경을 버린다. 실행 전에 `SELECT`로 현재 상태를 확인한다. `COMMIT`은 되돌릴 수 없다. 확정하기 전에 `SELECT`로 결과를 확인한다. 안전한 연습 절차는 DB-SQL-007-MP를 따른다.
+{% endhint %}
 
-| ACID 속성           | 설명                         | TCL 명령어와의 관계 |
-| ----------------- | -------------------------- | ------------ |
-| 원자성 (Atomicity)   | 트랜잭션 내 모든 작업이 성공해야 한다.     | ROLLBACK     |
-| 일관성 (Consistency) | 트랜잭션이 실행되면 데이터의 무결성이 유지된다. | COMMIT       |
-| 격리성 (Isolation)   | 여러 트랜잭션이 독립적으로 실행되어야 한다.   | SAVEPOINT    |
-| 지속성 (Durability)  | 트랜잭션이 완료되면 영구적으로 저장되어야 한다. | COMMIT       |
+## 4. ACID
+
+트랜잭션이 지켜야 하는 네 가지 성질이다.
+
+| 속성 | 의미 | 관련 기능 |
+|---|---|---|
+| 원자성 (Atomicity) | 트랜잭션의 작업이 모두 반영되거나 모두 취소된다 | `ROLLBACK` |
+| 일관성 (Consistency) | 트랜잭션 전후에 데이터 무결성 규칙이 유지된다 | 제약 조건, 트랜잭션 전체 |
+| 격리성 (Isolation) | 동시에 실행되는 트랜잭션이 서로 영향을 주지 않는다 | 격리 수준(`SET TRANSACTION ISOLATION LEVEL`) |
+| 지속성 (Durability) | 확정된 변경은 장애가 나도 유지된다 | `COMMIT`, 로그 |
+
+{% hint style="info" %}
+NOTE: 원본은 격리성을 `SAVEPOINT`에, 일관성을 `COMMIT`에 대응시켰다. 격리성은 `SAVEPOINT`가 아니라 격리 수준으로 제어하고, 일관성은 `COMMIT` 하나로 보장되지 않는다. 대응 열을 정정했다. 미검증이다.
+{% endhint %}
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [데이터 조작어 (DML)](sql_dml.md) | DB-SQL-003-REF | 트랜잭션 대상 명령 |
+| [데이터 정의어 (DDL)](sql_ddl.md) | DB-SQL-002-REF | 암묵적 커밋 |
+| [트랜잭션 COMMIT·ROLLBACK·SAVEPOINT 실습](sql_transaction_practice.md) | DB-SQL-007-MP | 실습 절차 |
+
+## 6. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | REF 형식으로 재작성. 자동 커밋, `ROLLBACK TO` 동작, ACID 대응 표를 정정하고, 실습은 DB-SQL-007-MP로 분리했다 |
