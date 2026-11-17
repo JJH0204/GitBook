@@ -1,183 +1,106 @@
 # Git 사용법 (GitHub Desktop)
 
-{% tabs %}
-{% tab title="GIT Desktop" %}
-* 최근에 깃은 여러 펀의성 툴을 등장으로 사용이 간단해졌습니다.
-* 원활한 팀 협업을 위해 간단 사용법이 필요한 당신에게 이 가이드를 바칩니다.
-* Windows를 기준으로 git 사용법은 두 가지로 나뉩니다.
-  * GIT Desktop
-  * GIT Bash
+## 작업 식별
 
-## GIT Desktop
-
-* 깃을 처음 사용하거나 다루는데 익숙하지 않다면 추천하는 Tool 입니다.
-* Git Hub에서 자체 개발한 Tool 로 무료입니다.
-
-### 준비물
-
-* [git](https://git-scm.com/book/ko/v2/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EC%84%A4%EC%B9%98)
-* [github 계정](https://github.com/signup?ref_cta=Sign+up\&ref_loc=header+logged+out\&ref_page=%2F\&source=header-home)
-* [github Desktop](https://github.com/apps/desktop?ref_cta=download+desktop\&ref_loc=installing+github+desktop\&ref_page=docs)
-* [VS code](https://code.visualstudio.com/)/[subline Text](https://www.sublimetext.com/) 같은 코드 에디터(본인 취향껏)
-
-### Github Desktop 실행
-
-{% stepper %}
-{% step %}
-### 로그인
-
-Windows: File > Accounts\
-Mac: Github Desktop > Preferences
-
-* Git 계정으로 로그인 합니다.
-{% endstep %}
-
-{% step %}
-### Create a New Repository...
-
-* 보유한 깃 레포지토리가 없다면 생성하여 깃 로컬 저장소를 만들 수 있습니다.
-* 여기서 생성한 깃 레포지토리는 자동으로 github에도 생성됩니다.
-{% endstep %}
-
-{% step %}
-### Clone a Repository...
-
-* 보유한 깃 리포지토리가 있거나 불러올 리포지토리가 있을 경우 로컬 저장소와 깃 허브 저장소를 동기화 할 수 있습니다.
-{% endstep %}
-
-{% step %}
-### Add an Existing Repository...
-
-* 이미 깃 허브 저장소와 로컬 저장소의 동기화가 완료된 폴더(디렉터리)를 Git Desktop에 등록해 저장소 관리를 편하게 할 수 있습니다.
-{% endstep %}
-{% endstepper %}
-
-### Git Desktop tool
-
-#### Current repository
-
-* 현재 Desktop에서 관리되는 리포지토리 리스트를 확인할 수 있습니다.
-* 우 클릭 시 추가 도구를 사용할 수 있습니다.
-
-#### Current Branch
-
-* 현재 리포지토리의 브렌치를 확인할 수 있습니다.
-* 브랜치에 대한 개념은 버전 관리를 위해 필요한 상위 개념임으로 현재는 이런 기능이 있다 정도만 이해하셔도 됩니다.
-
-#### Fetch origin
-
-* 현재 선택한 리포지토리에 깃 허브 리포지토리의 변경 사항을 동기화 하여 적용합니다.
-
-#### Changes & History
-
-* 현재 선택한 리포지토리와 깃 허브 저장소를 비교해 수정된 파일들을 표시합니다.
-* 수정 사항 로그를 볼 수 있습니다.
-* 수정 사항을 취소하거나 적용할 수 있습니다.
-
-#### Commit & History
-
-* 커밋 메시지를 작성하고 Commit을 누르면 Commit이 진행됩니다.
-* commit의 대상의 수정 사항을 확인할 수 있습니다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | DEV-GIT-004-MP |
+| 목적 | GitHub Desktop에 로그인하고 저장소를 만들거나 가져와 변경 사항을 커밋·푸시한다 |
+| 적용 대상 | Windows 10/11, macOS, GitHub Desktop |
+| 소요 시간 | 약 15분 |
+| 확인 상태 | 미검증 (원본 페이지를 정리한 것이며 이 환경에서 GitHub Desktop을 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="info" %}
-### 정리
-
-* Git Desktop은 깃 사용 숙련도가 부족할 때 사용하기 좋은 툴입니다.
-* 다만, Windows/mac 에서만 지원한다는 점에서 Git 명령어를 몰라도 되는 것은 아닙니다.
+NOTE: GitHub Desktop은 GitHub이 만든 무료 Git 클라이언트다. 명령어를 쓰지 않고 Git을 쓸 수 있어 처음 쓰는 사람에게 맞다. Windows와 macOS만 지원하므로 Git 명령어는 별도로 알아야 한다. 명령어 사용법은 DEV-GIT-005-REF를 따른다. 원본 페이지의 Git Bash 탭은 DEV-GIT-005-REF로 분리했다.
 {% endhint %}
-{% endtab %}
 
-{% tab title="Git Bash" %}
-* Git을 사용하는 전통적인 방법으로 CMD 창에서 사용하는 명령어는 Git Bash 명령어입니다.
+## 1. 참조
 
-### Git 명령어
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [gitbashcommands.md](gitbashcommands.md) | DEV-GIT-005-REF | Git Bash 기본 명령어 |
+| [gitsshkey.md](gitsshkey.md) | DEV-GIT-003-MP | Git SSH 키 생성과 등록 |
+| [gitdisconnect.md](gitdisconnect.md) | DEV-GIT-001-MP | 사용하지 않는 PC의 Git 접근 해제 |
 
-* 대부분의 깃 명령어 사용법은 잘 정리된 블로그 포스트가 많습니다.
-* 그것을 참고하는 것이 더 도움이 될 것 같습니다.
-* [링크](https://velog.io/@delilah/GitHub-Git-%EB%AA%85%EB%A0%B9%EC%96%B4-%EB%AA%A8%EC%9D%8C)
-* 가장 자주 사용하게 될 명령어는 아래에 정리해 놓겠습니다.
+## 2. 필요 장비와 자재
 
-#### clone
+| 번호 | 이름 | 사양 | 비고 |
+|---|---|---|---|
+| 1 | [Git](https://git-scm.com/book/ko/v2/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EC%84%A4%EC%B9%98) | 2.x | 설치 안내 링크 |
+| 2 | [GitHub 계정](https://github.com/signup) | | 가입 페이지 |
+| 3 | [GitHub Desktop](https://github.com/apps/desktop) | 최신 버전 | |
+| 4 | 코드 에디터 | [VS Code](https://code.visualstudio.com/), [Sublime Text](https://www.sublimetext.com/) 등 | 취향에 따라 고른다 |
 
-```bash
-git clone <리포지토리 링크>
-```
+## 3. 안전 사항
 
-* `<>`는 값을 대입할 때 생략합니다.
-* 클론을 원하는 리포지토리의 URL 경로가 필요합니다.
-* 브라우저 또는 깃 저장소에서 Code 버튼을 눌러 확인할 수 있습니다.
+{% hint style="info" %}
+NOTE: 브랜치(branch)는 버전 관리를 위한 상위 개념이다. 이 문서에서는 현재 브랜치를 확인하는 기능이 있다는 것만 알면 된다.
+{% endhint %}
 
-예:
+## 4. 준비
 
-```bash
-git clone https://github.com/JJH0204/MyNote.git
-```
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | GitHub Desktop을 설치한다 | 앱이 실행된다 |
+| 2 | GitHub 계정이 있는지 확인한다 | 웹에서 로그인된다 |
 
-#### add
+## 5. 절차
 
-```bash
-git add <커밋할 변경사항>
-```
+### A. 로그인
 
-* 변경 사항을 커밋하기 전 커밋 리스트에 저장하는 명령어입니다.
-* 커밋할 변경사항에 . 을 넣으면 변경 사항 모두 리스트에 등록됩니다.
+1. (5-A-01) 계정 설정을 연다. Windows: `File > Options > Accounts`, macOS: `GitHub Desktop > Settings` (구버전은 `Preferences`).
+2. (5-A-02) GitHub 계정으로 로그인한다. → 결과: 계정 이름이 표시된다.
 
-```bash
-git add .
-```
+### B. 저장소 준비 (셋 중 하나를 고른다)
 
-* 주의 할 점은 git clone 과 git add . 를 동시에 사용할 때 입니다.
-* git clone을 제외한 지금부터 소개하는 명령어는 리포지토리 디렉터리에서 실행해야 합니다.
+**B-1. 새 저장소 만들기**
 
-예:
+1. (5-B1-01) `Create a New Repository...`를 누른다.
+2. (5-B1-02) 이름과 로컬 경로를 입력하고 만든다. → 결과: 로컬 저장소가 만들어진다.
+3. (5-B1-03) GitHub에도 만들려면 `Publish repository`를 누른다. → 결과: GitHub에 같은 이름의 저장소가 생긴다.
 
-```bash
-cd /github
-git clone https://github.com/JJH0204/MyNote.git
+**B-2. 기존 저장소 가져오기**
 
-cd /github/MyNote/
-git add .
-git commit -m "asdfasdf"
-```
+1. (5-B2-01) `Clone a Repository...`를 누른다.
+2. (5-B2-02) 가져올 저장소와 저장할 로컬 경로를 선택한다. → 결과: 로컬 폴더에 저장소가 복제된다.
 
-#### commit -m
+**B-3. 이미 있는 로컬 폴더 등록**
 
-```bash
-git commit -m "커밋 메시지"
-```
+1. (5-B3-01) `Add an Existing Repository...`를 누른다.
+2. (5-B3-02) 이미 Git 저장소인 폴더를 선택한다. → 결과: `Current repository` 목록에 추가된다.
 
-* 변경 사항 커밋 시 표시되는 메시지 입니다.
-* 협업에서는 규칙을 갖고 메시지를 작성합니다.
-* 대부분의 팀에서 아래와 같이 메시지를 작성합니다.
+### C. 변경 사항 반영
 
-예:
+1. (5-C-01) 작업 전에 `Fetch origin`을 누른다. → 결과: 원격에 새 변경이 있으면 버튼이 `Pull origin`으로 바뀐다.
+2. (5-C-02) 버튼이 `Pull origin`이면 누른다. → 결과: 원격 변경 사항이 로컬에 적용된다.
+3. (5-C-03) 파일을 수정한다. → 결과: `Changes` 탭에 수정한 파일이 표시된다.
+4. (5-C-04) 커밋 메시지를 입력하고 `Commit`을 누른다. → 결과: `History` 탭에 커밋이 추가된다.
+5. (5-C-05) `Push origin`을 누른다. → 결과: GitHub 저장소에 커밋이 올라간다.
 
-```
-[날짜][시간]_[작업내용]_[작업자]
-241011_BuildTest_Jaeho
-```
+## 6. 기능 확인
 
-#### push
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 웹에서 GitHub 저장소를 연다 | 방금 커밋한 메시지가 보인다 | 커밋 목록에 있다 |
 
-```bash
-git push
-```
+## 7. 복구
 
-* push 단독으로 사용하는 명령어입니다.
-* 커밋 메시지가 등록된, 커밋 리스트의 모든 변경 사항을 지정된 브랜치에 적용합니다.
-* 브랜치 관련 수정이 없다면 기본은 main입니다. (버전 관리/프로세스에 따라서 여려 브랜치가 만들어질 수 있습니다. 팀바팀)
+1. (7-01) 커밋 전 변경을 취소한다: `Changes` 탭에서 파일을 우클릭해 `Discard changes`를 누른다.
+2. (7-02) 계정 연결을 해제한다: DEV-GIT-001-MP를 따른다.
 
-#### pull
+## 8. 화면 구성 (참조)
 
-```bash
-git pull
-```
+| 항목 | 역할 |
+|---|---|
+| Current repository | Desktop이 관리하는 저장소 목록을 보여 준다. 우클릭하면 추가 도구를 쓸 수 있다 |
+| Current Branch | 현재 저장소의 브랜치를 보여 준다 |
+| Fetch origin | GitHub 저장소의 변경 사항을 확인해 가져온다 |
+| Changes | 수정된 파일을 표시한다. 수정 사항을 취소하거나 커밋할 수 있다 |
+| History | 커밋 기록과 각 커밋의 수정 내용을 보여 준다 |
 
-* 깃 허브 저장소(리포지토리)의 변경 사항을 로컬에 적용하는 명령어
-* 대부분의 오류는 이 명령어를 사용하지 않아서 작업자 간의 동일한 파일을 수정하거나 커밋을 하려고 할 때 발생합니다.
-* 따라서 작업을 하기 전에 꼭 이 명령어로 저장소와 동기화를 최신 상태로 유지하고 작업합니다.
-* 변경 사항을 만들었다면 혹시 모를 충돌을 대비해 팀원에게 고지하면 에러를 만날 일이 줄어들 것입니다.
+## 9. 개정 이력
 
-그 외 git 관련 사용법은 GPT나 블로그 포스팅을 참고하시면 도움될 것이라 생각합니다.
-{% endtab %}
-{% endtabs %}
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 탭 구조를 풀어 GitHub Desktop 절차로 재작성하고 Git Bash 내용을 DEV-GIT-005-REF로 분리 |
