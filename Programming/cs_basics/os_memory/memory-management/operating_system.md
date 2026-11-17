@@ -47,8 +47,8 @@
 
 Windows는 마이크로소프트사에서 개발한 운영체제로, Graphical User Interface (GUI) 기능을 제공하여 사용자가 편리하게 사용할 수 있습니다. 2022년 [통계](https://gs.statcounter.com/os-market-share/desktop/south-korea)에 의하면 대한민국 PC 운영체제 점유율의 90% 가까이를 Windows가 차지하고 있습니다. 그만큼 많은 한국인들은 어렸을 때부터 윈도우를 사용해왔으며 윈도우 사용법에 친숙할 것입니다.
 
-UNIX는 벨 연구소에서 개발한 운영체제로, 대부분의 운영체제는 UNIX로부터 발전된 기술을 사용하고 있습니다. 따라서 현대 운영체제의 원형이라고 할 수 있습니다. 사용자가 키보드로 입력하는 명령에 의해 조작되는 Character User Interface (CUI) 기반의 대화식 운영체제입니다.
+UNIX는 벨 연구소에서 개발한 운영체제로, macOS·Linux 등 많은 운영체제가 UNIX의 설계를 이어받았습니다(Windows NT 계열은 별개 계통입니다). 따라서 현대 운영체제의 원형이라고 할 수 있습니다. 사용자가 키보드로 입력하는 명령에 의해 조작되는 Character User Interface (CUI) 기반의 대화식 운영체제입니다.
 
-UNIX가 개발된 이후, 리누스 토발즈(Linus Benedict Torvalds)가 UNIX 기반의 **Linux** 운영체제를 개발했습니다. Linux는 소스 코드를 공개하여 누구나 수정하고 재배포할 수 있는 오픈소스 프로그램으로, 많은 사람에 의해 계속해서 발전하고 있습니다. Linux 역시 CUI 기반의 운영체제입니다. Linux를 기반으로 Ubuntu, CentOS 등의 다양한 버전이 존재하며, 드림핵 강의에서는 Ubuntu Linux를 사용합니다.
+UNIX가 개발된 이후, 리누스 토발즈(Linus Benedict Torvalds)가 유닉스 계열(Unix-like)의 **Linux** 커널을 새로 작성했습니다(UNIX 소스 코드를 기반으로 한 것은 아닙니다). Linux는 소스 코드를 공개하여 누구나 수정하고 재배포할 수 있는 오픈소스 프로그램으로, 많은 사람에 의해 계속해서 발전하고 있습니다. Linux 역시 명령줄(CLI) 중심으로 쓰이지만 데스크톱 GUI 환경도 있습니다. Linux를 기반으로 Ubuntu, CentOS 등의 다양한 버전이 존재하며, 드림핵 강의에서는 Ubuntu Linux를 사용합니다.
 
 UNIX 기반의 또 다른 운영체제로는 애플에서 개발한 GUI 기반 운영체제 **macOS**, 스마트폰을 많이 사용하는 현대인에게 친숙한 모바일 운영체제 **Android**와 **iOS**가 있습니다.

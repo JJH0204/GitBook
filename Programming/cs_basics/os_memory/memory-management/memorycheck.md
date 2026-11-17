@@ -59,7 +59,7 @@ python vol.py -f memory.mem windows.info.Info
 * windows.pstree.PsTree: 프로세스 계층 구조
 * windows.psscan.PsScan: 숨겨진 프로세스 목록
 * windows.netstat.NetStat: 네트워크 정보
-* windows.netscan.NetScan: 저장된 메모리 데이터 출력
+* windows.netscan.NetScan: 메모리 덤프에서 네트워크 연결과 소켓을 스캔
 * windows.cmdline.CmdLine: CMD 명령어 정보 출력
-* windows.malfind.Malfind: 메모리에 상주하는 악성 프로그램 찾는다
+* windows.malfind.Malfind: 의심스러운 RWX 메모리 영역(코드 인젝션 후보)을 탐지
 * windows.filescan.FileScan
