@@ -1,7 +1,5 @@
 # Swift 기본 문법 예제
 
-아래는 원본 Swift 코드 예제입니다. 주석과 코드 내용을 그대로 유지했습니다.
-
 {% code title="playground.swift" %}
 ```swift
 import UIKit
@@ -237,7 +235,7 @@ case 1..<5:
 
     print("4~1")
 
-default
+default:
 
     print(String(Condition))
 

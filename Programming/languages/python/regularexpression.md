@@ -35,7 +35,7 @@
 | <p><code>[a-z]</code><br><br><code>[A-Z]</code><br><br><code>[0-9]</code></p> | 두 문자 사이 범위의 문자와 매치합니다.                                                                   | \[b-d] → ha**c**k                                                                                 |
 | `\w`                                                                          | <p>알파벳 또는 숫자 또는 <code>_</code>와 매치합니다.<br><br><code>[A-Za-z0-9_]</code></p>              | \w → **a**!                                                                                       |
 | `\d`                                                                          | <p>숫자와 매치합니다.<br><br><code>[0-9]</code></p>                                              | \d → a**1**                                                                                       |
-| `\s`                                                                          | <p>공백 문자와 매치합니다.<br><br><code>[\b\f\n\r\t\v]</code></p>                                  |                                                                                                   |
+| `\s`                                                                          | <p>공백 문자와 매치합니다.<br><br><code>[ \t\n\r\f\v]</code></p>                                  |                                                                                                   |
 
 #### 수량자
 
@@ -46,8 +46,8 @@
 | `?`        | 앞에 나온 문자가 0개 혹은 1개이면 매치합니다.                                    | <p>Hac?k → <strong>Hak</strong><br><br>Hac?k → <strong>Hack</strong></p>                                                                                                                                                                     |
 | 수량자?       | <p>수량자 뒤에 <code>?</code>를 붙이면 게으른 수량자로,<br>최소한의 문자만 매치합니다.</p> | <p>&#x3C;p>.*&#x3C;/p> → <strong>&#x3C;p>Hello&#x3C;/p>&#x3C;p>Hi&#x3C;/p></strong><br><br>&#x3C;p>.*?&#x3C;/p> → <strong>&#x3C;p>Hello&#x3C;/p></strong>&#x3C;p>Hi&#x3C;/p><br><br>Hack+? → <strong>Hack</strong><br><br>Hack+? → Hackk</p> |
 | `{n}`      | 앞에 나온 문자가 정확히 n개이면 매치합니다.                                      | Hac{3}k → **Haccck**                                                                                                                                                                                                                         |
-| `{n, }`    | 앞에 나온 문자가 n개 이상이면 매치합니다.                                       | Hac{2,}k → **Haccck**                                                                                                                                                                                                                        |
-| `{n1, n2}` | 앞에 나온 문자가 n1개 이상, n2개 이하면 매치합니다.                               | <p>Hac{2,3}k → <strong>Hacck</strong><br><br>Hac{2,3}k → <strong>Haccck</strong></p>                                                                                                                                                         |
+| `{n,}`    | 앞에 나온 문자가 n개 이상이면 매치합니다.                                       | Hac{2,}k → **Haccck**                                                                                                                                                                                                                        |
+| `{n1,n2}` | 앞에 나온 문자가 n1개 이상, n2개 이하면 매치합니다.                               | <p>Hac{2,3}k → <strong>Hacck</strong><br><br>Hac{2,3}k → <strong>Haccck</strong></p>                                                                                                                                                         |
 
 #### 그룹화
 
@@ -81,11 +81,11 @@
 | **함수**                                 | **설명**                            | **반환 값**                                                                                                                |
 | -------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `re.compile(pattern, flags)`           | 정규 표현식 패턴을 컴파일합니다.                | 패턴 객체를 반환합니다. 만들어진 패턴 객체는 변수에 저장하여 사용할 수 있습니다.                                                                          |
-| `re.search(pattern, string, flags)`    | 문자열 내에서 패턴에 처음으로 매치하는 문자열을 검색합니다. | <p>매치하는 문자열이 있으면 문자열 객체를 반환하고, 없으면 None을 반환합니다.<br><br>문자열 객체의 <code>group()</code> 메소드를 사용하여 객체에서 문자열만 반환할 수 있습니다.</p> |
+| `re.search(pattern, string, flags)`    | 문자열 내에서 패턴에 처음으로 매치하는 문자열을 검색합니다. | <p>매치하면 Match 객체를 반환하고, 없으면 None을 반환합니다.<br><br>Match 객체의 <code>group()</code> 메소드를 사용하여 매치된 문자열만 얻을 수 있습니다.</p> |
 | `re.match(pattern, string, flags)`     | 문자열 시작 부분에서 패턴에 매치하는 문자열을 검색합니다.  |                                                                                                                         |
 | `re.fullmatch(pattern, string, flags)` | 전체 문자열이 패턴과 정확하게 매치하는지 확인합니다.     |                                                                                                                         |
 | `re.findall(pattern, string, flags)`   | 문자열 내에서 패턴에 매치하는 모든 문자열을 검색합니다.   | 모든 문자열을 리스트 형식으로 반환합니다. 각 문자열은 리스트의 인덱스로 접근합니다.                                                                         |
-| `re.finditer(pattern, string, flags)`  | 모든 문자열 객체를 리스트 형식으로 반환합니다.        |                                                                                                                         |
+| `re.finditer(pattern, string, flags)`  | 모든 매치의 Match 객체를 이터레이터로 반환합니다.        |                                                                                                                         |
 
 #### flags (Python)
 

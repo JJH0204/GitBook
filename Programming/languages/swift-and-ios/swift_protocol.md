@@ -17,7 +17,7 @@ protocol Identifiable   // Identifiable 이라는 이름의 프로토콜 정의
 
     func displayID()
 
-    /* 모든 타입에 id 속성(일기 가능)과 displayID() 메서드를 요구한다. */
+    /* 모든 타입에 id 속성(읽기 가능)과 displayID() 메서드를 요구한다. */
 
 }
 

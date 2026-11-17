@@ -52,13 +52,13 @@
 
 #### GCC 컴파일러 설치
 
-* 터미널 실행 후 `xdoe-select --install`명령어 실행
+* 터미널 실행 후 `xcode-select --install`명령어 실행
 * "도구를 지금 설치하겠습니까?"에서 설치 선택
 * "동의"를 누르고 설치가 끝날때까지 기다린다.
 
 #### 설치 확인
 
-* 터미널에 `gcc -v` 또는 `gcc --version` 실행
+* 터미널에 `gcc -v` 또는 `gcc --version` 실행 (macOS에서 `gcc`는 GNU GCC가 아니라 Apple clang의 별칭이라 clang 버전이 출력된다)
 * 버전을 확인할 수 있다면 성공
 
 #### VSCode install
