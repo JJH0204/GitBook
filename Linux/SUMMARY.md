@@ -82,6 +82,7 @@
   * [로그 회전 관리 (Logrotate)](guide/logging-monitoring/logrotate.md)
   * [로그 분석 및 보고 (Logwatch)](guide/logging-monitoring/logwatch.md)
   * [시스템 성능 모니터링 (sysstat)](guide/logging-monitoring/sysstat.md)
+  * [sar·iostat 명령 참조 (sysstat)](guide/logging-monitoring/sysstatcommands.md)
 * [스크립트 및 자동화](guide/scripting/README.md)
   * [쉘 스크립트 프로그래밍 기초](guide/scripting/shell-script.md)
   * [쉘 스크립트 작성 실습 예제](guide/scripting/scripts.md)
