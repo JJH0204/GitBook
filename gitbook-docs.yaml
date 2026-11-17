@@ -1,0 +1,69 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+version: 1
+site:
+  title: J:Log
+  structure:
+    - type: space
+      key: space-programming
+      title: Programming
+      path: programming
+      default: true
+      content:
+        directory: ./Programming
+        language: ko
+    - type: space
+      key: space-security
+      title: Security
+      path: security
+      content:
+        directory: ./Security
+        language: ko
+    - type: space
+      key: space-cloud
+      title: Cloud · DevOps
+      path: cloud
+      content:
+        directory: ./Cloud
+        language: ko
+    - type: space
+      key: space-linux
+      title: Linux
+      path: linux
+      content:
+        directory: ./Linux
+        language: ko
+    - type: space
+      key: space-network
+      title: Network
+      path: network
+      content:
+        directory: ./Network
+        language: ko
+    - type: space
+      key: space-database
+      title: DB
+      path: database
+      content:
+        directory: ./DB
+        language: ko
+    - type: space
+      key: space-devtool
+      title: DevTool
+      path: devtool
+      content:
+        directory: ./DevTool
+        language: ko
+    - type: space
+      key: space-gamedev
+      title: GameDev
+      path: gamedev
+      content:
+        directory: ./GameDev
+        language: ko
+    - type: space
+      key: space-projects
+      title: Projects
+      path: projects
+      content:
+        directory: ./Projects
+        language: ko
