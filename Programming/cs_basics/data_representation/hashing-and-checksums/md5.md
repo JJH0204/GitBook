@@ -1,53 +1,91 @@
 # MD5 해시 알고리즘 (MD5)
 
-MD5는 메시지 다이제스트 알고리즘 5(Message Digest Algorithm 5)의 줄임말로, 1991년에 로널드 리베스트가 설계했어. 이 알고리즘은 입력 데이터를 고정된 128비트 해시 값으로 변환해줘. 해시 값은 흔히 32자리의 16진수로 표현되는데, 이는 데이터의 "디지털 지문" 같은 역할을 해 ([Wikipedia](https://en.wikipedia.org/wiki/MD5)) ([DebugPointer](https://debugpointer.com/security/md5-hash-overview)).
+## 작업 식별
 
-#### MD5 알고리즘의 동작 원리
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRG-HSH-002-DO |
+| 유형 | D&O (개념) |
+| 목적 | MD5의 구조와 동작 순서, 보안 용도로 쓰면 안 되는 이유를 설명한다 |
+| 확인 상태 | 미검증 (원본과 일반 지식을 정리했으며 RFC 1321을 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="warning" %}
+WARNING: MD5는 충돌이 발견되어 보안 용도(서명, 인증서, 비밀번호 저장)로 쓰면 안 된다. 원본이 "패스워드 저장"을 사용 사례로 적었으나 부적합하므로 정정했다.
+{% endhint %}
+
+## 1. 목적
+
+MD5(Message-Digest Algorithm 5)는 1991년 로널드 리베스트(Ronald Rivest)가 설계한 해시 알고리즘이다. 입력을 128비트 해시 값으로 바꾼다. 해시 값은 보통 32자리 16진수로 표기하며, 데이터의 "디지털 지문"처럼 쓴다. RFC 1321로 공개되었다.
+
+## 2. 구성 요소
+
+| 항목 | 내용 |
+|---|---|
+| 출력 | 128비트 (32자리 16진수) |
+| 블록 크기 | 512비트 |
+| 내부 상태 | 32비트 변수 4개 (A, B, C, D) |
+| 라운드 | 블록당 4라운드, 라운드당 16단계(총 64단계) |
+| 입력 예 | 빈 문자열 → `d41d8cd98f00b204e9800998ecf8427e`, `abc` → `900150983cd24fb0d6963f7d28e17f72` |
+
+## 3. 동작 원리
 
 {% stepper %}
 {% step %}
 ### 패딩
 
-입력 데이터에 1비트와 여러 개의 0비트를 추가해서 길이를 512비트의 배수가 되게 해.
+입력 끝에 1비트와 0비트 여러 개를 붙여 길이를 (512의 배수 − 64)비트로 맞춘다.
 {% endstep %}
 
 {% step %}
 ### 길이 추가
 
-원래 데이터의 길이를 64비트로 표현해서 마지막에 붙여.
+원래 입력 길이를 64비트로 표현해 마지막에 붙인다. 전체 길이가 512비트의 배수가 된다.
 {% endstep %}
 
 {% step %}
 ### 초기화
 
-4개의 32비트 변수를 특정 값으로 초기화해.
+32비트 변수 4개를 규격에 정해진 초기값으로 설정한다.
 {% endstep %}
 
 {% step %}
 ### 블록 처리
 
-각 512비트 블록을 4번의 라운드로 나누어 처리해. 각 라운드마다 16개의 연산이 이루어지지.
+512비트 블록마다 4라운드를 수행한다. 각 라운드는 16단계의 연산으로 이루어진다.
 {% endstep %}
 
 {% step %}
 ### 출력
 
-모든 블록 처리가 끝나면 4개의 변수 값이 최종 128비트 해시를 형성해 ([DebugPointer](https://debugpointer.com/security/md5-hash-overview)) ([Simplilearn.com](https://www.simplilearn.com/tutorials/cyber-security-tutorial/md5-algorithm)).
+모든 블록 처리가 끝나면 변수 4개를 이어 붙인 128비트가 최종 해시 값이다.
 {% endstep %}
 {% endstepper %}
 
-#### MD5의 사용 사례
+## 4. 사용 사례와 한계
 
-MD5는 데이터 무결성 검사, 패스워드 저장, 디지털 서명 검증, 파일 중복 제거 등 다양한 분야에서 사용돼. 예를 들어, 파일이 전송 중에 변조되지 않았는지 확인할 때 MD5 해시 값을 비교해서 검증할 수 있어 ([DebugPointer](https://debugpointer.com/security/md5-hash-overview)) ([Simplilearn.com](https://www.simplilearn.com/tutorials/cyber-security-tutorial/md5-algorithm)).
+| 용도 | 적합 여부 | 이유 |
+|---|---|---|
+| 전송·저장 중 우발적 손상 확인 (체크섬) | 가능 | 속도가 빠르다. 의도적 조작은 막지 못한다 |
+| 파일 중복 탐지 | 가능 | 비의도적 중복 판별에 쓴다 |
+| 디지털 서명, SSL 인증서 | 부적합 | 충돌 공격으로 서로 다른 입력에 같은 해시를 만들 수 있다 |
+| 비밀번호 저장 | 부적합 | 너무 빨라 무차별 대입에 취약하다. 솔트와 느린 해시를 쓴다 |
 
 {% hint style="warning" %}
-#### MD5의 취약점
-
-MD5는 충돌 공격(다른 입력 데이터가 같은 해시 값을 생성하는 경우)에 취약해. 1996년 이후로 MD5의 여러 보안 취약점이 발견되었고, 현재는 중요한 보안 목적으로는 사용되지 않아. 특히 SSL 인증서나 디지털 서명 같은 곳에서는 사용하면 안 돼. MD5의 충돌 문제로 인해 SHA-256 같은 더 안전한 해시 알고리즘이 권장돼 ([Wikipedia](https://en.wikipedia.org/wiki/MD5)) ([Simplilearn.com](https://www.simplilearn.com/tutorials/cyber-security-tutorial/md5-algorithm)).
+CAUTION: MD5는 충돌 공격(서로 다른 입력이 같은 해시 값을 내는 경우)에 취약하다. 1996년에 압축 함수의 약점이 지적되었고, 이후 실제 충돌이 만들어져 중요한 보안 목적에는 쓰지 않는다. 대안으로 SHA-256 같은 SHA-2 계열을 쓴다. 해시 비교는 [단방향 해싱 (PRG-HSH-001-DO)](hashing.md)를 참조한다.
 {% endhint %}
 
-더 자세한 정보를 원하면 아래 링크를 참고해:
+## 5. 참조
 
-* [Wikipedia](https://en.wikipedia.org/wiki/MD5)
-* [DebugPointer](https://debugpointer.com/)
-* [Simplilearn](https://www.simplilearn.com/)
+* [Wikipedia: MD5](https://en.wikipedia.org/wiki/MD5)
+* [DebugPointer: MD5 hash overview](https://debugpointer.com/security/md5-hash-overview)
+* [Simplilearn: MD5 algorithm](https://www.simplilearn.com/tutorials/cyber-security-tutorial/md5-algorithm)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] MD5를 파일 무결성 확인에는 쓸 수 있고 서명에는 못 쓰는 이유를 내 말로 설명해 본다.
+- [ ] 충돌이란 무엇인가?
