@@ -116,6 +116,7 @@
     * [셰이더 및 모델 연구 일지](gameplayprogrammer/shadergraph/shaderresearchlog.md)
     * [셰이더 강의 메모 (노멀맵, 툰 셰이딩)](gameplayprogrammer/shadergraph/shaderlecture2.md)
     * [고라니TV 셰이더 강의 타임라인](gameplayprogrammer/shadergraph/goranitvshadertimeline.md)
+    * [Shader Graph 핵심 노드 입출력 표](gameplayprogrammer/shadergraph/shadernodes.md)
 * [게임 수학 (Game Math)](gamemath/README.md)
   * [삼각함수 기초 (Trigonometry)](gamemath/trigonometry.md)
   * [벡터 기초와 연산 (Vector)](gamemath/vector.md)
