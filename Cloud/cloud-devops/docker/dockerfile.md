@@ -1,4 +1,4 @@
-# Dockerfile
+# Dockerfile 작성법 및 실습
 
 * 도커 이미지를 빌드하는 데 단계적으로 필요한 명령어와 모든 설정이 정의된 파일
 * 도커 이미지를 빌드하기 위해서 꼭 필요하다.
@@ -7,7 +7,7 @@
 ## Dockerfile 구성
 
 * 도커 파일의 파일명은 확장자 없이 Dockerfile이다.
-* [Docker\_Build](/broken/pages/3967193d0af3381c948781c85245cca5f5a71ac0) 명령어를 사용하면 자동으로 이름이 Dockerfile인 파일을 찾아 이미지를 빌드한다.
+* [Docker\_Build](docker_build.md) 명령어를 사용하면 자동으로 이름이 Dockerfile인 파일을 찾아 이미지를 빌드한다.
 * -f 옵션으로 원하는 이름의 도커 파일을 사용할 수도 있다.
 * dockerfile 구성
 

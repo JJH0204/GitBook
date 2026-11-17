@@ -1,4 +1,4 @@
-# CTF Custom
+# CTF 커스텀 시나리오 설계
 
 ## 1. 프로젝트 개요
 
@@ -112,4 +112,4 @@
 * **테스트**: CTF 환경 테스트 및 오류 수정
 * **운영**: CTF 진행 및 모니터링
 
-> [windows 7 CTF](file:///5659318/security/windows%207%20CTF.md) 환경 구성
+> [windows 7 CTF](../windows-7-ctf.md) 환경 구성

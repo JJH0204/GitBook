@@ -1,4 +1,4 @@
-# SQL Injection
+# SQL 인젝션 실습 (DVWA)
 
 ## (수동점검 , 자동점검) 두 방법이 있다.
 
@@ -92,11 +92,11 @@
 ### 자동 점검 툴
 
 * Zap
-  * [Zap](/broken/pages/64b87885235e58ca88ad256839d5a1ea768a3b01)&#x20;
+  * [Zap](../security/tools/toolbox/zap.md)&#x20;
   * 프록시 툴이지만 취약점 점검이 가능함.
   * 공격방법과 취약점에 대한 상세 정보 확인 가능.
 * sqlmap
-  * [sqlmap](/broken/pages/aafa05c925ede82d2f1c53d8e742970fca13f565)&#x20;
+  * sqlmap&#x20;
   * id 라는 파라미터가 취약하다는 것을 자동으로 탐지
 
 예시 사용법 및 결과:

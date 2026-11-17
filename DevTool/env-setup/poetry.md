@@ -1,4 +1,4 @@
-# poetry
+# Poetry 패키지 관리자
 
 ## Poetry 개요
 

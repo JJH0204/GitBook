@@ -1,4 +1,4 @@
-# cmake
+# CMake 빌드 도구 (CMake)
 
 {% hint style="warning" %}
 * 이 글은 CMake에 대해 깊은 탐구를 위해 작성한 글이 아닙니다.

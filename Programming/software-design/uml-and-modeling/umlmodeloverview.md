@@ -1,4 +1,4 @@
-# UMLModelOverview
+# UML 모델링 개요
 
 ## UML (Unified Modeling Language, 통합 모델링 언어)란?
 

@@ -1,3 +1,3 @@
 # Table of contents
 
-* [Daylog](README.md)
+* [개발 일지 (Daylog)](README.md)

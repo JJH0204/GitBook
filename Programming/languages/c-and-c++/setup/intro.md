@@ -1,4 +1,4 @@
-# intro
+# VS Code C/C++ 환경 설정
 
 ## C/Cpp 개발 준비를 위한 준비
 

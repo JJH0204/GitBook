@@ -1,4 +1,4 @@
-# A4 Insecure\_DOR
+# A4 직접 객체 참조 취약점 (IDOR)
 
 ## Change Secret
 

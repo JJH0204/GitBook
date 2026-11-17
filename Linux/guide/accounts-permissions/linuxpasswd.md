@@ -1,4 +1,4 @@
-# linuxpasswd
+# 리눅스 비밀번호 암호화 구조
 
 ## /etc/passwd
 
@@ -23,7 +23,7 @@ UID, GID를 임의로 조작하여 0으로 변경하면 해당 user는 관리자
 
 ## /etc/shadow
 
-: [암호화](file:///6408728/security/Brute-force%20Attack.md)(Encrypted)된 계정 비밀번호가 저장된 파일
+: [암호화](https://krjaeh0.gitbook.io/j-log/security/security/offensive-security/pentest/brute-force/brute-force-attack)(Encrypted)된 계정 비밀번호가 저장된 파일
 
 {% code title="/etc/shadow" %}
 ```shell
@@ -47,7 +47,7 @@ root:$6$dp4zP54GVKNmwh6C$Uo0nNEP1ogBK8hMc1QDxHh/dCGuqUHv6NxqXRNBzJMphTOPHx4kiDTp
 ## salt
 
 {% hint style="info" %}
-/etc/shadow 파일에 저장된 패스워드에 적용된 암호화([해싱](file:///6408728/cs_basics/Hashing.md)) 알고리즘 결과에 임의의 문자열을 추가해 같은 비밀번호를 사용하더라도 다른 암호화 결과가 나오도록 하는 기법
+/etc/shadow 파일에 저장된 패스워드에 적용된 암호화([해싱](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/hashing-and-checksums/hashing)) 알고리즘 결과에 임의의 문자열을 추가해 같은 비밀번호를 사용하더라도 다른 암호화 결과가 나오도록 하는 기법
 {% endhint %}
 
 {% code title="예시 (/etc/shadow 일부)" %}

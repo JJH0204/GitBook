@@ -1,4 +1,4 @@
-# non linear data structure
+# 비선형 자료구조 (Non-linear)
 
 ## **비선형 자료 구조(Non-Linear Data Structure)란?**
 

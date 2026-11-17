@@ -1,4 +1,4 @@
-# CTF\_Pwned
+# CTF: Pwned
 
 ## IP 탐지
 

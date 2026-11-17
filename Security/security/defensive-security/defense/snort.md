@@ -1,4 +1,4 @@
-# snort
+# Snort 설치 및 침입 탐지 구축
 
 * IDS: 침입 탐지 시스템 구축을 위해 사용되는 우분투 리눅스 기반 엔진
 * 관련자료: https://velog.io/@2jinu/Snort-%EC%84%A4%EC%B9%98-0nl990xy
@@ -254,4 +254,4 @@ snort -c /usr/local/etc/snort/snort.lua -R /usr/local/etc/snort/rules/local.rule
 {% endstep %}
 {% endstepper %}
 
-참고: Snort Rule 관련 문서는 별도 페이지를 참조하세요: [Snort Rule](/broken/pages/b467014e975ccc5f1df1ca09e29b630ed88274a8)
+참고: Snort Rule 관련 문서는 별도 페이지를 참조하세요: [Snort Rule](snort-rule.md)

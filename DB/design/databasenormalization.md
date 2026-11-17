@@ -1,4 +1,4 @@
-# DatabaseNormalization
+# 데이터베이스 정규화 (Normalization)
 
 ## **정규화(Normalization)란?**
 

@@ -1,4 +1,4 @@
-# ISPInterfaceSegregationPrinciple
+# 인터페이스 분리 원칙 (ISP)
 
 {% hint style="info" %}
 클라이언트는 자신이 사용하지 않는 인터페이스에 의존하지 않아야 합니다.

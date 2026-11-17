@@ -1,4 +1,4 @@
-# Level\_10\~20
+# Bandit Level 10~20 풀이
 
 ## Bandit Level 10 → Level 11
 
@@ -55,7 +55,7 @@ grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd, mkdir, cp, mv, fil
 ### Helpful Reading Material
 
 * [Hex dump on Wikipedia](https://en.wikipedia.org/wiki/Hex_dump)
-* [매직넘버](file:///5659318/cs_basics/MagicNumber.md)
+* 매직넘버
 
 {% stepper %}
 {% step %}

@@ -1,4 +1,4 @@
-# CriticalSection
+# 임계 구역 (Critical Section)
 
 ## 임계 구역(Critical Section) 이란?
 

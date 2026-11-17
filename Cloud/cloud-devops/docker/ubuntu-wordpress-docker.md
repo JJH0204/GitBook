@@ -1,4 +1,4 @@
-# ubuntu wordpress docker
+# Ubuntu 워드프레스 도커 배포
 
 아래는 Ubuntu 기반의 단일 컨테이너에서 WordPress와 MariaDB를 함께 구성하는 방법을 GitBook에 적합하게 정리한 문서야. 원본 구조와 내용을 유지하면서, 단계별 설치를 stepper 블록으로 정리했고 장단점은 좌우 컬럼으로 배치했어.
 

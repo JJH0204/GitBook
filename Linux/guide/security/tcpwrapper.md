@@ -1,4 +1,4 @@
-# tcpwrapper
+# TCP 래퍼 접근 제어
 
 * host.allow, host.deny 두 파일을 활용해서 호스트 서비스에 접근을 허용 또는 거부하는 기능입니다.
 * 관련 자료: https://dev-jaguar.tistory.com/entry/Linux-TCP-Wrapper-%EC%84%A4%EC%A0%95-hostsallow-hostsdeny

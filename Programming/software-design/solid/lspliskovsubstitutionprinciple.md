@@ -1,4 +1,4 @@
-# LSPLiskovSubstitutionPrinciple
+# 리스코프 치환 원칙 (LSP)
 
 {% hint style="info" %}
 프로그램의 객체는 그 객체의 하위 타입의 인스턴스로 바꿀 수 있어야 합니다\

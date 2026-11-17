@@ -1,4 +1,4 @@
-# Unions\_kr
+# 공용체 상세 (Unions)
 
 C 유니언은 각각 고유의 메모리를 가진 여러 변수를 포함하는 대신 동일한 메모리를 공유하는 여러 이름을 허용한다는 점을 제외하고는 본질적으로 C 구조체와 동일하다. 이 이름들은 같은 메모리를 서로 다른 타입으로 취급할 수 있다. (그리고 유니언의 크기는 컴파일러가 정하는 가장 큰 멤버 타입의 크기가 된다.)
 
@@ -132,3 +132,9 @@ printf("There are %i quarters, %i dimes, %i nickels, and %i pennies\n",
 {% hint style="warning" %}
 유니언의 멤버들은 동일한 메모리를 공유한다는 점을 잊지 마십시오. 한 멤버에 값을 쓰고 다른 멤버로 읽을 때의 동작은 의도한 바에 따라 달라지며, 특히 정렬(endianness)이나 타입 크기에 의존하는 코드는 이식성 문제를 일으킬 수 있습니다.
 {% endhint %}
+
+## 소스 코드 링크
+
+* [Unions](https://github.com/JJH0204/DevBasics/blob/main/source/C_language/Unions.c)
+* [ExUnions](https://github.com/JJH0204/DevBasics/blob/main/source/C_language/ExUnions.c)
+* [ExUnionsTest](https://github.com/JJH0204/DevBasics/blob/main/source/C_language/ExUnions_test.c)

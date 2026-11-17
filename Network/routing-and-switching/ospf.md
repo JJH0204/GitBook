@@ -1,4 +1,4 @@
-# OSPF
+# OSPF 라우팅 프로토콜
 
 * [관련자료](https://nirsa.tistory.com/32)
 
@@ -71,4 +71,4 @@
 
 ### 관련
 
-[Redistribution](file:///2435498/linux_admin/Redistribution.md)
+[Redistribution](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/redistribution)

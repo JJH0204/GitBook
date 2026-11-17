@@ -1,4 +1,4 @@
-# structures
+# 구조체 (Structures)
 
 {% code title="structures.c" %}
 ```c

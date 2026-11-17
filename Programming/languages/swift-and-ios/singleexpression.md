@@ -1,4 +1,4 @@
-# SingleExpression
+# 단일 표현식 (Single Expression)
 
 {% hint style="info" %}
 하나의 표현식으로 이뤄진 구문입니다.\

@@ -1,4 +1,4 @@
-# PythonSettingWin
+# Windows Python 환경 설정 (pyenv)
 
 참조: [pyenv-win.git](https://github.com/pyenv-win/pyenv-win/blob/master/README.md#installation)
 

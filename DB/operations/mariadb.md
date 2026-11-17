@@ -1,8 +1,8 @@
-# Mariadb
+# MariaDB 기본 사용법
 
 mysql의 후속작으로 거의 모든 명령어가 mysql과 동일합니다.
 
-* [RDBMS](file:///1491819/database.zip/)
+* RDBMS
 
 {% hint style="warning" %}
 보안 설정 (필수)

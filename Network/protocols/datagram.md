@@ -1,4 +1,4 @@
-# Datagram
+# 데이터그램 (Datagram)
 
 {% hint style="info" %}
 ## 데이터그램

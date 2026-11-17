@@ -1,4 +1,4 @@
-# ACL
+# 라우터 접근 제어 목록 (ACL)
 
 * [관련자료](https://simpleisit.tistory.com/21)
 
@@ -82,5 +82,5 @@ access-list를 구성합니다.
 
 ### 네트워크 보안에 사용되는 ACL
 
-* [RACL](file:///6408728/network/RACL.md)
-* [DACL](file:///6408728/security/DACL.md)
+* RACL
+* DACL

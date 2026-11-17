@@ -1,4 +1,4 @@
-# HDLC
+# HDLC 프로토콜 (HDLC)
 
 ## HDLC(High-Level Data Link Control)란?
 

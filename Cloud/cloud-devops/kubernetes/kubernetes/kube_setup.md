@@ -1,4 +1,4 @@
-# Kube\_setup
+# 쿠버네티스 노드 설치 및 설정
 
 {% stepper %}
 {% step %}
@@ -210,3 +210,26 @@ Commands and configurations mentioned in the video are included step-by-step. Ma
 Don’t forget to like, subscribe, and hit the bell icon to stay updated with more Linux and Kubernetes tutorials!
 {% endstep %}
 {% endstepper %}
+
+## 설치 아키텍처 (노드 네트워크 구성)
+
+원본 다이어그램(Excalidraw)의 텍스트 요소를 정리한 내용입니다.
+
+* 네트워크는 호스트 머신과 통신 가능한 상태로 자유롭게 구성합니다 (NAT + Host Only).
+* 커널은 가능한 최신 버전을 사용합니다.
+
+| 노드 | 호스트 IP |
+| --- | --- |
+| Master | 192.168.1.118 |
+| Worker1 | 192.168.1.117 |
+| Worker2 | 192.168.1.116 |
+
+### Helm 설치
+
+```bash
+sudo snap install helm --classic
+```
+
+### 관련 문서
+
+<table data-view="cards"><thead><tr><th>Title</th><th data-card-target data-type="content-ref">Target</th></tr></thead><tbody><tr><td>Kube_setup</td><td><a href="kube_setup.md">바로가기</a></td></tr><tr><td>Kube_webDashboard</td><td><a href="kube_webdashboard.md">바로가기</a></td></tr></tbody></table>

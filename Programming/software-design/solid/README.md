@@ -1,2 +1,1 @@
-# SOLID
-
+# SOLID 원칙 (SOLID)

@@ -1,2 +1,1 @@
-# MonsterAI
-
+# 몬스터 AI (Monster AI)

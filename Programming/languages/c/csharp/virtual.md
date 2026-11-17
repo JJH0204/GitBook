@@ -1,4 +1,4 @@
-# virtual
+# 가상 메서드 (virtual)
 
 {% hint style="info" %}
 * **C#** 에서 기본 구현을 가지면서 자식 클래스에서 재정의(override)할 수 있는 메서드를 정의할 때 사용하는 키워드

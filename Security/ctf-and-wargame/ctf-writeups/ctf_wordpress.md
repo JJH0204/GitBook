@@ -1,6 +1,6 @@
-# CTF\_Wordpress
+# CTF: WordPress
 
-[slitaz linux set](file:///5659318/linux_admin/slitaz%20linux%20set.md)
+[slitaz linux set](https://krjaeh0.gitbook.io/j-log/linux/guide/intro/install_linux)
 
 ## \[탐색]
 
@@ -31,7 +31,7 @@ parameter='value'& 구조로 되어 있다.<br>
 
 포스트 방식으로 서버에 요청한 점을 활용
 
-히드라 툴을 활용한 [Brute Force Attack](file:///5659318/security/Brute%20Force%20Attack.md)
+히드라 툴을 활용한 [Brute Force Attack](../../security/offensive-security/pentest/brute-force/brute-force-attack.md)
 
 * 취약한 비밀번호를 이용해 관리자 툴에 접속에 성공
 

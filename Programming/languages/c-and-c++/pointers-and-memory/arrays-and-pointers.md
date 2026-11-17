@@ -1,4 +1,4 @@
-# arrays and pointers
+# 배열과 포인터 (Pointers)
 
 ```c
 #include <stdio.h>

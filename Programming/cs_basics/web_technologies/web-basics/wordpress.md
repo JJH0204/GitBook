@@ -1,4 +1,4 @@
-# Wordpress
+# Docker 워드프레스 배포 (Wordpress)
 
 ## Use Docker
 

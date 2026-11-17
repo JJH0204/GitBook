@@ -1,4 +1,4 @@
-# Insecure CAPTCHA
+# 취약한 캡차 (Insecure CAPTCHA)
 
 {% hint style="info" %}
 * 테스트하려면 API 키를 발급받아야 합니다.

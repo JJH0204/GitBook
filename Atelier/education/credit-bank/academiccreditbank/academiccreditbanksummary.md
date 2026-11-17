@@ -1,4 +1,4 @@
-# AcademicCreditBankSummary
+# 학점은행제 원격수업 안내와 FAQ
 
 * 원격 수업 관련 링크
   * https://bank.step.or.kr/home/main/main.jsp
@@ -55,7 +55,3 @@
 * https://bdes.nile.or.kr/nile/base/bdesMain.do
 
 </details>
-
-추가로 원하시면,
-
-* 위 두 기관(한국기술교육대학교부설원격평생교육원, 국가평생교육진흥원) 공지에서 “수업 방식(녹화/실시간)”, “수강신청 일정”, “수강료/무료 여부 상세”, “학점 인정 범위(전공/교양 등)” 항목을 확인해 정리해 드릴 수 있습니다. 원하시면 어느 항목을 우선 확인해 드릴지 알려주세요.

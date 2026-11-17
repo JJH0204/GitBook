@@ -1,4 +1,4 @@
-# Level 01\~10
+# Bandit Level 01~10 풀이
 
 ## Bandit Level 0 → Level 1
 

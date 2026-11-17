@@ -1,4 +1,4 @@
-# DDoS
+# 분산 서비스 거부 공격 (DDoS)
 
 * 분산 서비스 거부 공격
 * hping3 / SlowHTTPTest / GoldenEye / LOIC 등 다양한 Attack Tool이 있다.
@@ -58,7 +58,7 @@ hping3 [Victim_IP] -S [추가 옵션]
 
 ### 공격 방어
 
-* [IDS](/broken/pages/0d63d92e675686084c8c6ec5c59232835d025ecf) / IPS / UTM(IDS, IPS 통합) 시스템 활용
+* [IDS](../../defensive-security/defense/ids.md) / IPS / UTM(IDS, IPS 통합) 시스템 활용
 
 ## DDoS 공격 현황
 

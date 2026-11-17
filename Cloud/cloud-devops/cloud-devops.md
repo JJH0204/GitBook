@@ -2,7 +2,7 @@
 description: AWS, Docker, Kubernetes, CI/CD, Private Cloud로 빠르게 이동.
 ---
 
-# Cloud · DevOps 개요
+# 클라우드 및 DevOps 개요
 
 ### 빠른 이동
 

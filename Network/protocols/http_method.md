@@ -1,4 +1,4 @@
-# HTTP\_Method
+# HTTP 메서드 상세 (HTTP Method)
 
 요청 대상에 대해 서버가 수행하길 바라는 동작입니다.
 

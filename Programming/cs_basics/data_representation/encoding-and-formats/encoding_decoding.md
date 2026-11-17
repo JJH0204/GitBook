@@ -1,4 +1,4 @@
-# Encoding\_Decoding
+# 인코딩과 디코딩 (Encoding)
 
 {% hint style="info" %}
 인코딩(Encoding)은 데이터를 특정한 형식으로 변환하는 것을 말합니다.
@@ -14,10 +14,10 @@
 
 ### 관련 페이지
 
-* [아스키 코드](/broken/pages/1504f0da52b38e834cc79f495e9327e0bad323c8)
-* [유니코드](/broken/pages/0bef655cdbaeb07aa3d9499cb1a2ce928cf05e53)
-* [URL](file:///0903665/web/URL.md) 인코딩 (퍼센트 인코딩)
-* [Base64](/broken/pages/4857556c2e01264c0c9d977db4152291b73f6b53) 인코딩
+* 아스키 코드
+* 유니코드
+* [URL](../../web_technologies/http-and-urls/url.md) 인코딩 (퍼센트 인코딩)
+* [Base64](base64.md) 인코딩
 
 ### 인코딩 도구
 

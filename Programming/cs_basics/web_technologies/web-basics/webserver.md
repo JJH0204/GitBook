@@ -1,4 +1,4 @@
-# WebServer
+# 웹 서버 설정 및 명령어 (WebServer)
 
 {% stepper %}
 {% step %}
@@ -49,9 +49,9 @@ firewall-cmd ~~
 
 ### 필요 툴
 
-* [HTML](/broken/pages/7ef44fc4ba51d6e5bb1559bb8a499b77d7ff77b0) 또는 [php](file:///0903665/programming/php.md)
-* [Mariadb](file:///0903665/database/Mariadb.md)
-* [httpd](/broken/pages/61d7c097fa19a82502b1c34720fb8a63a329aeb0)
+* [HTML](html.md) 또는 php
+* [Mariadb](https://krjaeh0.gitbook.io/j-log/database/operations/mariadb)
+* httpd
 
 ### httpd 홈 디렉토리
 
@@ -79,4 +79,4 @@ firewall-cmd ~~
 
 ### 참고
 
-* [php](file:///0903665/programming/php.md)
+* php

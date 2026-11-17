@@ -1,4 +1,4 @@
-# BBCode
+# BBCode 마크업 (BBCode)
 
 * 프로그래밍 언어
 * 볼리턴 코드

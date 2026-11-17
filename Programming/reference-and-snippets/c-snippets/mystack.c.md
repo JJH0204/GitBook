@@ -1,4 +1,4 @@
-# MyStack.c
+# 연결 스택 구현 (MyStack.c)
 
 {% code title="MyStack.c" %}
 ```c

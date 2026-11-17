@@ -1,6 +1,4 @@
-# about\_Linux
-
-## Text Elements
+# 리눅스 개요 및 역사
 
 * Linux
 * 1991.09.17 리눅스 토르발스에 의해 개발
@@ -173,7 +171,7 @@ Linux의 단점
 
 ***
 
-## 기타 링크 및 참조 (Element Links)
+## 참고 링크
 
 * Linux 기본 디렉토리 설명: Linux기본\_디렉토리\_설명 (파일: Linux%EA%B8%B0%EB%B3%B8\_%EB%94%94%EB%A0%89%ED%86%A0%EB%A6%AC\_%EC%84%A4%EB%AA%85.md)
 * RAID: ../network/RAID.md
@@ -182,18 +180,6 @@ Linux의 단점
   * https://www.google.com/search?q=%EC%98%A4%ED%94%88+%EC%86%8C%EC%8A%A4\&sca\_esv=2a19a3414e05e997\&sca\_upv=1\&sxsrf=ADLYWIIdJcVfetVgtRGl-vtASfTVsVW7og:1721663087101\&ei=b36eZvL1Banl2roPgZeC-A4\&ved=0ahUKEwiy6erl\_rqHAxWpslYBHYGLAO8Q4dUDCA8\&uact=5\&oq=%EC%98%A4%ED%94%88+%EC%86%8C%EC%8A%A4\&gs\_lp=Egxnd3Mtd2l6LXNlcnAiDeyYpO2UiCDshozsiqQyCxAAGIAEGLEDGIMBMgUQABiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAESNoWUABYvhRwBngBkAECmAGVAaAB3gyqAQQwLjE0uAEDyAEA-AEBmAIMoALSBcICERAuGIAEGLEDGNEDGIMBGMcBwgIIEAAYgAQYsQPCAgQQLhgDwgIKEAAYgAQYQxiKBcICBBAAGAPCAgsQLhiABBjRAxjHAcICBxAAGIAEGArCAgUQIRigAcICBhAAGB4YD8ICCBAAGIAEGKIEwgIGEAAYCBgemAMAkgcDNi42oAfFXQ\&sclient=gws-wiz-serp
   * https://namu.wiki/w/%EB%A6%AC%EB%88%84%EC%8A%A4%20%ED%86%A0%EB%A5%B4%EB%B0%9C%EC%8A%A4
   * https://namu.wiki/w/GNU
-  * obsidian://open?vault=MyNote\&file=Spaces%2FHome%2FC%20%EC%96%B8%EC%96%B4
+  * //open?vault=MyNote\&file=Spaces%2FHome%2FC%20%EC%96%B8%EC%96%B4
 
 ***
-
-## Drawing (원본 압축 데이터)
-
-```compressed-json
-N4KAkARALgngDgUwgLgAQQQDwMYEMA2AlgCYBOuA7hADTgQBuCpAzoQPYB2KqATLZMzYBXUtiRoIACyhQ4zZAHoFAc0JRJQgEYA6bGwC2CgF7N6hbEcK4OCtptbErHALRY8RMpWdx8Q1TdIEfARcZgRmBShcZQUebQA2bQAOGjoghH0EDihmbgBtcDBQMBLoeHF0QOwojmVg1JLIRhZ2LjQARnaeAE5+UubWTgA5TjFuTvikgGYAdgBWOfapvshC
-
-DmIsbghcAAYG0sJmABF0qARibgAzAjCViBIto6gANUuAYQBBIQQABSEAFU0ABkPgBVADipH+RlwAHV9pBLoR8PgAMqweoSQQeBEQZhQUhsADWCFhJHU3D4hQEBOJCHRMEx6GxDzuhL8kg44VyHTubDguGwahg4x2Ozu1jqFXF1IgmG4zh4ABYpto5kqdkkle14jx1TMplMkncRWhnFMdjMEsq5obujxOrMkjM7vjCSS3mx8GxSFsAMTtBCBwO4zS
-
-... (생략되지 않은 전체 압축 JSON 데이터는 원본 그대로 유지)
-```
-
-(위의 compressed-json 블록은 Excalidraw에 사용된 원본 압축 데이터를 포함합니다. 필요시 원본을 그대로 복원하여 사용하세요.)

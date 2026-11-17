@@ -1,4 +1,4 @@
-# SearchAlgorithmOverview
+# 탐색 알고리즘 개요 (Search)
 
 ## 탐색 알고리즘(Search Algorithm)이란?
 

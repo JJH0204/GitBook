@@ -1,4 +1,4 @@
-# memset()
+# memset 함수 안전성 (memset)
 
 \#c #Coding #개발
 

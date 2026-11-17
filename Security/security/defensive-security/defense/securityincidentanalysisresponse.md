@@ -1,4 +1,4 @@
-# SecurityIncidentAnalysisResponse
+# 침해사고 분석 및 대응 절차
 
 {% stepper %}
 {% step %}
@@ -17,25 +17,25 @@
 {% step %}
 ### WebGoat
 
-[WebGoat](/broken/pages/5f7e1f6745b42773d2f176a6459c8e23cd009d81)
+[WebGoat](../../../notes/webgoat.md)
 {% endstep %}
 
 {% step %}
 ### Webhacking.kr
 
-[Webhacking.kr](/broken/pages/23ccd9be43442d4a1e1af831bb97ef46b62d443b)
+[Webhacking.kr](../../../ctf-and-wargame/webhacking.kr.md)
 {% endstep %}
 
 {% step %}
 ### SIEM
 
-[SIEM](/broken/pages/dc19bc007478b1f035a64c6358f0af12b3b6e19e)
+[SIEM](siem.md)
 {% endstep %}
 
 {% step %}
 ### 악성코드분석
 
-[악성코드분석](/broken/pages/8138ef98c5a0f2ce8e84787daabc1542fc5d3c0f)
+악성코드분석
 {% endstep %}
 
 {% step %}

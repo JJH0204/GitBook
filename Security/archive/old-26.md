@@ -1,4 +1,4 @@
-# old 26
+# Webhacking.kr: old 26
 
 ```php
 <?php  include "../../config.php";  

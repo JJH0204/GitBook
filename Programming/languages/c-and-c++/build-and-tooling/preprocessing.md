@@ -1,4 +1,4 @@
-# Preprocessing
+# 전처리 과정 (Preprocessing)
 
 컴파일러가 소스 코드를 어셈블리어로 컴파일하기 전에, 필요한 형식으로 가공하는 과정\
 (언어마다 조금 다름)
@@ -51,8 +51,6 @@ add.c를 add.i로 전처리한 결과:
 int add(int a, int b);
 
 # 2 "add.c" 2
-
-
 
 int add(int a, int b) { return a + b + 3; }
 ```

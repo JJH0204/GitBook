@@ -2,7 +2,7 @@
 description: 복잡한 의존성(Npcap, Tailscale, Python Assets)을 포함한 단일 설치 파일 제작.
 ---
 
-# 배포 자동화 및 인스톨러(Inno Setup) 구축 문제
+# 인스톨러 구축 및 배포 자동화 (Inno Setup)
 
 **1. 배경: 엔터프라이즈급 배포 환경 구축**
 

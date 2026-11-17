@@ -1,4 +1,4 @@
-# UIKitReference
+# UIKit 프레임워크 (UIKit)
 
 {% hint style="info" %}
 UIKit 프레임워크는 iOS의 그래픽, 이벤트 처리, 사용자 인터페이스 요소를 관리하는 데 사용된다.\

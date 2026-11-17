@@ -1,4 +1,4 @@
-# SQL\_TCL
+# 트랜잭션 제어 언어 (TCL)
 
 ## TCL (Transaction Control Language, 트랜잭션 제어 언어)란?
 

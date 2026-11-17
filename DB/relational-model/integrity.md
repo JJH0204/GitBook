@@ -1,4 +1,4 @@
-# integrity
+# 데이터 무결성 규정 (Integrity)
 
 ## 무결성 규정이란?
 
@@ -8,12 +8,12 @@
 
 | 무결성 규정                                                                                                                                                                  | 설명                                         |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| [**개체** 무결성(Entity Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#%EA%B0%9C%EC%B2%B4%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(Entity%20Integrity\))           | Primary Key는 NULL이거나 중복될 수 없다.             |
-| [**참조** 무결성(Referential Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#%EC%B0%B8%EC%A1%B0%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(Referential%20Integrity\)) | Foreign Key는 부모 테이블의 Primary Key와 일치해야 한다. |
-| [**도메인** 무결성(Domain Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#%EB%8F%84%EB%A9%94%EC%9D%B8%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(Domain%20Integrity\)) | 컬럼의 데이터 타입과 허용된 값의 범위를 지켜야 한다.             |
-| [**고유** 무결성(Unique Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#%EA%B3%A0%EC%9C%A0%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(Unique%20Integrity\))           | 특정 컬럼 값은 중복될 수 없다.                         |
-| [**NULL** 무결성(NULL Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#NULL%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(NULL%20Integrity\))                           | 특정 컬럼은 NULL 값을 가질 수 없다.                    |
-| [**키** 무결성(Key Integrity)](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb#%ED%82%A4%20%EB%AC%B4%EA%B2%B0%EC%84%B1\(Key%20Integrity\))                           | Primary Key는 변경될 수 없다.                     |
+| **개체** 무결성(Entity Integrity))           | Primary Key는 NULL이거나 중복될 수 없다.             |
+| **참조** 무결성(Referential Integrity)) | Foreign Key는 부모 테이블의 Primary Key와 일치해야 한다. |
+| **도메인** 무결성(Domain Integrity)) | 컬럼의 데이터 타입과 허용된 값의 범위를 지켜야 한다.             |
+| **고유** 무결성(Unique Integrity))           | 특정 컬럼 값은 중복될 수 없다.                         |
+| **NULL** 무결성(NULL Integrity))                           | 특정 컬럼은 NULL 값을 가질 수 없다.                    |
+| **키** 무결성(Key Integrity))                           | Primary Key는 변경될 수 없다.                     |
 
 ***
 

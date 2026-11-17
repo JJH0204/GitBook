@@ -1,13 +1,13 @@
-# HTTP
+# HTTP 프로토콜 (HTTP)
 
 ## HTTP (Hyper Text Transfer Protocol)
 
-* 서버 클라이언트의 데이터 교환을 요청(Request), 응답(Response) 형식으로 정의한 [프로토콜](/broken/pages/937a1352a75b0b512686dfca3357893a284fb1fe)
-* 팀 버너스 리(Team Berners-Lee)와 그의 팀이 제정한 이후, 현대 웹 서비스의 바탕이 되는 [프로토콜](/broken/pages/937a1352a75b0b512686dfca3357893a284fb1fe)로 자리 잡았다.
+* 서버 클라이언트의 데이터 교환을 요청(Request), 응답(Response) 형식으로 정의한 프로토콜
+* 팀 버너스 리(Team Berners-Lee)와 그의 팀이 제정한 이후, 현대 웹 서비스의 바탕이 되는 프로토콜로 자리 잡았다.
 * 기본 메커니즘은 클라이언트가 서버에 요청하면, 서버가 응답하는 것 뿐
-* 웹 서버는 HTTP 서비스를 HTTP [서비스 포트](/broken/pages/b2e635cd8e73f704e1289d6371bac83146676118)에 대기 시킨다.
+* 웹 서버는 HTTP 서비스를 HTTP 서비스 포트에 대기 시킨다.
 * 포트는 일반적으로 TCP/80 또는 TCP/8080로 정해진다.
-* 클라이언트가 [서비스 포트](/broken/pages/b2e635cd8e73f704e1289d6371bac83146676118)에 HTTP 요청을 전송 > 이를 해석해 적절한 응답을 반환한다.
+* 클라이언트가 서비스 포트에 HTTP 요청을 전송 > 이를 해석해 적절한 응답을 반환한다.
 
 ## HTTP 메시지
 
@@ -16,7 +16,7 @@
 
 #### HTTP 헤더 (Headers)
 
-* 각 줄은 [CRLF](file:///2435498/cs_basics/CRLF.md) 로 구분
+* 각 줄은 [CRLF](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/encoding-and-formats/crlf) 로 구분
 * 첫 줄은 시작 줄(Start line), 나머지 줄은 헤더(Header)라 부른다.
 * 영문 표기에 주의해야 한다. (Headers와 Header)
 * 헤더의 끝은 빈 줄로 나타낸다.
@@ -26,7 +26,7 @@
 
 #### HTTP 바디 (Body)
 
-* 헤드의 끝을 나타내는 [CRLF](file:///2435498/cs_basics/CRLF.md) 뒤 모든 줄을 말한다.
+* 헤드의 끝을 나타내는 [CRLF](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/encoding-and-formats/crlf) 뒤 모든 줄을 말한다.
 * 클라이언트나 서버에게 전송하려는 데이터가 바디에 담긴다.
 
 ## HTTP 요청 (Request)
@@ -35,7 +35,7 @@
 
 #### 시작 줄
 
-* HTTP의 시작 줄은 [메소드(Method)](/broken/pages/9a24bfc5d07c91697e2167974e8b209a6eba8dca), 요청 대상(Request target), HTTP 버전으로 구성된다.
+* HTTP의 시작 줄은 메소드(Method), 요청 대상(Request target), HTTP 버전으로 구성된다.
 * 각각은 띄어쓰기로 구분된다.
 * 요청 URI는 메소드의 대상을, HTTP 버전은 클라이언트가 사용하는 HTTP 프로토콜의 버전을 의미
 
@@ -54,5 +54,5 @@
 * HTTP 응답의 시작 줄은 HTTP 버전, 상태 코드(Status Code), 처리 사유(Reason Phrase)로 구성된다.
 * 위 요소들은 띄어쓰기로 구분된다.
 * **HTTP 버전**: 서버에서 사용하는 HTTP 버전을 의미
-* [**상태 코드(Status Code)**](file:///2435498/web/RFC_2616_Code.md): 요청에 대한 처리 결과를 세 자릿수로 표현
+* [**상태 코드(Status Code)**](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/rfc_2616_code): 요청에 대한 처리 결과를 세 자릿수로 표현
 * 처리 사유는 상태 코드가 발생한 이유를 짧게 기술한 것

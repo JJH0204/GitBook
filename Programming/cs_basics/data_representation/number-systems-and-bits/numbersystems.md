@@ -1,4 +1,4 @@
-# NumberSystems
+# 진법 체계 (Number Systems)
 
 {% hint style="info" %}
 임의의 숫자 혹은 문자를 사용하여 수를 표현하는 체계

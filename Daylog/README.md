@@ -20,9 +20,17 @@ metaLinks:
     - https://app.gitbook.com/s/euz6U9T9Ui1Un0dUKuuZ/
 ---
 
-# Daylog
+# 개발 일지 (Daylog)
 
 {% updates format="full" %}
+{% update date="2026-11-17" %}
+## 깃북 정리, 학습 트랙 4개 이전
+
+오래 방치한 문서를 정리하고(깨진 링크, 빈 문서, 중복, 제목), GitHub에 있던 학습 자료 4개를 GameDev 스페이스로 옮겼다. 앞으로 공부 기록은 여기에 남긴다.
+
+<a href="https://krjaeh0.gitbook.io/j-log/gamedev" class="button primary">GameDev 학습 트랙</a>
+{% endupdate %}
+
 {% update date="2026-01-29" %}
 ## 올벤: 주방 관리 프로그램 프로토타입 구현 완료
 

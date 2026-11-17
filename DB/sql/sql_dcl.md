@@ -1,4 +1,4 @@
-# SQL\_DCL
+# 데이터 제어어 (DCL)
 
 ## DCL (Data Control Language, 데이터 제어어)란?
 

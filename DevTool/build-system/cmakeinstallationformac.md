@@ -1,4 +1,4 @@
-# CMakeInstallationForMac
+# macOS CMake 설치
 
 {% stepper %}
 {% step %}

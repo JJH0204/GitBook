@@ -1,3 +1,0 @@
-# meterpreter
-
-## Core Commands

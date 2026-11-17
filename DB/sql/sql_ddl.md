@@ -1,4 +1,4 @@
-# SQL\_DDL
+# 데이터 정의어 (DDL)
 
 ## DDL (Data Definition Language, 데이터 정의어)란?
 

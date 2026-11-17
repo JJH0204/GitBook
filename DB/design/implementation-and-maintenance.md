@@ -1,4 +1,4 @@
-# implementation and maintenance
+# 데이터베이스 구현 및 운영
 
 ## 구현 및 운영 이란?
 
@@ -153,7 +153,7 @@ GRANT SELECT, INSERT, UPDATE ON mydb.Users TO 'app_user'@'localhost';
 ### 백업 및 복구 전략 (Backup & Recovery)
 
 * 데이터 손실을 방지하기 위해 정기적인 백업 및 복구 전략을 수립해야 한다.
-* [백업 및 복구 전략에 대하여](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#undefined-4)
+* 백업 및 복구 전략에 대하여
 
 ### 운영 및 유지보수 (Database Maintenance)
 

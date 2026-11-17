@@ -1,4 +1,4 @@
-# RAID
+# 복수 배열 독립 디스크 (RAID)
 
 {% hint style="info" %}
 Redundant Array of Independent Disk의 약자 (한국어로 **복수 배열 독립 디스크**)\

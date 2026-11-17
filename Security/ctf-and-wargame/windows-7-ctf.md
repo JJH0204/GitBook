@@ -1,4 +1,4 @@
-# windows 7 CTF
+# Windows 7 취약점 실습 (CTF)
 
 {% stepper %}
 {% step %}

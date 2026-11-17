@@ -1,4 +1,4 @@
-# WebGoat
+# WebGoat 취약점 실습
 
 {% stepper %}
 {% step %}

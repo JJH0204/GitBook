@@ -1,4 +1,4 @@
-# WebOverview
+# 웹 개요 및 통신 구조 (Web)
 
 ## 서론
 
@@ -9,9 +9,9 @@
 
 ## Web
 
-인터넷을 기반으로 구현된 서비스 중 [HTTP](file:///0903665/network/HTTP.md)를 이용하여 정보를 공유하는 서비스를 웹이라 한다.
+인터넷을 기반으로 구현된 서비스 중 [HTTP](https://krjaeh0.gitbook.io/j-log/network/protocols/http)를 이용하여 정보를 공유하는 서비스를 웹이라 한다.
 
-* 정보를 제공하는 주체 = 웹 서버([WebServer](file:///0903665/web/WebServer.md))
+* 정보를 제공하는 주체 = 웹 서버([WebServer](webserver.md))
 * 정보를 받는 이용자 = 웹 클라이언트(Web Client)
 
 #### 웹의 발전과 보안의 중요성
@@ -22,7 +22,7 @@
 
 #### 웹 서비스, 프론트엔드와 백엔드
 
-* 이용자의 요청을 받는 부분 = [프론트엔드(Front-end)](/broken/pages/6b048c345bfa068de7eb67336d20038716f37742)
+* 이용자의 요청을 받는 부분 = 프론트엔드(Front-end)
 * 요청을 처리하는 부분 = 백엔드(Back-end)
 
 ## 클라이언트와 서버의 통신
@@ -65,14 +65,14 @@
 {% endstep %}
 {% endstepper %}
 
-## [HTTP](file:///0903665/network/HTTP.md)
+## [HTTP](https://krjaeh0.gitbook.io/j-log/network/protocols/http)
 
 ***
 
-## [HTTPS](file:///0903665/network/HTTPS.md)
+## [HTTPS](https://krjaeh0.gitbook.io/j-log/network/protocols/https)
 
 ***
 
-## [Wordpress](file:///0903665/web/Wordpress.md)
+## [Wordpress](wordpress.md)
 
 ***

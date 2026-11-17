@@ -1,4 +1,4 @@
-# Command\_Injection
+# 커맨드 인젝션 (Command Injection)
 
 위와 같은 구조일때 ''안에 들어갈 명령어를 원하는 명령어로 바꾼다면 실행이 가능할 것 같다.
 

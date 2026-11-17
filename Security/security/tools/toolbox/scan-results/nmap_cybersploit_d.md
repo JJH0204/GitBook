@@ -1,4 +1,4 @@
-# nmap\_cybersploit\_d
+# Nmap 네트워크 스캔 로그
 
 ```
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-09-25 21:45 EDT

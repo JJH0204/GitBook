@@ -1,4 +1,4 @@
-# CTF\_cybersploit
+# CTF: Cybersploit 1
 
 ## \[1] 정보 수집
 
@@ -9,8 +9,8 @@ victim: 192.168.56.105, Linux Web Server\
 
 Nmap 명령어:
 
-* `nmap 192.168.56.0/24` [nmap\_cybersploit](file:///5659318/security/nmap_cybersploit.md)
-* `nmap 192.168.56.0/24 -sV -v -p-` [nmap\_cybersploit\_d](file:///5659318/security/nmap_cybersploit_d.md)
+* `nmap 192.168.56.0/24` [nmap\_cybersploit](../../security/tools/toolbox/scan-results/nmap_cybersploit.md)
+* `nmap 192.168.56.0/24 -sV -v -p-` [nmap\_cybersploit\_d](../../security/tools/toolbox/scan-results/nmap_cybersploit_d.md)
 
 ```
 Nmap scan report for 192.168.56.105
@@ -35,14 +35,14 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ### 디렉터리 스캐닝
 
 명령어: `dirb http://192.168.56.105/`\
-참조: [dirb\_cybersploit\_result](/broken/pages/2c4717e0bdf229fbc7f9d52d793db42e30e6fa3d)
+참조: [dirb\_cybersploit\_result](../../security/tools/toolbox/scan-results/dirb_cybersploit_result.md)
 {% endstep %}
 
 {% step %}
 ### 웹 서비스 스캐닝
 
 명령어: `nikto -h 192.168.56.105 -C all`\
-참조: [nikto\_cybersploit\_result](file:///5659318/security/nikto_cybersploit_result.md)
+참조: [nikto\_cybersploit\_result](../../security/tools/toolbox/scan-results/nikto_cybersploit_result.md)
 
 발견된 취약점:
 
@@ -106,7 +106,7 @@ Linux cybersploit-CTF 3.13.0-32-generic #57~precise1-Ubuntu SMP Tue Jul 15 03:50
 #### 커널 취약점 탐색
 
 명령어: `searchsploit linux 3.13.0`\
-참조: [searchsploit\_cybersploit\_result](/broken/pages/dd1d6fd6b7596cb11aec283586587decf9ddca8f)
+참조: [searchsploit\_cybersploit\_result](../../security/tools/toolbox/scan-results/searchsploit_cybersploit_result.md)
 
 발견된 익스플로잇:
 

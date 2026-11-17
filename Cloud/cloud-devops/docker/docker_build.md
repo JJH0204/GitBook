@@ -1,4 +1,4 @@
-# Docker\_Build
+# 도커 이미지 빌드 (Docker Build)
 
 * 도커 엔진 설치가 완료 된 후 개발환경 설정을 위해 도커 이미지를 빌드하는 과정을 설명한다.
 
@@ -9,7 +9,7 @@
 ### 준비
 
 * Dockerfile과 deploy 파일을 한 디렉토리(폴더)에 모아 둔다.
-  * 참조: [Docker file](/broken/pages/37232ddec1f97defb087df92df0626ad29ed291a)
+  * 참조: [Docker file](dockerfile.md)
 {% endstep %}
 
 {% step %}

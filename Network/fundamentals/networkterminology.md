@@ -1,8 +1,8 @@
-# NetworkTerminology
+# 네트워크 주요 용어 정리
 
-## [DHCP](/broken/pages/749e6fcf7fc54966eddc4773db25c105a0a5ace7)
+## [DHCP](../ip-addressing-and-nat/dhcp.md)
 
-## [Mac\_Address](/broken/pages/9ae42a05a0c28f2e3ffbba8ab00ee817434e923f)
+## [Mac\_Address](networkterminology.md)
 
 * L2 스위치에서 노드간 데이터 통신을 위해 사용
 * MAC Address를 참조해 목표 PC에 데이터를 전송
@@ -16,6 +16,11 @@
 
 * [관련 자료](https://m.blog.naver.com/sung_mk1919/221796249432)
 
-## [Gateway](/broken/pages/12d9eace7555166a500470e76d3095315e102bae)
+## Gateway
 
-## [DTE](/broken/pages/6a6979814c8e6656e823ac2924370108772dc14b) / [DCE](/broken/pages/6a6979814c8e6656e823ac2924370108772dc14b)
+## DTE / DCE
+
+## 홉 (Hop)
+
+* 1 Hop = 라우터 1대를 의미한다.
+* 2 Hop = 라우팅 경로에 라우터가 2개 있다는 의미

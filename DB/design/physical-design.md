@@ -1,4 +1,4 @@
-# physical design
+# 물리적 설계 (Physical Design)
 
 ## 물리적 설계란?
 
@@ -9,7 +9,7 @@
 {% step %}
 ### 저장 구조 설계
 
-설계 순서: [저장 구조 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#storage-structure-design)
+설계 순서: 저장 구조 설계
 
 테이블 및 데이터 저장소의 구조를 정의합니다. 컬럼의 데이터 타입 최적화, 컬럼 크기 최소화 등이 포함됩니다.
 {% endstep %}
@@ -17,7 +17,7 @@
 {% step %}
 ### 파일 조직 방식
 
-설계 순서: [파일 조직 방식](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#file-organization)
+설계 순서: 파일 조직 방식
 
 데이터를 저장하는 방식(Heap, Clustered, Indexed)을 결정합니다.
 {% endstep %}
@@ -25,7 +25,7 @@
 {% step %}
 ### 인덱스 설계
 
-설계 순서: [인덱스 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#index-design)
+설계 순서: 인덱스 설계
 
 검색 성능을 높이기 위한 인덱스 생성 및 종류(Primary, Secondary, Unique, Full-Text, Bitmap) 설계.
 {% endstep %}
@@ -33,7 +33,7 @@
 {% step %}
 ### 파티셔닝 설계
 
-설계 순서: [파티셔닝 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#partitioning)
+설계 순서: 파티셔닝 설계
 
 데이터를 여러 파티션으로 나누어 저장해 성능을 향상시킵니다.
 {% endstep %}
@@ -41,7 +41,7 @@
 {% step %}
 ### 뷰(view) 설계
 
-설계 순서: [뷰(view) 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#view)
+설계 순서: 뷰(view) 설계
 
 복잡한 쿼리를 단순화하고 보안을 강화하기 위해 논리적 뷰를 제공합니다.
 {% endstep %}
@@ -49,7 +49,7 @@
 {% step %}
 ### 트랜잭션 제어
 
-설계 순서: [트랜잭션 및 동시성 제어](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#undefined-3)
+설계 순서: 트랜잭션 및 동시성 제어
 
 ACID 원칙 적용 및 동시 접근 관리를 포함합니다.
 {% endstep %}
@@ -57,7 +57,7 @@ ACID 원칙 적용 및 동시 접근 관리를 포함합니다.
 {% step %}
 ### 백업 및 복구
 
-설계 순서: [백업 및 복구 전략](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#undefined-4)
+설계 순서: 백업 및 복구 전략
 
 데이터 손실 방지를 위한 백업 및 복구 방안을 설정합니다.
 {% endstep %}
@@ -78,13 +78,13 @@ ACID 원칙 적용 및 동시 접근 관리를 포함합니다.
 
 | 단계                                                                                          | 설명                                                |
 | ------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| [저장 구조 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#storage-structure-design) | 테이블 및 데이터 저장소의 구조를 정의                             |
-| [파일 조직 방식 선택](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#file-organization)     | <p>테이터를 저장하는 방식<br>(Heap, Clustered, Indexed)</p> |
-| [인덱스 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#index-design)               | 검색 기능을 높이기 위한 인덱스 생성                              |
-| [파티셔닝 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#partitioning)              | 데이터를 분할하여 저장하여 성능 향상                              |
-| [뷰(view) 설계](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#view)                   | 보안 및 성능 최적화를 위해 논리적 뷰 제공                          |
-| [트랜잭션 및 동시성 제어](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#undefined-3)         | ACID 원칙 적용 및 동시 접근 관리                             |
-| [백업 및 복구 전략](/broken/pages/744004a4beafa9a12effe7ce3b994a072bea1d37#undefined-4)            | 데이터 손실 방지를 위한 백업 및 복구 방안 설정                       |
+| 저장 구조 설계 | 테이블 및 데이터 저장소의 구조를 정의                             |
+| 파일 조직 방식 선택     | <p>테이터를 저장하는 방식<br>(Heap, Clustered, Indexed)</p> |
+| 인덱스 설계               | 검색 기능을 높이기 위한 인덱스 생성                              |
+| 파티셔닝 설계              | 데이터를 분할하여 저장하여 성능 향상                              |
+| 뷰(view) 설계                   | 보안 및 성능 최적화를 위해 논리적 뷰 제공                          |
+| 트랜잭션 및 동시성 제어         | ACID 원칙 적용 및 동시 접근 관리                             |
+| 백업 및 복구 전략            | 데이터 손실 방지를 위한 백업 및 복구 방안 설정                       |
 
 ***
 

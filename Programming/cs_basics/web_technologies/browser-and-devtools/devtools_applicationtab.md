@@ -1,4 +1,4 @@
-# DevTools\_ApplicationTab
+# 개발자 도구 Application 탭
 
 ### 리소스 조회
 

@@ -1,4 +1,4 @@
-# HungarianNotation
+# 헝가리안 표기법 (Hungarian)
 
 {% stepper %}
 {% step %}

@@ -1,4 +1,4 @@
-# SwiftBasicSyntax
+# Swift 기본 문법 예제
 
 아래는 원본 Swift 코드 예제입니다. 주석과 코드 내용을 그대로 유지했습니다.
 

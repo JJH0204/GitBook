@@ -1,4 +1,4 @@
-# functions
+# 함수 (Functions)
 
 {% code title="functions.c" %}
 ```c

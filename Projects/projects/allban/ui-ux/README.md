@@ -2,7 +2,7 @@
 description: UI/UX 디자인 초안
 ---
 
-# UI/UX 디자인
+# UI/UX 디자인 초안
 
 #### 문제 인식
 

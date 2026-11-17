@@ -1,4 +1,4 @@
-# DatabaseBasics
+# 데이터베이스 기초 (Database Basics)
 
 ## 언어 구조
 

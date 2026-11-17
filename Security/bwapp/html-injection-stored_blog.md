@@ -1,4 +1,4 @@
-# HTML Injection   Stored\_Blog
+# 저장형 HTML 인젝션 블로그
 
 ## Low
 

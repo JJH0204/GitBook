@@ -1,2 +1,1 @@
-# AcademicCreditBank
-
+# 학점은행제 학위 과정

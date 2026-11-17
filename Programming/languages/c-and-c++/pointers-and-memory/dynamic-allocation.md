@@ -1,4 +1,4 @@
-# dynamic allocation
+# 동적 메모리 할당 (Allocation)
 
 {% code title="DynamicAllocation.c" %}
 ```c

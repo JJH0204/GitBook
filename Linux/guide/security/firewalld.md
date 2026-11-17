@@ -1,4 +1,4 @@
-# firewalld
+# firewalld 방화벽 관리
 
 ## 서비스 활성 여부
 

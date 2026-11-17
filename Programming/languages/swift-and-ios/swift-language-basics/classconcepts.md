@@ -1,4 +1,4 @@
-# ClassConcepts
+# 클래스 개념 (Class)
 
 {% stepper %}
 {% step %}

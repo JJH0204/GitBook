@@ -1,7 +1,7 @@
-# SSH
+# 시큐어 셸 (SSH)
 
 * 원격 Linux 서버에 연결하는 가장 일반적인 방식
-* Secure Shell, Secure Socket Shell 이라 부르며 원격 서버에 연결할 수 있도록 해 주는 암호화된 [네트워크 프로토콜](/broken/pages/937a1352a75b0b512686dfca3357893a284fb1fe)이다.
+* Secure Shell, Secure Socket Shell 이라 부르며 원격 서버에 연결할 수 있도록 해 주는 암호화된 네트워크 프로토콜이다.
 * 암호화를 통해 호스트와 클라이언트가 안전하게 통신할 수 있다.
 * 클라이언트가 원격 서버의 터미널에 접속하여 명령을 입력하면, 호스트가 명령 실행 결과를 클라이언트에 전달한다.
 * 가끔 워게임이나 CTF 문제에 접속하기 위해 SSH를 사용한다.
@@ -24,7 +24,7 @@ ssh user@HOST -p PORT -i [개인 키 파일 경로]
 ### 패스워드
 
 * `ssh user@HOST` 명령을 실행하면 패스워드를 입력한 후 원격 서버에 접속할 수 있다.
-* 패스워드를 충분히 긴 길이로 설정하지 않으면 [Brute-force Attack](file:///2435498/security/Brute-force%20Attack.md) 공격을 통해 패스워드를 유추할 수 있기에 권장하지 않는다.
+* 패스워드를 충분히 긴 길이로 설정하지 않으면 [Brute-force Attack](https://krjaeh0.gitbook.io/j-log/security/security/offensive-security/pentest/brute-force/brute-force-attack) 공격을 통해 패스워드를 유추할 수 있기에 권장하지 않는다.
 
 ```shell
 # 원격 서버 정보

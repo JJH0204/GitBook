@@ -1,4 +1,4 @@
-# IntegratedCalendarAppDevelopment
+# 통합 캘린더 앱 기획
 
 {% hint style="info" %}
 다이어리 + 캘린더 + 가계부

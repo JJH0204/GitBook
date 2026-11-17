@@ -1,4 +1,4 @@
-# iFrame Injection
+# 아이프레임 인젝션 (iFrame)
 
 코드 수정: `(document.cookie);` 로 수정
 

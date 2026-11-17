@@ -1,4 +1,4 @@
-# WindowsSystemFile
+# 가상 메모리 시스템 파일
 
 * `pagefile.sys` -> 가상 메모리(pageing) 정보 저장
 * `hiberfile.sys` -> 최대 절전 모드가 활성화 되면 생성

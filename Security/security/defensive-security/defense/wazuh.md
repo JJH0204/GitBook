@@ -1,4 +1,4 @@
-# Wazuh
+# Wazuh 보안 관제 시스템 구축
 
 대표적인 보안 관제 솔루션 https://wazuh.com/
 

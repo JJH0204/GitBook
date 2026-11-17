@@ -2,7 +2,7 @@
 description: PC방 관리 프로그램(게토)의 로컬 루프백 트래픽에서 실시간 주문 데이터를 추출하는 것.
 ---
 
-# 네트워크 패킷 분석 및 MySQL 프로토콜 디코딩 문제
+# 네트워크 패킷 분석 및 MySQL 디코딩
 
 > * 프로젝트 목적: PC방 관리 프로그램(게토)의 DB 트래픽을 가로채 실시간 주문 알림 시스템을 구현함.
 > * 환경: Windows 10/11, MariaDB 10.0.16, Npcap Loopback Adapter.
@@ -44,7 +44,7 @@ Step 3: 바이너리 파라미터 인덱스 추출 제공된 PDML(Packet Details
 * 이슈: 인터페이스 경로 탐색 실패.
   * 원인: Windows 환경에서 Npcap의 루프백 어댑터명이 시스템마다 상이함 (`\Device\NPF_Loopback` 등).
   * 해결: [`get_tshark_interfaces()`](get_tshark_interfaces.md)를 사용하여 런타임에 "loopback" 키워드가 포함된 GUID를 자동 검색하는 로직 구현.
-* 이슈: [실시간 로그 출력 지연](undefined.md).
+* 이슈: [실시간 로그 출력 지연](realtime-output-delay.md).
   * 원인: 파이썬의 표준 출력 버퍼링과 Dart `Process.start` 간의 스트림 간섭.
   * 해결: 파이썬 실행 옵션에 `-u`(Unbuffered) 플래그를 추가하고, Dart에서 `LineSplitter`를 사용하여 줄 단위로 로그를 복원함.
 
