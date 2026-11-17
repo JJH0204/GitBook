@@ -44,7 +44,7 @@
 {% step %}
 ### 세그멘테이션 오류
 
-* [Segmentation Fault](../../../cs_basics/os_memory/memory-management/segmentationfault.md)
+* [Segmentation Fault](../../../cs-basics/cs_basics/os_memory/memory-management/segmentationfault.md)
 {% endstep %}
 
 {% step %}
