@@ -6,7 +6,7 @@
 
 ## 리눅스 기초
 
-* [리눅스 기초 대시보드 (Linux Basic)](linux-basics/linux-basic.md)
+* [리눅스 기초 대시보드 (Linux Basic)](undefined-1/linux-basic.md)
 
 ## Cloud · DevOps
 
