@@ -1,314 +1,129 @@
 # SELinux 보안 모듈
 
-> 커널에서 동작하는 Linux용 보안 아키텍처\
-> 관련자료: https://velog.io/@ujeongoh/SELinux-Security-Enhanced-Linux
+## 작업 식별
 
-### 상태 확인
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-SEC-003-DO |
+| 유형 | D&O (개념·원리) |
+| 목적 | SELinux의 모드, 컨텍스트(레이블), 로그, 주요 파일을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 직접 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-```sh
-sestatus
-```
+{% hint style="info" %}
+NOTE: 모드를 바꾸는 절차는 LNX-SEC-004-MP, 파일 레이블을 바꾸는 절차는 LNX-SEC-005-MP를 따른다.
+{% endhint %}
 
-출력 예:
+## 1. 목적
+
+SELinux(Security-Enhanced Linux)는 커널에서 동작하는 리눅스용 보안 아키텍처다. 일반 권한(소유자, 그룹, 기타)과 별개로 프로세스와 파일에 레이블을 붙이고, 정책이 허용한 접근만 통과시킨다. root 권한을 가진 프로세스도 정책을 벗어난 접근은 막힌다.
+
+## 2. 구성 요소
+
+| 구성 요소 | 위치·명령 | 역할 |
+|---|---|---|
+| 상태 조회 | `sestatus` | SELinux 상태, 모드, 정책 이름을 출력한다 |
+| 현재 모드 조회 | `getenforce` | 실행 중인 모드를 출력한다 |
+| 설정 파일 | `/etc/sysconfig/selinux` | 부팅 시 적용할 모드(`SELINUX=`)와 정책 종류(`SELINUXTYPE=`)를 정한다 |
+| 정책 파일 | `/etc/selinux/targeted/policy/policy.33` | 컴파일된 바이너리 정책이다. 텍스트로 읽을 수 없다 |
+| 감사 로그 | `/var/log/audit/audit.log` | SELinux가 기록한 접근 거부와 시스템 호출 기록이다 |
+| 컨텍스트 조회 | `ls -Z` | 파일의 레이블을 출력한다 |
+| 정책 관리 도구 | `semanage` | 레이블 규칙, 로그인 매핑을 관리한다 |
+
+### 모드
+
+| 모드 | 활성 | 기록 | 적용(차단) |
+|---|---|---|---|
+| Enforcing | 예 | 예 | 예 |
+| Permissive | 예 | 예 | 아니오 |
+| Disabled | 아니오 | 아니오 | 아니오 |
+
+### `sestatus` 출력 예
 
 ```sh
 SELinux status:                 enabled
 SELinuxfs mount:                /sys/fs/selinux
 SELinux root directory:         /etc/selinux
 Loaded policy name:             targeted
-Current mode:                   enforcing # 적용 중인 모드
-Mode from config file:          enforcing # 설정 파일의 모드
+Current mode:                   enforcing   # 적용 중인 모드
+Mode from config file:          enforcing   # 설정 파일의 모드
 Policy MLS status:              enabled
 Policy deny_unknown status:     allowed
 Memory protection checking:     actual (secure)
 Max kernel policy version:      33
 ```
 
-### 상태값
+### 컨텍스트(레이블) 구성
 
-* Enforcing: 활성화, 기록, 적용 상태
-* Permissive: 활성화, 기록은 하지만 적용은 하지 않는 상태
-* Disabled: 비활성화
-
-### SELinux 로그
-
-로그 파일:
+`ls -Zl /etc/selinux/targeted/policy/`의 출력 예는 다음과 같다.
 
 ```sh
-/var/log/audit/audit.log
-```
-
-로그 예:
-
-```sh
-type=SYSCALL msg=audit(1727053795.603:148): arch=c000003e syscall=46 success=yes exit=384 a0=6 a1=7ffca00d4940 a2=0 a3=7ffca00c37ec items=0 ppid=1 pid=674 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm="firewalld" exe="/usr/bin/python3.9" subj=system_u:system_r:firewalld_t:s0 key=(null)ARCH=x86_64 SYSCALL=sendmsg AUID="unset" UID="root" GID="root" EUID="root" SUID="root" FSUID="root" EGID="root" SGID="root" FSGID="root"
-type=PROCTITLE msg=audit(1727053795.603:148): proctitle=2F7573722F62696E2F707974686F6E33002D73002F7573722F7362696E2F6669726577616C6C64002D2D6E6F666F726B002D2D6E6F706964
-```
-
-### 현재 동작 상태 확인
-
-```sh
-getenforce
-```
-
-### 모드 변경
-
-임시(런타임) 변경:
-
-```sh
-setenforce 0 # Permissive
-# usage:  setenforce [ Enforcing | Permissive | 1 | 0 ]
-```
-
-* setenforce로 변경하는 것은 설정 파일을 변경하는 것이 아니므로 재부팅하면 원래 설정으로 돌아감. 영구 적용을 원하면 설정 파일을 수정해야 하며 설정 파일 수정 후 reboot 해야 적용된다.
-* disabled 상태로 변경하려면 설정 파일을 수정하는 방법밖에 없음.
-
-{% hint style="info" %}
-영구 변경을 위해 부트 인자(selinux=0) 사용 또는 설정 파일 수정 필요(아래 참조).
-{% endhint %}
-
-### 설정 파일
-
-설정 파일:
-
-```sh
-/etc/sysconfig/selinux
-```
-
-예시 내용:
-
-```sh
-# This file controls the state of SELinux on the system.
-
-# SELINUX= can take one of these three values:
-
-#     enforcing - SELinux security policy is enforced.
-
-#     permissive - SELinux prints warnings instead of enforcing.
-
-#     disabled - No SELinux policy is loaded.
-
-# See also:
-
-# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/using_selinux/changing-selinux-states-and-modes_using-selinux#changing-selinux-modes-at-boot-time_changing-selinux-states-and-modes
-
-#
-# NOTE: Up to RHEL 8 release included, SELINUX=disabled would also
-
-# fully disable SELinux during boot. If you need a system with SELinux
-
-# fully disabled instead of SELinux running with no policy loaded, you
-
-# need to pass selinux=0 to the kernel command line. You can use grubby
-
-# to persistently set the bootloader to boot with selinux=0:
-
-#
-#    grubby --update-kernel ALL --args selinux=0
-
-#
-# To revert back to SELinux enabled:
-
-#
-#    grubby --update-kernel ALL --remove-args selinux
-
-#
-SELINUX=enforcing # 이 값을 disabled로 바꿔야 적용된다.
-
-# SELINUXTYPE= can take one of these three values:
-
-#     targeted - Targeted processes are protected,
-
-#     minimum - Modification of targeted policy. Only selected processes are protected.
-
-#     mls - Multi Level Security protection.
-SELINUXTYPE=targeted
-```
-
-### 부트 인자로 SELinux 끄기/켜기
-
-* 끄기:
-
-```sh
-grubby --update-kernel ALL --args selinux=0
-```
-
-* 켜기:
-
-```sh
-grubby --update-kernel ALL --remove-args selinux
-```
-
-### 정책 세부 설정 파일
-
-정책 바이너리 파일:
-
-```sh
-/etc/selinux/targeted/policy/policy.33
-```
-
-* 바이너리 파일이므로 텍스트로 읽을 수 없음.
-
-### Label(Context) 정보 보기 및 관리
-
-* SELinux는 각 파일에 접근 제어를 적용하기 위해 Label(컨텍스트)을 할당한다.
-
-예:
-
-```sh
-ls -Zl /etc/selinux/targeted/policy/
-```
-
-출력 예:
-
-```sh
-total 3384
 -rw-r--r--. 1 root root unconfined_u:object_r:semanage_store_t:s0 3462772 Aug 30 09:01 policy.33
 ```
 
-Label 구성 예시 항목 설명:
+| 필드 | 예 | 뜻 |
+|---|---|---|
+| 사용자(User) | `unconfined_u` | SELinux 사용자. `policy.33`에 정의되며 셸에서 만들 수 없다 |
+| 역할(Role) | `object_r` | 사용자가 수행할 수 있는 역할 |
+| 유형(Type) | `semanage_store_t` | 객체 유형. 정책은 유형을 기준으로 접근을 허용한다(예: `httpd_sys_content_t`는 웹 서버가 읽을 수 있는 내용) |
+| 보안 레벨 | `s0` | 기본값은 `s0`다 |
 
-* unconfined\_u: SELinux의 사용자(User)\
-  (policy.33에 정의되어 있음, shell에서 생성 불가능)
-* object\_r: 사용자가 수행할 수 있는 역할(Roles)
-* semanage\_store\_t: 객체 유형(type)\
-  (예: httpd\_sys\_connect\_t — httpd 접근 허용)
-* s0: 보안 레벨 (default = s0)
+### 설정 파일의 값
 
-파일 타입 변경 예:
+| 항목 | 값 | 뜻 |
+|---|---|---|
+| `SELINUX=` | `enforcing` | 정책을 적용한다 |
+| | `permissive` | 경고만 출력한다 |
+| | `disabled` | 정책을 로드하지 않는다 |
+| `SELINUXTYPE=` | `targeted` | 지정한 프로세스만 보호한다(기본) |
+| | `minimum` | targeted 정책에서 일부 프로세스만 보호한다 |
+| | `mls` | 다중 보안 레벨(Multi Level Security) 보호 |
 
-```sh
-touch test.html
-chcon -t admin_home_t test.html # 타입을 지정해서 파일 생성
-```
+RHEL 8까지는 `SELINUX=disabled`가 SELinux를 완전히 끄지만, 이후 버전은 정책이 없는 상태로 실행된다. 완전히 끄려면 커널 인자 `selinux=0`을 쓴다.
 
-출력 예:
+## 3. 동작 원리
 
-```sh
--rw-r--r--. 1 root root unconfined_u:object_r:admin_home_t:s0   0 Sep 23 10:46 test.html
-```
+1. 프로세스가 파일에 접근을 요청한다.
+2. 커널이 일반 권한(소유자, 그룹, 기타)을 먼저 검사한다.
+3. 통과하면 SELinux가 프로세스의 유형과 파일의 유형을 정책에 대조한다.
+4. 정책이 허용하면 접근한다. 허용하지 않으면 Enforcing 모드는 차단하고, Permissive 모드는 허용하되 `/var/log/audit/audit.log`에 기록한다.
 
-원래 타입으로 복원:
-
-```sh
-restorecon test.html # 타입 초기화
-```
-
-Roles 관리 도구:
-
-```sh
-semanage
-```
-
-fcontext 예제:
+감사 로그 예(요약)는 다음과 같다. `subj=`가 프로세스 컨텍스트다.
 
 ```sh
-semanage fcontext -a -t httpd_sys_content_t "/test(/.*)?"
+type=SYSCALL msg=audit(<타임스탬프>:148): arch=c000003e syscall=46 success=yes ... comm="firewalld" exe="/usr/bin/python3.9" subj=system_u:system_r:firewalld_t:s0
 ```
 
-### semanage 관련 설정 (예시 구성 파일)
+## 4. 약어·용어
 
-아래는 /etc/selinux/semanage.conf 예시 내용입니다:
+| 용어 | 풀이 |
+|---|---|
+| SELinux | Security-Enhanced Linux |
+| MLS | Multi Level Security. 다중 보안 레벨 |
+| 컨텍스트(Context) | 파일과 프로세스에 붙는 `사용자:역할:유형:레벨` 레이블 |
+| `semanage.conf` | `/etc/selinux/semanage.conf`. `semanage`가 정책 저장소와 통신하는 방식을 정하는 설정 파일 |
 
-<details>
+## 5. 참조
 
-<summary>semanage.conf (펼치기)</summary>
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [selinux-mode.md](selinux-mode.md) | LNX-SEC-004-MP | SELinux 모드 변경 |
+| [selinux-context.md](selinux-context.md) | LNX-SEC-005-MP | SELinux 파일 컨텍스트 변경 |
+| [SELinux (velog)](https://velog.io/@ujeongoh/SELinux-Security-Enhanced-Linux) | | 외부 자료 |
+| [Red Hat: SELinux 모드 변경](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/using_selinux/changing-selinux-states-and-modes_using-selinux) | | 공식 문서 |
 
-```
-# Authors: Jason Tang <jtang@tresys.com>
+## 내 말로 채우기
 
-#
-# Copyright (C) 2004-2005 Tresys Technology, LLC
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-#
-#  This library is free software; you can redistribute it and/or
+- [ ] Enforcing과 Permissive의 차이를 로그와 차단 관점에서 설명해 보자.
+- [ ] 파일 권한이 `777`인데도 SELinux 때문에 접근이 거부되는 상황을 설명해 보자.
+- [ ] 컨텍스트의 네 필드 중 `targeted` 정책에서 가장 중요한 것은 무엇이고, 그 이유는 무엇일까?
 
-#  modify it under the terms of the GNU Lesser General Public
+## 개정 이력
 
-#  License as published by the Free Software Foundation; either
-
-#  version 2.1 of the License, or (at your option) any later version.
-
-#
-#  This library is distributed in the hope that it will be useful,
-
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-
-#  Lesser General Public License for more details.
-
-#
-#  You should have received a copy of the GNU Lesser General Public
-
-#  License along with this library; if not, write to the Free Software
-
-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-#
-# Specify how libsemanage will interact with a SELinux policy manager.
-
-# The four options are:
-
-#
-#  "source"     - libsemanage manipulates a source SELinux policy
-
-#  "direct"     - libsemanage will write directly to a module store.
-
-#  /foo/bar     - Write by way of a policy management server, whose
-
-#                 named socket is at /foo/bar.  The path must begin
-
-#                 with a '/'.
-
-#  foo.com:4242 - Establish a TCP connection to a remote policy
-
-#                 management server at foo.com.  If there is a colon
-
-#                 then the remainder is interpreted as a port number;
-
-#                 otherwise default to port 4242.
-module-store = direct
-
-# When generating the final linked and expanded policy, by default
-
-# semanage will set the policy version to POLICYDB_VERSION_MAX, as
-
-# given in <sepol/policydb.h>.  Change this setting if a different
-
-# version is necessary.
-#policy-version = 19
-
-# expand-check check neverallow rules when executing all semanage
-
-# commands. There might be a penalty in execution time if this
-
-# option is enabled.
-expand-check=0
-
-# usepasswd check tells semanage to scan all pass word records for home directories
-
-# and setup the labeling correctly. If this is turned off, SELinux will label only /home
-
-# and home directories of users with SELinux login mappings defined, see
-
-# semanage login -l for the list of such users.
-
-# If you want to use a different home directory, you will need to use semanage fcontext command.
-
-# For example, if you had home dirs in /althome directory you would have to execute
-
-# semanage fcontext -a -e /home /althome
-usepasswd=False
-bzip-small=true
-bzip-blocksize=5
-ignoredirs=/root;/bin;/boot;/dev;/etc;/lib;/lib64;/proc;/run;/sbin;/sys;/tmp;/usr;/var
-optimize-policy=true
-
-[sefcontext_compile]
-path = /usr/sbin/sefcontext_compile
-args = -r $@
-[end]
-```
-
-</details>
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 원본을 D&O로 재작성하고 모드 변경과 레이블 변경 절차를 LNX-SEC-004-MP, LNX-SEC-005-MP로 분리했다. 라이선스 전문이 대부분이던 `semanage.conf` 전체 인용을 삭제했다 |
