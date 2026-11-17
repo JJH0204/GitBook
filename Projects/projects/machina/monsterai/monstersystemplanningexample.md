@@ -1,8 +1,5 @@
 # 몬스터 시스템 기획 예시
 
-{% hint style="warning" %}
-{% endhint %}
-
 <details>
 
 <summary>몬스터란?</summary>
@@ -14,8 +11,6 @@
 <details>
 
 <summary>피해를 입히는</summary>
-
-^z5akuEkG
 
 </details>
 

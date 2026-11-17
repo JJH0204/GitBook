@@ -1,8 +1,5 @@
 # FSM 몬스터 AI (FSM)
 
-{% hint style="warning" %}
-{% endhint %}
-
 FSM (Finite State Machine)을 활용한 몬스터 AI 구현
 
 Find aid

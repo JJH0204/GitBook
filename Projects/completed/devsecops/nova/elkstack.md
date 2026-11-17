@@ -1,8 +1,5 @@
 # ELK 스택 구축 구상 (ELK)
 
-{% hint style="warning" %}
-{% endhint %}
-
 ELK Stack 사용 환경 구조
 
 경량화 모델

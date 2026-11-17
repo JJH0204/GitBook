@@ -1,8 +1,5 @@
 # 자료구조 과제 (Data Structure)
 
-{% hint style="warning" %}
-{% endhint %}
-
 * CalcTree recursion
 * GetElements logic
 * Start CALC

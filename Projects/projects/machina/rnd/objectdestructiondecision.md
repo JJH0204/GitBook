@@ -1,9 +1,5 @@
 # 오브젝트 파괴 감지 설계
 
-{% hint style="warning" %}
-You can decompress drawing data with the command palette: "Decompress current Excalidraw file". For more info check in plugin settings under "Saving".
-{% endhint %}
-
 ```csharp
 public class GlobalGameObject : MonoBehaviour
 {
