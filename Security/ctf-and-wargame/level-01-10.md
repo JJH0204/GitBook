@@ -1,215 +1,115 @@
 # Bandit Level 01~10 풀이
 
-## Bandit Level 0 → Level 1
+## 작업 식별
 
-### Level Goal
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-CTF-006-TS |
+| 유형 | TS (문제 해결, 풀이 방법론) |
+| 목적 | Bandit 레벨 0에서 10까지 각 레벨의 목표와 접근 방법(사용 명령어, 개념)을 정리한다 |
+| 확인 상태 | 미검증 (원본 메모를 정리한 것이며 레벨을 다시 풀어 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-The password for the next level is stored in a file called **readme** located in the home directory. Use this password to log into bandit1 using SSH. Whenever you find a password for a level, use SSH (on port 2220) to log into that level and continue the game.
+{% hint style="info" %}
+NOTE: 원본에 적힌 각 레벨의 비밀번호는 모두 삭제했다. 원본에 없던 명령(레벨 0~4의 파일 읽기 명령)은 파일명 규칙을 설명하려고 보충했으며 미검증이다. SSH 접속 호스트는 `<Bandit 호스트>`로 적는다. 플랫폼 소개는 [Bandit 워게임](badit.md) (SEC-CTF-002-DO)이다.
+{% endhint %}
 
-### Commands you may need to solve this level
+{% hint style="danger" %}
+WARNING: Bandit 서버는 워게임 운영자가 풀이를 허용한 환경이다. 같은 명령을 허가받지 않은 서버에서 쓰는 것은 불법이다.
+{% endhint %}
 
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
+## 1. 증상
 
-**TIP:** Create a file for notes and passwords on your local machine!
+각 레벨의 목표는 "다음 레벨 비밀번호가 있는 곳을 찾는 것"이다. 접속은 `ssh bandit<레벨 번호>@<Bandit 호스트> -p 2220`로 한다.
 
-Passwords for levels are _not_ saved automatically. If you do not save them yourself, you will need to start over from bandit0.
+## 2. 가능 원인
 
-Passwords also occassionally change. It is recommended to take notes on how to solve each challenge. As levels get more challenging, detailed notes are useful to return to where you left off, reference for later problems, or help others after you’ve completed the challenge.
+| 레벨 | 목표 | 핵심 개념 |
+|---|---|---|
+| 0→1 | 홈 디렉터리의 `readme` 파일을 읽는다 | `ls`, `cat` |
+| 1→2 | 이름이 `-`인 파일을 읽는다 | 옵션으로 오해되는 파일명 |
+| 2→3 | 이름에 공백이 있는 파일을 읽는다 | 공백이 든 파일명 처리 |
+| 3→4 | `inhere`의 숨김 파일을 읽는다 | 숨김 파일 (`ls -a`) |
+| 4→5 | `inhere`에서 사람이 읽을 수 있는 유일한 파일을 읽는다 | `file`로 파일 유형 확인 |
+| 5→6 | 사람이 읽을 수 있고, 1033바이트이며, 실행 불가인 파일을 찾는다 | `find` 조건 조합 |
+| 6→7 | 서버 전체에서 소유자 `bandit7`, 그룹 `bandit6`, 33바이트인 파일을 찾는다 | `find` 소유자·그룹·크기 조건 |
+| 7→8 | `data.txt`에서 `millionth` 옆 단어를 찾는다 | `grep` |
+| 8→9 | `data.txt`에서 한 번만 나오는 줄을 찾는다 | `sort`, `uniq -u` |
+| 9→10 | `data.txt`의 읽을 수 있는 문자열 중 `=` 여러 개 뒤의 것을 찾는다 | `strings` |
 
-The password you are looking for is: ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If
+## 3. 격리 절차와 시정 조치 (풀이 방법)
 
-***
+### 3.1 레벨 0→1, 1→2, 2→3, 3→4
 
-## Bandit Level 1 → Level 2
+1. (3.1-01) 홈 디렉터리 파일을 확인한다: `ls` → 결과: 파일 목록이 보인다.
+2. (3.1-02) 파일을 읽는다: `cat readme` → 결과: 다음 레벨 비밀번호가 나온다.
+3. (3.1-03) 이름이 `-`인 파일은 경로를 붙여 읽는다: `cat ./-` → 결과: `-`가 옵션이 아니라 파일명으로 해석된다.
+4. (3.1-04) 공백이 든 이름은 따옴표로 감싼다: `cat "spaces in this filename"`
+5. (3.1-05) 숨김 파일은 `ls -a inhere`로 찾아 읽는다.
 
-### Level Goal
+{% hint style="info" %}
+NOTE: 원본은 이 네 레벨의 명령을 적지 않았다. 3.1절 명령은 레벨 목표 문구에서 도출한 것이며 미검증이다. 원본에는 "비밀번호는 서버가 저장하지 않으므로 직접 메모하라"는 안내가 있었다.
+{% endhint %}
 
-The password for the next level is stored in a file called **-** located in the home directory
+### 3.2 레벨 4→5
 
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
-
-### Helpful Reading Material
-
-* [Google Search for “dashed filename”](https://www.google.com/search?q=dashed+filename)
-* [Advanced Bash-scripting Guide - Chapter 3 - Special Characters](https://linux.die.net/abs-guide/special-chars.html)
-
-263JGJPfgU6LtdEvgfWU1XP5yac29mFx
-
-***
-
-## Bandit Level 2 → Level 3
-
-### Level Goal
-
-The password for the next level is stored in a file called **spaces in this filename** located in the home directory
-
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
-
-### Helpful Reading Material
-
-* [Google Search for “spaces in filename”](https://www.google.com/search?q=spaces+in+filename)
-
-MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
-
-***
-
-## Bandit Level 3 → Level 4
-
-### Level Goal
-
-The password for the next level is stored in a hidden file in the **inhere** directory.
-
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
-
-2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ
-
-***
-
-## Bandit Level 4 → Level 5
-
-### Level Goal
-
-The password for the next level is stored in the only human-readable file in the **inhere** directory. Tip: if your terminal is messed up, try the “reset” command.
-
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
-
-* 타입이 file 이며 타입을 출력하는 명령어
+원본의 방법은 타입이 파일인 항목의 유형을 출력하는 것이다.
 
 ```sh
 find . -type f -exec file {} +
 ```
 
-4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw
+1. 위 명령을 실행한다. → 결과: 각 파일의 유형이 나온다.
+2. `ASCII text`로 표시된 파일을 읽는다.
 
-***
+### 3.3 레벨 5→6
 
-## Bandit Level 5 → Level 6
-
-### Level Goal
-
-The password for the next level is stored in a file somewhere under the **inhere** directory and has all of the following properties:
-
-* human-readable
-* 1033 bytes in size
-* not executable
-
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html)
-
-* 특정 문자열을 제외한 결과 출력
-
-```sh
-grep -v "with very long lines"
-```
-
-```sh
-find . -type f -exec file {} + | grep -i "ASCII text" | grep -v "with very long"
-```
+원본은 `grep -v`로 특정 문자열을 제외하는 방법을 쓴다.
 
 ```sh
 find . -type f -size 1033c ! -perm /a=x -exec file {} + | grep -i "ASCII text" | grep -v "with very long"
 ```
 
-```sh
-find . -type f -size 1033c
-```
+| 조건 | 뜻 |
+|---|---|
+| `-size 1033c` | 크기가 1033바이트 |
+| `! -perm /a=x` | 누구에게도 실행 권한이 없음 |
+| `grep -i "ASCII text"` | 사람이 읽을 수 있는 파일 |
+| `grep -v "with very long"` | "with very long lines"가 든 줄 제외 |
 
-HWasnPhtq9AVKe0dmk45nxy20cvUa6EG
+크기 조건만 줘도 후보가 하나로 좁혀지는 경우가 있다: `find . -type f -size 1033c`
 
-***
-
-## Bandit Level 6 → Level 7
-
-### Level Goal
-
-The password for the next level is stored **somewhere on the server** and has all of the following properties:
-
-* owned by user bandit7
-* owned by group bandit6
-* 33 bytes in size
-
-### Commands you may need to solve this level
-
-[ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html) , [cd](https://manpages.ubuntu.com/manpages/noble/man1/cd.1posix.html) , [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html) , [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html) , [du](https://manpages.ubuntu.com/manpages/noble/man1/du.1.html) , [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html) , [grep](https://manpages.ubuntu.com/manpages/noble/man1/grep.1.html)
-
-```sh
--user "사용자이름"
--group "그룹이름"
-2>/dev/null # 출력 코드가 2(에러)이면 /dev/null로 보내(출력 x)
-```
+### 3.4 레벨 6→7
 
 ```sh
 find / -type f -user bandit7 -group bandit6 -size 33c 2>/dev/null
 ```
 
-morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
+| 옵션 | 뜻 |
+|---|---|
+| `-user <사용자 이름>` | 소유자 조건 |
+| `-group <그룹 이름>` | 그룹 조건 |
+| `2>/dev/null` | 표준 오류(2번)를 버려 권한 오류 출력을 없앤다 |
 
-***
+### 3.5 레벨 7→8, 8→9, 9→10
 
-## Bandit Level 7 → Level 8
+1. (3.5-01) 레벨 7→8: `grep millionth data.txt` → 결과: `millionth`가 든 줄이 나온다.
+2. (3.5-02) 레벨 8→9: `sort data.txt | uniq -u` → 결과: 한 번만 나오는 줄이 나온다. `sort`는 같은 줄이 이웃하도록 정렬하고, `uniq -u`는 중복 없는 줄만 출력한다.
+3. (3.5-03) 레벨 9→10: `strings data.txt` → 결과: 읽을 수 있는 문자열이 나오며, `=` 여러 개 뒤의 줄이 대상이다.
 
-### Level Goal
+## 4. 참조
 
-The password for the next level is stored in the file **data.txt** next to the word **millionth**
+| 구분 | 링크 |
+|---|---|
+| 명령어 설명 | [ls](https://manpages.ubuntu.com/manpages/noble/man1/ls.1.html), [cat](https://manpages.ubuntu.com/manpages/noble/man1/cat.1.html), [file](https://manpages.ubuntu.com/manpages/noble/man1/file.1.html), [find](https://manpages.ubuntu.com/manpages/noble/man1/find.1.html), [grep](https://manpages.ubuntu.com/manpages/noble/man1/grep.1.html) |
+| 파이프와 리다이렉션 | [Piping and Redirection](https://ryanstutorials.net/linuxtutorial/piping.php) |
+| 파일명 처리 | [Advanced Bash-scripting Guide - Special Characters](https://linux.die.net/abs-guide/special-chars.html) |
 
-### Commands you may need to solve this level
+## 내 말로 채우기
 
-[man](https://manpages.ubuntu.com/manpages/noble/man1/man.1.html), grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-```sh
-cat ./data.txt | grep millionth
-```
-
-dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
-
-***
-
-## Bandit Level 8 → Level 9
-
-### Level Goal
-
-The password for the next level is stored in the file **data.txt** and is the only line of text that occurs only once
-
-### Commands you may need to solve this level
-
-grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
-
-### Helpful Reading Material
-
-* [Piping and Redirection](https://ryanstutorials.net/linuxtutorial/piping.php)
-
-```sh
-sort ./data.txt | uniq -u
-```
-
-* sort: 정렬(파일의 내용을 일정하게 정렬)
-* uniq: -u 옵션을 통해 유일하게 등장하는 줄만 출력
-
-4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
-
-***
-
-## Bandit Level 9 → Level 10
-
-### Level Goal
-
-The password for the next level is stored in the file **data.txt** in one of the few human-readable strings, preceded by several ‘=’ characters.
-
-### Commands you may need to solve this level
-
-grep, sort, uniq, strings, base64, tr, tar, gzip, bzip2, xxd
-
-```sh
-strings ./data.txt
-```
-
-FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey
+- [ ] `find`의 조건을 조합하면 어떻게 후보를 줄이는가?
+- [ ] 이 레벨들에서 처음 알게 된 명령어와 그 쓰임은 무엇인가?
