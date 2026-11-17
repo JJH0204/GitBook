@@ -1,11 +1,29 @@
 # IDA Pro 실습 (Lab 05)
 
-Download the file below:
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-LAB-002-REF |
+| 유형 | REF (도구 참조) |
+| 목적 | 역공학 실습에 쓰는 디스어셈블러(IDA Free)의 위치와 용도를 정리한다 |
+| 확인 상태 | 미검증 (다운로드 주소는 원본에서 옮겼으며 접속해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-<a href="https://out7.hex-rays.com/files/idafree84_windows.exe" class="button primary">Download idafree84_windows.exe</a>
+{% hint style="danger" %}
+WARNING: 악성코드 샘플은 스냅샷을 만들 수 있는 가상 머신에서만 다룬다. 가상 머신의 네트워크는 차단하거나 호스트 전용으로 격리한다. 샘플·해시·C2 주소는 이 문서에 적지 않는다.
+{% endhint %}
 
-Or download directly via the URL:
+## 도구
 
-```
-https://out7.hex-rays.com//files/idafree84_windows.exe
-```
+| 항목 | 내용 |
+|---|---|
+| 이름 | IDA Free (Hex-Rays) |
+| 용도 | 실행 파일의 디스어셈블과 함수 구조 분석 |
+| 설치 파일 | 원본은 `idafree84_windows.exe`를 가리켰다. 버전은 최신 공식 배포를 확인한다 |
+| 배포처 | [Hex-Rays 공식 사이트](https://hex-rays.com/ida-free) |
+
+## 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [lab06.md](lab06.md) | SEC-LAB-003-REF | 악성코드 분석 실습 (Lab 06) |
+| [lab09.md](lab09.md) | SEC-LAB-005-REF | 디버깅 브레이크포인트 (Lab 09) |
