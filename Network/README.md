@@ -19,38 +19,16 @@ metaLinks:
     - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/
 ---
 
-# Welcome
+# Network
 
-네트워크를 빠르게 정리하고, 필요할 때 바로 찾아보기 위한 문서입니다.
+네트워크 기초, IP 주소·NAT, 프로토콜, 라우팅·스위칭, 네트워크 보안 노트다.
 
-* 개념 정리: “왜 그런가”를 중심으로 적습니다.
-* 운영/트러블슈팅: “어떻게 확인하나”를 중심으로 적습니다.
-* 중복 내용은 대표 문서로 통합합니다.
-
-### 어디서부터 볼까
-
-추천 흐름입니다.
-
-1. **Fundamentals**: 네트워크 큰 그림과 기본 용어
-2. **IP Addressing & NAT**: 서브넷/라우팅/게이트웨이 이해의 기반
-3. **Protocols**: TCP/UDP/HTTP/DNS 등 프로토콜 정리
-4. **Routing & Switching**: 라우팅 프로토콜과 L2/L3 기능
-5. **Security**: VPN/방화벽/SSH/TLS 등
-6. **Tools & Operations**: 커맨드/모니터링/자동화
-
-### 섹션 바로가기
-
-<table data-view="cards"><thead><tr><th>섹션</th><th data-card-target data-type="content-ref">이동</th></tr></thead><tbody><tr><td>Fundamentals</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/6artD43iOsnH0if5LUqd">Broken link</a></td></tr><tr><td>IP Addressing &#x26; NAT</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/ZtOYbrh7aP82qHKIECEc">Broken link</a></td></tr><tr><td>Protocols</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/enzbFctxwRBn3p6CodKa">Broken link</a></td></tr><tr><td>Routing &#x26; Switching</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/pCoVAhDcVa2CIVu3al7E">Broken link</a></td></tr><tr><td>Security</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/WCw0VZFTYilt1B7fJ5T0">Broken link</a></td></tr><tr><td>Tools &#x26; Operations</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/FoKLsiTX5ZFHMyCk9qzq">Broken link</a></td></tr><tr><td>Servers &#x26; Storage</td><td><a href="/broken/spaces/Y8UYFuEu8fQDSvspnrVC/pages/GolYqtZkQnvecZauEiuZ">Broken link</a></td></tr></tbody></table>
-
-### 자주 찾는 페이지
-
-* 라우팅 개념: [Routing](routing-and-switching/routing.md)
-* 서브넷/주소: [Subnetting](ip-addressing-and-nat/subnetting.md), [CIDR](ip-addressing-and-nat/cidr.md)
-* NAT: [Network\_Address\_Translation](ip-addressing-and-nat/network_address_translation.md)
-* HTTP 메소드: [HTTP\_Method](protocols/http_method.md)
-* 진단 커맨드: [NetworkCommands](tools-and-operations/networkcommands.md)
-
-{% hint style="info" %}
-문서가 두 개로 나뉘어 보이면, 보통 한쪽에 “통합됨” 안내가 있습니다.\
-그 링크를 따라가면 최신/대표 문서로 이동합니다.
-{% endhint %}
+| 묶음 | 페이지 |
+|---|---|
+| **Fundamentals** | [네트워크 기초 (Basics)](fundamentals/basics/README.md), [네트워크의 개념 (Network)](fundamentals/network.md), [네트워크 기본 구성도](fundamentals/networkbasics.md), [네트워크 주요 용어 정리](fundamentals/networkterminology.md), [네트워크와 프로토콜의 관계](fundamentals/relationshipbetweennetworkandprotocol.md), [OSI 7계층 모델 (OSI 7 Layer)](fundamentals/osi7layer.md), [TCP/IP 4계층 모델](fundamentals/tcpip4layer.md), [네트워크 토폴로지 (Topology)](fundamentals/topology.md) 외 1개 |
+| **IP Addressing & NAT** | [NAT 동작 원리 (NAT)](ip-addressing-and-nat/network_address_translation.md), [서브넷팅 계산 (Subnetting)](ip-addressing-and-nat/subnetting.md), [IP 프로토콜 개요 (IP)](ip-addressing-and-nat/ip.md), [IPv4 주소 체계 (IPv4)](ip-addressing-and-nat/ipv4.md), [IPv6 주소 체계 (IPv6)](ip-addressing-and-nat/ipv6.md), [게이트웨이 설정 (Gateway Setup)](ip-addressing-and-nat/gatewaysetup.md), [동적 호스트 설정 프로토콜 (DHCP)](ip-addressing-and-nat/dhcp.md), [사이더 표기법 (CIDR)](ip-addressing-and-nat/cidr.md) |
+| **Protocols** | [네트워크 프로토콜 (Network Protocol)](protocols/network_protocol.md), [데이터그램 (Datagram)](protocols/datagram.md), [전송 계층 개요 (Transport Layer)](protocols/transport-layer.md), [전송 제어 프로토콜 (TCP)](protocols/tcp.md), [사용자 데이터그램 프로토콜 (UDP)](protocols/udp.md), [HDLC 프로토콜 (HDLC)](protocols/hdlc.md), [HTTP 프로토콜 (HTTP)](protocols/http.md), [HTTPS 프로토콜 (HTTPS)](protocols/https.md) 외 5개 |
+| **Routing & Switching** | [동적 라우팅 프로토콜 개요](routing-and-switching/dynamic-routing-protocol.md), [라우팅 개념 및 동작 원리](routing-and-switching/routing.md), [라우팅 실습 (Packet Tracer)](routing-and-switching/routing-1.md), [EIGRP 라우팅 프로토콜](routing-and-switching/eigrp.md), [OSPF 라우팅 프로토콜](routing-and-switching/ospf.md), [RIP 라우팅 프로토콜](routing-and-switching/rip.md), [스패닝 트리 프로토콜 (STP)](routing-and-switching/stp.md), [가상 랜 (VLAN)](routing-and-switching/vlan.md) 외 1개 |
+| **Security** | [네트워크 보안 로드맵](security/networksecurity.md), [가상 사설망 (VPN)](security/vpn.md), [SSL 및 TLS 프로토콜](security/ssl.md), [시큐어 셸 (SSH)](security/ssh.md), [방화벽 장치 유형 (Firewall)](security/firewall.md), [Cisco 가상 방화벽 (ASAv)](security/asav.md) |
+| **Tools & Operations** | [네트워크 진단 명령어](tools-and-operations/networkcommands.md), [네트워크 상태 모니터링 (netstat)](tools-and-operations/netstat.md), [프록시 도구와 Burp Suite](tools-and-operations/proxytool.md), [서버 상태 점검 스크립트](tools-and-operations/servercheckscript.md) |
+| **Servers & Storage** | [서버 분류 및 유형](servers-and-storage/server.md), [복수 배열 독립 디스크 (RAID)](servers-and-storage/raid.md) |

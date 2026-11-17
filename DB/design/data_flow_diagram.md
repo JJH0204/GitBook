@@ -1,4 +1,4 @@
-# data\_flow\_diagram
+# 데이터 흐름도 (DFD)
 
 ## 데이터 흐름도란?
 

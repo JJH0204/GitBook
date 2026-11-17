@@ -1,4 +1,4 @@
-# A2 Broken\_Auth
+# A2 취약한 인증 (Broken Auth)
 
 ## CAPTCHA Bypassing
 
@@ -139,7 +139,7 @@ medium
 
 ## Cookies (session 하이제킹)
 
-[cookie](file:///2237607/web/cookie.md)
+[cookie](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/cookie)
 
 \
 \

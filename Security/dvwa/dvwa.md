@@ -1,4 +1,4 @@
-# dvwa
+# DVWA 취약점 실습 (DVWA)
 
 DVWA 실습 항목 모음입니다.
 

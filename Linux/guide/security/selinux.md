@@ -1,4 +1,4 @@
-# SELinux
+# SELinux 보안 모듈
 
 > 커널에서 동작하는 Linux용 보안 아키텍처\
 > 관련자료: https://velog.io/@ujeongoh/SELinux-Security-Enhanced-Linux
@@ -312,7 +312,3 @@ args = -r $@
 ```
 
 </details>
-
-***
-
-필요하시면 특정 명령의 실행 예, SELinux 문제 진단(예: audit 로그 해석) 또는 특정 서비스에 대한 라벨 설정 예제를 추가로 정리해 드리겠습니다.

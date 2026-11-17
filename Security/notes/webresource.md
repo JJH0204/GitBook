@@ -1,4 +1,4 @@
-# WebResource
+# 웹 리소스와 URI 개념
 
 ## 웹 리소스란?
 
@@ -15,11 +15,11 @@ URI를 이용해 식별된다.
 
 ## 프론트엔드를 구성하는 웹 리소스
 
-* [HTML(Hyper Text Markup Language)](file:///2237607/web/HTML.md)
+* [HTML(Hyper Text Markup Language)](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/web-basics/html)
   * 태그와 속성을 통한 구조화된 문서 작성을 지원
-* [CSS(Cascading Style Sheets)](file:///2237607/web/BrowserDevTools.md)
+* [CSS(Cascading Style Sheets)](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/browser-and-devtools/browserdevtools)
   * 웹 리소스들의 시각화 방법을 기재하는 스타일 시트
-* [JS(JavaScript)](/broken/pages/84e4b18004d529ccec17a5e115cd32e04fcde1bd)
+* JS(JavaScript)
   * 웹 문서의 동작을 정의
   * 클라이언트가 실행하는 코드라고 하여 Client-Side Script라고 부른다.
 * 그 외 (문서, 이미지, 동영상, 폰트 등)

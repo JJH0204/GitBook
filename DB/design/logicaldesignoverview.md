@@ -1,4 +1,4 @@
-# LogicalDesignOverview
+# 논리적 설계 개요
 
 ## 논리적 설계란?
 
@@ -41,10 +41,10 @@
 
 | 단계                                                                   | 설명                                              |
 | -------------------------------------------------------------------- | ----------------------------------------------- |
-| [개념적 설계](file:///1491819/database.zip/#greater-than)                 | 엔터티를 테이블(Table)로 변환                             |
-| [속성(Attribute)변환](file:///1491819/database.zip/#attribute)           | 엔터티의 속성을 테이블의 컬럼(Column)으로 변환                   |
-| [키(Key)정의](file:///1491819/database.zip/#key)                        | 기본 키(Primary Key, PK)와 외래 키(Foreign Key, FK) 설정 |
-| [정규화(Normalization) 수행](file:///1491819/database.zip/#normalization) | 데이터 중복을 최소화하고 무결성을 유지                           |
+| 개념적 설계                 | 엔터티를 테이블(Table)로 변환                             |
+| 속성(Attribute)변환           | 엔터티의 속성을 테이블의 컬럼(Column)으로 변환                   |
+| 키(Key)정의                        | 기본 키(Primary Key, PK)와 외래 키(Foreign Key, FK) 설정 |
+| 정규화(Normalization) 수행 | 데이터 중복을 최소화하고 무결성을 유지                           |
 | 제약 조건(Constraints) 설정                                                | NULL 여부, UNIQUE, CHECK, DEFAULT 값 설정            |
 | 관계 정의                                                                | 엔터티 간 관계를 테이블의 FK로 변환                           |
 | 테이블 스키마 설계                                                           | 최종적으로 SQL 테이블을 정의                               |
@@ -116,7 +116,7 @@
 ### 정규화(Normalization) 수행
 
 * 정규화는 데이터 중복을 최소화하고 무결성을 유지하기 위한 과정이다.
-* [정규화에 대해서](/broken/pages/8bb4d6ebc3a7824705470945708b2c8c0ce82daa)
+* 정규화에 대해서
 
 ***
 
@@ -133,7 +133,7 @@
 | CHECK       | 특정 조건을 만족해야 함      |
 | DEFAULT     | 기본값 설정 가능          |
 
-* [무결성 정책에 대해서](/broken/pages/cf0f01ff066fff1360bfdc77160ef563f1d0f2eb)
+* 무결성 정책에 대해서
 
 ***
 

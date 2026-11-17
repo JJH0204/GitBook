@@ -1,4 +1,4 @@
-# DeviceToolbar
+# 디바이스 툴바 반응형 테스트
 
 디바이스 툴바(Device Toolbar)를 활용하면 현재 브라우저의 화면 비율 및 User-Agent를 원하는 값으로 변경할 수 있습니다.
 

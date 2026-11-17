@@ -1,4 +1,4 @@
-# searchsploit\_cybersploit\_result
+# Searchsploit 검색 로그
 
 | Exploit Title                                 | Path                         |
 | --------------------------------------------- | ---------------------------- |

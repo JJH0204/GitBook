@@ -1,4 +1,4 @@
-# vscode for mac
+# macOS VS Code C 및 C++ 설정
 
 ## c\_cpp\_properties.json
 

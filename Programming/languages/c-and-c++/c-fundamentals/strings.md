@@ -1,4 +1,4 @@
-# strings
+# 문자열 (Strings)
 
 {% code title="strings.c" %}
 ```c

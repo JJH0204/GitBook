@@ -1,4 +1,4 @@
-# UserCreationCommands
+# 사용자 생성 명령어 (useradd)
 
 아래는 사용자 계정 관련 주요 명령어들의 설명, 옵션, 사용 방법 및 예제입니다.
 

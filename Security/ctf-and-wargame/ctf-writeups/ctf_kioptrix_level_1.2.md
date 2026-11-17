@@ -1,4 +1,4 @@
-# CTF\_KIOPTRIX\_Level\_1.2
+# CTF: Kioptrix Level 1.2
 
 {% hint style="warning" %}
 DISCLAIMER! We at Kioptrix are not responsible for any damaged directly, or indirectly, caused by using this system. We suggest you do not connect this installation to the Internet. It is, after all, a vulnerable setup. Please keep this in mind when playing the game.

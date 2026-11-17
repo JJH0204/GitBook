@@ -1,4 +1,4 @@
-# UIViewReference
+# UIView 클래스 (UIView)
 
 {% hint style="info" %}
 iOS 앱에서 화면에 보이는 모든 것(객체)의 기본 블록(클래스)\

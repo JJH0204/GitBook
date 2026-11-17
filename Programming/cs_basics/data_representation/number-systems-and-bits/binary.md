@@ -1,4 +1,4 @@
-# Binary
+# 2진법과 2의 보수 (Binary)
 
 {% hint style="info" %}
 키워드
@@ -40,7 +40,7 @@
 
 ***
 
-* [C 언어](/broken/pages/f5ef16332e72d62bbd8ce2abb86d1ca7f93c59dd)로 작성된 코드는 일반적으로 전처리(Preprocess) > 컴파일(Compile) > 어셈블(Assemble) > 링크(Link)의 과정을 거쳐 바이너리로 번역된다.
+* C 언어로 작성된 코드는 일반적으로 전처리(Preprocess) > 컴파일(Compile) > 어셈블(Assemble) > 링크(Link)의 과정을 거쳐 바이너리로 번역된다.
 
 {% stepper %}
 {% step %}

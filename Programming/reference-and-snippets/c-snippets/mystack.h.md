@@ -1,4 +1,4 @@
-# MyStack.h
+# 연결 스택 헤더 (MyStack.h)
 
 {% code title="MyStack.h" %}
 ```c

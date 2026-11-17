@@ -2,7 +2,7 @@
 description: Windows 환경에서 127.0.0.1(Loopback) 패킷을 안정적으로 가로채는 환경 구축.
 ---
 
-# get\_tshark\_interfaces()
+# 루프백 어댑터 자동 탐색 구현 (Npcap)
 
 ```python
 // scapy 라이브러리 사용 버전

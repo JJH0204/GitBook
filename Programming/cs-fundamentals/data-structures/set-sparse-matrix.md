@@ -1,4 +1,4 @@
-# set sparse matrix
+# 희소 행렬 (Sparse Matrix)
 
 * 희소 행렬: 대부분의 항들이 '0'인 배열
 * 배열을 이용한 행렬(Matrix)을 표현

@@ -1,4 +1,4 @@
-# DepthFirstSearch
+# 깊이 우선 탐색 (DFS)
 
 ## 1. 알고리즘 개념
 

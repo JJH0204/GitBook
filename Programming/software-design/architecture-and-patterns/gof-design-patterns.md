@@ -1,2 +1,0 @@
-# gof design patterns
-

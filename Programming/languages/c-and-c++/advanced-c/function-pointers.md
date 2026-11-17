@@ -1,4 +1,4 @@
-# function pointers
+# 함수 포인터 (Function Pointer)
 
 ### 예제 소스 코드
 

@@ -1,4 +1,4 @@
-# Elements
+# 개발자 도구 Elements 탭
 
 ### HTML 읽기
 

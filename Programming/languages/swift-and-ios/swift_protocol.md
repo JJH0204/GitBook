@@ -1,4 +1,4 @@
-# Swift\_Protocol
+# Swift 프로토콜 (Protocol)
 
 * 코드의 모듈성과 유연성을 높이는데 중요한 역할을 수행한다.
 
@@ -254,7 +254,7 @@ print(temp.name)
 {% endstep %}
 
 {% step %}
-* 스위프트 프로토콜의 확장: [스위프트 프로토콜의 확장](file:///4766478/network/SwiftProtocolExtension.md)
-* 프로토콜 지향 프로그래밍 (P.O.P): [프로토콜 지향 프로그래밍 (P.O.P)](/broken/pages/937e4b3c53169b38cb5d417e0291f12443cb96f3)
+* 스위프트 프로토콜의 확장: [스위프트 프로토콜의 확장](protocolextension.md)
+* 프로토콜 지향 프로그래밍 (P.O.P): [프로토콜 지향 프로그래밍 (P.O.P)](protocolorientedprogramming.md)
 {% endstep %}
 {% endstepper %}

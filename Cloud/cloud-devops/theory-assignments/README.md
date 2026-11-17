@@ -1,2 +1,1 @@
-# Theory · Assignments
-
+# 클라우드 이론 및 실습 과제

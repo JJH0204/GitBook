@@ -1,4 +1,4 @@
-# CTF\_cybersploit2
+# CTF: Cybersploit 2
 
 * nmap tool 을 이용한 victim server IP 찾기<br>
 * `http://192.168.56.106/` 접속<br>
@@ -6,8 +6,8 @@
   \
   소스에 ROT47 알고리즘에 대한 언급이 있다. 무슨 연관이 있을까?
 * `dirb http://192.168.56.106/`: 접근 가능한 웹 디렉터리 조사
-* `http://192.168.56.106/noindex/common/css/styles`에 접근 가능 [cybersploit\_css\_styles](file:///5659318/misc/cybersploit_css_styles.md)
-* [nikto\_cybersploit2\_result](file:///5659318/security/nikto_cybersploit2_result.md)
+* `http://192.168.56.106/noindex/common/css/styles`에 접근 가능 cybersploit\_css\_styles
+* [nikto\_cybersploit2\_result](../../security/tools/toolbox/scan-results/nikto_cybersploit2_result.md)
 
 {% hint style="info" %}
 소스에 ROT47이라는 주석과 소스 바디에 작성된 유저 이름, 비밀번호를 관찰해보면 적용 할만한 문자열이 보인다.\

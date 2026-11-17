@@ -1,4 +1,4 @@
-# Kali IP Setup
+# Kali Linux 고정 IP 설정
 
 ### Network Interface Setting File
 

@@ -1,7 +1,7 @@
-# Open VPN
+# pfSense 기반 OpenVPN
 
 {% hint style="info" %}
-[pfsense](file:///6408728/security/pfsense.md)를 활용하여 구현한 VPN
+[pfsense](https://krjaeh0.gitbook.io/j-log/security/security/tools/toolbox/pfsense)를 활용하여 구현한 VPN
 {% endhint %}
 
 ## 구축 방법

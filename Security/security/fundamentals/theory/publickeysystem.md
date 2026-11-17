@@ -1,4 +1,4 @@
-# PublicKeySystem
+# 공개키 암호 시스템 (Public Key)
 
 공용키 (public key)는 비대칭 암호화(Asymmetric Encryption) 방식에서 사용하는 두 개의 키(공개키와 개인키) 중 하나로, 누구나 접근할 수 있도록 공개된 키를 의미한다.
 

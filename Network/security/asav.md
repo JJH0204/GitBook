@@ -1,4 +1,4 @@
-# ASAv
+# Cisco 가상 방화벽 (ASAv)
 
 * 방화벽 가상화 장치
 * cisco 라이선스 필요 (유료)
@@ -12,4 +12,4 @@
 ## firewall Rule
 
 * 보안 레벨이 낮은 네트워크에서 높은 네트워크로 향하는 모든 트래픽은 차단된다.
-* 반대의 경우는 허용하나 icmp 패킷은 제외된다. (PingOfDeath: [PingOfDeath.md](/broken/pages/2e137febbfc5cdaa070aedfecd5890f7c289dbeb))
+* 반대의 경우는 허용하나 icmp 패킷은 제외된다. (PingOfDeath: PingOfDeath.md)

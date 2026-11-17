@@ -18,23 +18,15 @@ metaLinks:
     - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/
 ---
 
-# 개발 문서
+# DevTool
 
-개발 환경/도구 설정을 빠르게 찾기 위한 문서입니다.
+Git, VS Code, 빌드 시스템, 컴파일러·디버거, 개발 환경 설정 노트다.
 
-전체 목차는 [개발 가이드](/broken/spaces/WFk1hvXbKupnM9GSIBfC/pages/ab34039c904721f5ee12f4caeb8543cd3a403c50)에서 한 번에 봅니다.
-
-### 바로가기
-
-* [환경 설정](undefined-3/)
-* [VS Code](vs-code/)
-* [Git](git/)
-* [빌드 시스템](undefined/)
-* [컴파일러 · 디버깅](undefined-1/)
-* [문서 작성](undefined-2/)
-
-### 많이 쓰는 페이지
-
-* 빌드: [CMake](undefined/cmake.md), [Ninja](undefined/ninja.md), [CMakeLists.txt](undefined/cmakelists.txt.md)
-* Git: [GitSSHKey](git/gitsshkey.md), [How2UseGit](git/how2usegit.md)
-* VS Code: [VSCodeCPPDevelopment](vs-code/vscodecppdevelopment.md), [RunInTerminalSetup](vs-code/runinterminalsetup.md)
+| 주제 | 들어 있는 것 |
+|---|---|
+| [빌드 시스템 (Build System)](build-system/README.md) | macOS CMake 설치, CMake 개요 및 활용, Ninja 빌드 시스템, CMakeLists.txt 작성 가이드 |
+| [컴파일러 및 디버깅 (Compiler & Debug)](compiler-debug/README.md) | 디버거 개요 (Debugger), Windows MinGW-w64 설치, 바이트코드 개념 (Bytecode), GDB 디버거 사용법 |
+| [문서 작성 가이드 (Documentation)](documentation/README.md) | 마크다운 문법 (Markdown Syntax) |
+| [개발 환경 설정 (Environment Setup)](env-setup/README.md) | macOS Python 환경 설정, macOS 환경 변수 설정, Windows Python 환경 설정 (pyenv), Poetry 패키지 관리자 |
+| [Git 가이드 (Git)](git/README.md) | Git 기본 설정 및 계정 해제, VS Code Git 및 GitHub 연동, Git 사용법 (GitHub Desktop) |
+| [VS Code 가이드](vs-code/README.md) | VS Code 터미널 실행 설정, VS Code C 및 C++ 개발 환경 설정, macOS VS Code C 및 C++ 설정 |

@@ -1,4 +1,4 @@
-# IPv4
+# IPv4 주소 체계 (IPv4)
 
 IPv4 개요
 
@@ -14,4 +14,13 @@ IPv4 개요
 "127.0.0.1"은 루프백(loopback) 주소로, 호스트 자체를 가리키므로 사설망 할당용으로 사용할 수 없다.
 {% endhint %}
 
-<table data-view="cards"><thead><tr><th>관련 문서</th><th data-card-target data-type="content-ref">링크</th></tr></thead><tbody><tr><td>IP Class</td><td><a href="/broken/pages/57b4bf894f08ca16a7a3fe46f7250369cd21add6">Broken link</a></td></tr><tr><td>공인IP와 사설IP</td><td><a href="/broken/pages/a36c4ac2cd590fd789ef0f2c743416f32cf8908b">Broken link</a></td></tr><tr><td>네트워크 주소</td><td><a href="/broken/pages/bd2abe4a72696dd52fd8b0bb3e8b5343086885f2">Broken link</a></td></tr><tr><td>브로드캐스트 주소</td><td><a href="/broken/pages/a844ee081e0a693acd9e74ef0854ffff9bc3e2a3">Broken link</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th>관련 문서</th><th data-card-target data-type="content-ref">링크</th></tr></thead><tbody><tr><td>IP Class</td><td><a href="ipv4.md">바로가기</a></td></tr><tr><td>공인IP와 사설IP</td><td></td></tr><tr><td>네트워크 주소</td><td></td></tr><tr><td>브로드캐스트 주소</td><td></td></tr></tbody></table>
+
+## IP 클래스별 주소 범위와 사설망 대역
+
+* Class A : 0.0.0.0 \~ 127.255.255.255
+  * 사설망 대역: 10.
+* Class B : 128.0.0.0 \~ 191.255.255.255
+  * 사설망 대역: 172.16. \~ 172.31.
+* Class C : 192.0.0.0 \~ 223.255.255.255
+  * 사설망 대역: 192.168.

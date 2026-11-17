@@ -1,4 +1,4 @@
-# Logrotate
+# 로그 회전 관리 (Logrotate)
 
 ```c
 ○ logrotate.service - Rotate log files
@@ -117,4 +117,4 @@ WantedBy=timers.target
 기타 참고
 
 * crontab
-* `ps -ef` : 현재 실행 중인 서비스 로그 확인([Service Management](/broken/pages/fcaeb7ad34972b7912bf369a9827d07fdbfb048f))
+* `ps -ef` : 현재 실행 중인 서비스 로그 확인([Service Management](../services/service-management.md))

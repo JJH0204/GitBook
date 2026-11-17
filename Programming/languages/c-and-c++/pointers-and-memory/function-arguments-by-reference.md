@@ -1,4 +1,4 @@
-# function arguments by reference
+# 참조에 의한 전달 (Call by Ref)
 
 This page demonstrates passing function arguments by reference in C with several examples.
 

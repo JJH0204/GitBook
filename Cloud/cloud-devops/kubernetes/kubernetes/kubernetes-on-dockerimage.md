@@ -1,4 +1,4 @@
-# Kubernetes on dockerImage
+# Kind 클러스터 도커 이미지 배포
 
 여기서는 Kind 클러스터의 특정 노드에서 Docker Hub 이미지 krjaeh0/aurora:latest 를 실행하는 방법을 단계별로 정리했어.
 

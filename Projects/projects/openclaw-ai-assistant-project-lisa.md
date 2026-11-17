@@ -1,4 +1,4 @@
-# OpenClaw AI Assistant (project lisa)
+# 오픈클로 AI 어시스턴트 (OpenClaw)
 
 작성일: 2026-02-11
 

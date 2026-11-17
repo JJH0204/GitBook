@@ -1,7 +1,7 @@
-# Storyboard
+# 스토리보드 (Storyboard)
 
 {% hint style="info" %}
-**Storyboard**는 [UIKit (유저 인터페이스 킷)](/broken/pages/a6e9c59719c98cfc2be352992ad4247c83ffe69d)의 일부로, 시각적인 툴을 사용하여 UI를 드래그 앤 드롭으로 구성할 수 있는 방식입니다.\
+**Storyboard**는 UIKit (유저 인터페이스 킷)의 일부로, 시각적인 툴을 사용하여 UI를 드래그 앤 드롭으로 구성할 수 있는 방식입니다.\
 스토리보드는 여러 ’씬(scene)’을 포함하고 이들 간의 전환을 시각적으로 표현할 수 있습니다.
 {% endhint %}
 

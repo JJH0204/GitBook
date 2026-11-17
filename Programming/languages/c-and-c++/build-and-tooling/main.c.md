@@ -1,4 +1,4 @@
-# Main.c
+# main.c 작성 및 진입점
 
 {% code title="main.c" %}
 ```c

@@ -1,4 +1,4 @@
-# CentOS Basic Command
+# CentOS 기본 명령어 모음
 
 ### 전원 끄기
 

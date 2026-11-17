@@ -1,4 +1,4 @@
-# CMakeLists.txt
+# CMakeLists.txt 작성 가이드
 
 CMake 가 빌드 파일을 생성하는데 필요한 정보들이 들어있어야 합니다.
 
@@ -58,7 +58,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # macOS-specific settings
     message(STATUS "Configuring for macOS")
@@ -85,7 +84,7 @@ endif()
 {% endcode %}
 
 * 위 파일은 루트에서 Basics, OOP, Tetris 세 서브 디렉토리를 add\_subdirectory로 포함합니다.
-* Tetris는 루트의 서브 프로젝트 중 가장 최신 C++ 프로젝트입니다. (관련 페이지: [C++ 프로젝트](/broken/pages/cfc96bbbfed601c69ca85b9f4b60b77a27fe0f94))
+* Tetris는 루트의 서브 프로젝트 중 가장 최신 C++ 프로젝트입니다. (관련 페이지: C++ 프로젝트)
 
 ### Tetris 서브프로젝트 CMakeLists.txt
 

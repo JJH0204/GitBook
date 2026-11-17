@@ -1,10 +1,10 @@
-# SystemSecurityAssignment
+# 시스템 보안 과제 (Linux 보안)
 
 ## 1. Linux 보안 설정
 
 ### 1-1. root 원격 접속 제한
 
-참고자료: [Remote Access Management](file:///2237607/linux_admin/Remote%20Access%20Management.md)
+참고자료: [Remote Access Management](https://krjaeh0.gitbook.io/j-log/linux/guide/network-remote/remote-access-management)
 
 * ssh 프로토콜을 활용한 root 접속을 제한한다.(/etc/ssh/sshd\_config)\
   &#x20;문제는 이후에도 root 접속이 가능했다.
@@ -27,7 +27,7 @@ ssh root login deny
 보안을 위해 비밀번호 생성 규칙을 지정한다.
 
 * (대,소문자,특수문자,숫자) 최소 1개 이상 조합, 8자리 이상\
-  참고자료: [Account Management](file:///2237607/linux_admin/Account%20Management.md)
+  참고자료: [Account Management](https://krjaeh0.gitbook.io/j-log/linux/guide/accounts-permissions/account-management)
 * libpwquality 서비스가 설치되었는지 확인한다.&#x20;
 * `/etc/security/pwquality.conf`에서 규칙을 설정한다.&#x20;
 * 적용 여부 확인&#x20;
@@ -39,7 +39,7 @@ ssh root login deny
 
 ### 1-3. 패스워드 만료일 설정
 
-참고자료: [Account Management](file:///2237607/linux_admin/Account%20Management.md)
+참고자료: [Account Management](https://krjaeh0.gitbook.io/j-log/linux/guide/accounts-permissions/account-management)
 
 * 계정 패스워드 만료일 설정을 위해 chage 명령어를 사용한다.
 * 우선 서버에 등록되어 있는 사용자 들을 확인한다.&#x20;
@@ -52,7 +52,7 @@ ssh root login deny
 
 ### 1-4. 디스크 용량 확인 작업 자동화
 
-참고자료: [df](file:///2237607/linux_admin/df.md)
+참고자료: df
 
 {% stepper %}
 {% step %}
@@ -111,7 +111,7 @@ fun_disk_check $1
 
 ### 1-5. 공격자의 http/ssh 접속 차단(log)
 
-참고자료: [firewalld](file:///2237607/linux_admin/firewalld.md)
+참고자료: [firewalld](https://krjaeh0.gitbook.io/j-log/linux/guide/security/firewalld)
 
 * 방화벽 설정 확인&#x20;
 * 공격자가 enp0s8을 통해 공격을 시도한다 가정하고 공격을 차단한 방법을 구상할 수 있다.
@@ -162,7 +162,7 @@ chmod 4755 실행파일
 
 ## 2. Snort Setting
 
-참고자료: [snort](/broken/pages/a75b0c29eb137905c4dee50191af73dc48241bab)
+참고자료: [snort](../security/defensive-security/defense/snort.md)
 
 * 참고자료를 참고해 snort를 설치한다.&#x20;
 * 서비스 설정 작업을 한다.&#x20;
@@ -210,4 +210,4 @@ snort -c /usr/local/etc/snort/snort.lua -R /usr/local/etc/snort/rules/local.rule
 
 ## 3. CTF
 
-[CTF\_TechSupport](file:///2237607/ctf_writeups/CTF_TechSupport.md)
+[CTF\_TechSupport](../ctf-and-wargame/ctf-writeups/ctf_techsupport.md)

@@ -1,4 +1,4 @@
-# netstat
+# 네트워크 상태 모니터링 (netstat)
 
 {% hint style="info" %}
 네트워크 상태를 모니터링하고 분석하는 데 사용되는 툴\

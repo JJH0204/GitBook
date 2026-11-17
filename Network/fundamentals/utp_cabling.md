@@ -1,4 +1,4 @@
-# UTP\_Cabling
+# UTP 케이블 배선 (UTP Cabling)
 
 [관련 자료](https://m.blog.naver.com/itu_itu/220085575495)
 

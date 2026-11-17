@@ -2,7 +2,7 @@
 description: Inno Setup 기반 배포 자동화 및 서비스 관리 전략의 전환
 ---
 
-# neem.exe
+# NSSM 서비스 관리 전환 (NSSM)
 
 **1. 배경: 시스템 안정성을 위한 기술 스택 재검토**
 

@@ -1,4 +1,4 @@
-# EIGRP
+# EIGRP 라우팅 프로토콜
 
 cisco에서 개발한 IGRP 기반의 개방형 라우팅 프로토콜\
 망 구성 방식이 변경된 뒤 일어나는 불안정한 라우팅을 최소화하는데 최적화 됨\
@@ -26,8 +26,8 @@ rip와 달리 경로 비용을 가중치로 관리해 유동적이다.
 3. 광고할 네트워크 추가:
    * `network <네트워크IP> <와일드카드>`
    * 참고
-     * [ASN](/broken/pages/1510b86b07834d6c1616552b8243ac715f0d6be4)
-     * [와일드카드 마스크](/broken/pages/d5509560da5dd097bd382b83cc1a65fda2701cda)
+     * ASN
+     * 와일드카드 마스크
 4. 자동 요약 해제:
    * 모든 네트워크를 설정한 뒤 `no auto-summary` 실행
 5. 다른 라우터에서도 동일하게 구성
@@ -115,4 +115,4 @@ Router(config-router)#no auto-summary
 
 ## 관련 문서
 
-* [Redistribution](file:///2435498/linux_admin/Redistribution.md)
+* [Redistribution](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/redistribution)

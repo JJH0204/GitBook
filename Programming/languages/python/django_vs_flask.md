@@ -1,4 +1,4 @@
-# Django\_VS\_Flask
+# Django 대 Flask 비교
 
 2주 안에 **SNS 프로토타입**을 제작한다면, **Flask**와 **Django**의 특성을 비교해봤을 때 **Django**가 더 나은 선택일 가능성이 높아. 이유는 Django가 **"Batteries Included"** 철학에 따라 필수적인 기능(예: 인증, ORM, 관리 도구 등)을 기본적으로 제공하기 때문에 빠르게 프로토타입을 완성할 수 있기 때문이야. 아래에서 Flask와 Django의 특징을 비교하며 선택의 기준을 설명할게.
 

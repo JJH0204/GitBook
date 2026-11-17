@@ -1,3 +1,3 @@
-# ELF
+# ELF 바이너리 형식 (ELF)
 
-> [Linux Basic](file:///0903665/linux_admin/Linux%20Basic.md) 실행 파일 형식
+> [Linux Basic](https://krjaeh0.gitbook.io/j-log/cloud/linux-basics/linux-basic) 실행 파일 형식

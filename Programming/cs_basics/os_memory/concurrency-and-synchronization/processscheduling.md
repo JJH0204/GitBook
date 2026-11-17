@@ -1,4 +1,4 @@
-# ProcessScheduling
+# 프로세스 스케줄링 (Scheduling)
 
 ## 프로세스 스케줄링 종류
 

@@ -1,4 +1,4 @@
-# LinuxMasterExamPrep
+# 리눅스마스터 기출 문제 및 해설
 
 <details>
 
@@ -132,7 +132,7 @@
 * 정답: 나. Redhat 계열의 배포판에서만 제공된다.
 * 해설:\
   LILO는 특정 배포판에만 국한되지 않는다.
-* 관련 링크: [LILO](file:///6408728/linux_admin/LILO.md)
+* 관련 링크: [LILO](../storage-boot/lilo.md)
 
 </details>
 
@@ -192,7 +192,7 @@
   라. 파티션, LILO
 * 정답: 다. 파티션, Disk Druid
 * 해설:\
-  Disk Druid는 GUI 기반의 디스크 파티셔닝 도구이다. 관련: [MBR](file:///6408728/cs_basics/MBR.md), [Disk Druid](file:///6408728/linux_admin/Disk_Druid.md), [FDISK](file:///6408728/linux_admin/FDISK.md)
+  Disk Druid는 GUI 기반의 디스크 파티셔닝 도구이다. 관련: [MBR](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/architecture/mbr), [Disk Druid](../storage-boot/disk_druid.md), [FDISK](../operations/linux_admin/system_mgmt/fdisk.md)
 
 </details>
 
@@ -498,7 +498,7 @@
   4. -r
 * 정답: 4. -r
 * 해설:\
-  -r 옵션은 라우팅 테이블을 출력한다. 관련: [netstat](file:///6408728/network/netstat.md)
+  -r 옵션은 라우팅 테이블을 출력한다. 관련: [netstat](https://krjaeh0.gitbook.io/j-log/network/tools-and-operations/netstat)
 
 </details>
 

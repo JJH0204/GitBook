@@ -1,4 +1,4 @@
-# CLanguage
+# C 언어 학습 로드맵 및 메모
 
 잊고 살았던 코딩 실력을 다시 일깨우는 작업
 
@@ -14,7 +14,7 @@
 ### VS Code로 C(C++) 개발하기
 
 * C/C++ 개발 초기 환경 설정 방법
-* [VS Code 로 C(C++) 개발하기](/broken/pages/7efc3b62a49becb94261f05d723f3b153de3faa9)
+* VS Code 로 C(C++) 개발하기
 {% endstep %}
 
 {% step %}
@@ -38,25 +38,25 @@
 {% step %}
 ### memset() 함수의 위험성
 
-* [memset() 함수의 위험성](/broken/pages/d211162b82519e5cbde3744c2fc163cd96ae02b0)
+* memset() 함수의 위험성
 {% endstep %}
 
 {% step %}
 ### 세그멘테이션 오류
 
-* [Segmentation Fault](file:///4766478/cs_basics/SegmentationFault.md)
+* [Segmentation Fault](../../../cs_basics/os_memory/memory-management/segmentationfault.md)
 {% endstep %}
 
 {% step %}
 ### 자료구조 및 알고리즘
 
-* [Data Structures And Algorithms](/broken/pages/13850983e411159352b3feb173687bfb26ea5f66)
+* [Data Structures And Algorithms](../../../cs-fundamentals/overviews/datastructurealgorithmoverview.md)
 {% endstep %}
 
 {% step %}
 ### C 모듈화 에러
 
-* [C 모듈화 에러](/broken/pages/3c78ac1c484f5e3dac2209d62760b5d70b3f546e)
+* C 모듈화 에러
 {% endstep %}
 
 {% step %}
@@ -68,12 +68,12 @@
 {% step %}
 ### C 고급 문법
 
-* [Bitmasks\_kr](file:///4766478/cs_basics/Bitmasks_kr.md)
-* [Unions\_kr](file:///4766478/cs_basics/Unions_kr.md)
-* [함수 포인터](/broken/pages/483d19201f67796ee20673b9787ef0aedef51565)
-* [Pointer Arithmetics\_kr](/broken/pages/f5055a9c417d71f9ed7c6a96399cdea03b095471)
-* [제네릭 프로그래밍](/broken/pages/3cf9debe464919c7f521e25486d0246379463ee4)
-* [메모리 할당 유효성 점검 방법](/broken/pages/5d8892e490a9dd50a9d6e5718960a61770f426e5)
+* [Bitmasks\_kr](../advanced-c/bitmasks_kr.md)
+* [Unions\_kr](../data-structures-c/unions_kr.md)
+* 함수 포인터
+* [Pointer Arithmetics\_kr](../pointers-and-memory/pointer-arithmetics_kr.md)
+* 제네릭 프로그래밍
+* 메모리 할당 유효성 점검 방법
 {% endstep %}
 
 {% step %}

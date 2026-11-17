@@ -1,4 +1,4 @@
-# SMARTTool
+# 스마트몬툴즈 디스크 점검 도구
 
 {% code title="Install smartmontools" %}
 ```

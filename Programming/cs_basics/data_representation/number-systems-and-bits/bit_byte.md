@@ -1,4 +1,4 @@
-# bit\_byte
+# 비트와 바이트 (Bit & Byte)
 
 ## bit
 
@@ -13,6 +13,6 @@
 
 **1byte = 16진수 2자리 = 2진수 8자리 = 8bit**
 
-## [최상위 비트(MSB), 최하위 비트(LSB)](/broken/pages/994490187942ead42b1b2141fc7cf90806418bae)
+## 최상위 비트(MSB), 최하위 비트(LSB)
 
-## [바이트 오더링(Byte Ordering)](/broken/pages/e81fc4220e821e5664813233b56effe0d1554958)
+## [바이트 오더링(Byte Ordering)](byte_ordering.md)

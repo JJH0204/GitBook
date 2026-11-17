@@ -1,4 +1,4 @@
-# FormatStringAttack
+# 포맷 스트링 공격 (FSB)
 
 * 오래된 공격 기법
 * 프로그래밍 언어에서 사용하는 포맷 스트링의 허점을 사용
@@ -53,7 +53,7 @@ https://dining-developer.tistory.com/13
 ### 포맷 스트링 공격을 막는 방법
 
 (line9) 안전한 코드는 입력 받은 매개변수가 문자열로 정확하게 출력되었다.\
-(line11) 안전하지 않은 코드의 경우 버퍼 사이즈를 넘어 출력을 실행하기 때문에 [SegmentationFault](file:///2237607/cs_basics/SegmentationFault.md)를 발생시킨다.
+(line11) 안전하지 않은 코드의 경우 버퍼 사이즈를 넘어 출력을 실행하기 때문에 [SegmentationFault](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/os_memory/memory-management/segmentationfault)를 발생시킨다.
 
 {% hint style="warning" %}
 print 함수는 종류에 상관 없이 출력 시 포맷 스트링을 사용하도록 시큐어 코딩이 요구된다.

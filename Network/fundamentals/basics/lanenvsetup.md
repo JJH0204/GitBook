@@ -1,4 +1,4 @@
-# LANEnvSetup
+# LAN 환경 구축 실습
 
 {% stepper %}
 {% step %}
@@ -19,7 +19,7 @@
 하나의 스위치로 모든 기기를 연결했다고 데이터 통신이 가능한 것은 아니다.\
 각 PC에 접속해 각각의 독립된 IP를 할당해야 한다.
 
-여기서 [Subnet Mask](/broken/pages/c4ca2e01935cb0fafbda6aec7631cd818c96c148)에 대한 내용이 중요하다.\
+여기서 [Subnet Mask](../../ip-addressing-and-nat/subnetting.md)에 대한 내용이 중요하다.\
 192.168.10.0/24 대역을 사용한다는 의미에서 255.255.255.0 입력
 {% endstep %}
 
@@ -45,6 +45,6 @@
 주의할 점: IP 대역(네트워크 주소)을 신경 써야 한다. 다른 대역의 IP를 사용하면 같은 네트워크로 인식되지 않아 통신할 수 없다.
 {% endhint %}
 
-* [단말 원격 접속](/broken/pages/4d8fcb02b44dc2d1577ea80cfdf80d2fe1a608e2)
-* [VLAN](/broken/pages/aaed20016af6fda2b281077600407792b3295d97)
-* [STP](/broken/pages/dbf77dffab3bfeda430beae055a42f3c6bc84511)
+* 단말 원격 접속
+* [VLAN](../../routing-and-switching/vlan.md)
+* [STP](../../routing-and-switching/stp.md)

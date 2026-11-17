@@ -1,2 +1,1 @@
-# Number systems & bits
-
+# 진법과 비트 (Number & Bits)

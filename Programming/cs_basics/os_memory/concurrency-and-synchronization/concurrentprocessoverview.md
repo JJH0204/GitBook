@@ -1,4 +1,4 @@
-# ConcurrentProcessOverview
+# 병행 프로세스 (Concurrency)
 
 ## 병행 프로세스(Concurrent Process) 란?
 

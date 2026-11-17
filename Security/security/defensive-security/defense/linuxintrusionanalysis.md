@@ -1,4 +1,4 @@
-# LinuxIntrusionAnalysis
+# Linux 침해 분석 아티팩트
 
 아티팩트는 윈도우와 같지만 명령어가 다르다
 

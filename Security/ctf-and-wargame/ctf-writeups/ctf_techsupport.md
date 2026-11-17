@@ -1,4 +1,4 @@
-# CTF\_TechSupport
+# CTF: TechSupport
 
 ## Nmap
 
@@ -27,7 +27,7 @@
 
 * 분명 이 서버에 samba 도 함께 동작하고 있었다.
 * Samba 서비스를 활용해서 원격 접속할 수 있는 방법을 찾아보자.
-* 참고: [Samba](file:///5659318/linux_admin/Samba.md)
+* 참고: Samba
 * 공격자 서버에서 samba 클라이언트 설정을 하고 접속 시도
 * 패스워드가 뭘까? 방금 찾은 전화번호?
 * 공백을 입력하니 samba server에 접속할 수 있었다.

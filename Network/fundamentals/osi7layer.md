@@ -1,4 +1,4 @@
-# OSI7Layer
+# OSI 7계층 모델 (OSI 7 Layer)
 
 ## OSI 7 계층 모델(OSI 7 Layer Model)이란?
 

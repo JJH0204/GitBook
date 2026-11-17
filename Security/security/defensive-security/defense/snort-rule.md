@@ -1,4 +1,4 @@
-# Snort Rule
+# Snort 룰 문법 (Snort Rule)
 
 ## action
 

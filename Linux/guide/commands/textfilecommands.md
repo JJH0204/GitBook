@@ -1,4 +1,4 @@
-# TextFileCommands
+# 텍스트 파일 처리 명령어
 
 | 명령어   | 설명                                                                                 | 옵션                                                         | 사용 방법                                                          | 예제                                  |
 | ----- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------- |
@@ -7,7 +7,7 @@
 | tail  | 텍스트 파일의 끝 부분 출력                                                                    | -'숫자': 숫자 만큼 뒤에서 한 줄 씩 출력                                  | `bash\ntail '옵션' '파일이름'\n`                                     | `bash\ntail -2 /etc/passwd\n`       |
 | more  | 파일을 화면 단위로 끊어서 출력                                                                  | -'숫자': 한 페이지에 표시되는 라인 수                                    | `bash\nmore '옵션' '파일이름'\n`                                     | `bash\n# 예: more -20 filename\n`    |
 | less  | 한 번에 한 화면씩 나눠서 출력                                                                  | (옵션 생략)                                                    | `bash\nless '파일이름'\n`                                          | `bash\n# 예: less /var/log/syslog\n` |
-| grep  | 파일에서 특정 문자열 또는 [정규 표현식](file:///6408728/programming/RegularExpression.md)의 단어를 찾는다 | -n: 문자열 또는 정규 표현식을 포함한 문장의 줄 번호 함께 출력                      | `bash\ngrep '옵션' '키' '파일이름'\n`                                 | `bash\ngrep -n sys /etc/passwd\n`   |
+| grep  | 파일에서 특정 문자열 또는 [정규 표현식](https://krjaeh0.gitbook.io/j-log/programming/languages/python/regularexpression)의 단어를 찾는다 | -n: 문자열 또는 정규 표현식을 포함한 문장의 줄 번호 함께 출력                      | `bash\ngrep '옵션' '키' '파일이름'\n`                                 | `bash\ngrep -n sys /etc/passwd\n`   |
 | wc    | 파일의 문장 수, 단어 수, 알파벳 수 출력                                                           | <p>-l: 전체 문장 수<br>-w: 전체 단어 수<br>-c: 전체 알파벳(바이트) 수</p>     | `bash\nwc '옵션' '파일이름'\n`                                       | `bash\nwc -l /etc/passwd\n`         |
 | sort  | 명령어 결과 또는 문서 내용을 정렬                                                                | <p>-r: 역순으로 정렬<br>-f: 대소문자 구분하지 않음</p>                     | `bash\nsort '옵션' '파일이름'\n`                                     | `bash\nsort -r /etc/passwd\n`       |
 | cut   | 파일에서 특정 필드(칸)을 추출                                                                  | <p>-c: 잘라낼 위치 지정<br>콤마(,)나 하이픈(-)을 이용해 범위 지정</p>           | `bash\ncut '옵션' '파일이름'\n`                                      | `bash\ncut -c 1-5 /etc/passwd\n`    |

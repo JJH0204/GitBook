@@ -1,4 +1,4 @@
-# nikto\_cybersploit\_result
+# Nikto 스캔: Cybersploit 1
 
 {% code title="nikto-output.txt" %}
 ```

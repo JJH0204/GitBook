@@ -1,4 +1,4 @@
-# Lab05
+# IDA Pro 실습 (Lab 05)
 
 Download the file below:
 

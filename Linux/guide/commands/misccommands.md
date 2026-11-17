@@ -1,4 +1,4 @@
-# MiscCommands
+# 기타 유용한 명령어
 
 ## cal
 
@@ -223,7 +223,7 @@
 파일/디렉토리 권한 수정
 
 링크\
-[Permission.md](/broken/pages/1fa90d6f0213d66a404fcb4e73e0beb1a88924ef)
+[Permission.md](../accounts-permissions/permission.md)
 
 옵션\
 (없음)
