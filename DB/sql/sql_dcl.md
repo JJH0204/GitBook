@@ -1,102 +1,82 @@
 # 데이터 제어어 (DCL)
 
-## DCL (Data Control Language, 데이터 제어어)란?
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | DB-SQL-004-REF |
+| 유형 | REF (문법 표) |
+| 목적 | DCL 명령(GRANT, REVOKE)의 문법과 권한 종류를 참조한다 |
+| 확인 상태 | 미검증 (원본 페이지와 MariaDB/MySQL 문서 지식을 정리한 것이며 DB에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. DCL이란
+
+DCL(Data Control Language, 데이터 제어어)은 사용자에게 데이터베이스 객체에 대한 권한을 부여하거나 회수하는 SQL 명령이다. 사용자가 할 수 있는 작업을 제한해 데이터를 보호한다.
+
+## 2. 명령 표
+
+| 명령 | 용도 | 문법 | 비고 |
+|---|---|---|---|
+| `GRANT` | 권한을 부여한다 | `GRANT <권한> ON <객체> TO '<사용자명>'@'<호스트>' [WITH GRANT OPTION];` | `WITH GRANT OPTION`을 붙이면 받은 사용자가 다른 사용자에게 같은 권한을 줄 수 있다 |
+| `REVOKE` | 권한을 회수한다 | `REVOKE <권한> ON <객체> FROM '<사용자명>'@'<호스트>';` | 부여한 범위와 같은 범위로 회수한다 |
+| `SHOW GRANTS` | 부여된 권한을 확인한다 | `SHOW GRANTS FOR '<사용자명>'@'<호스트>';` | MariaDB/MySQL 명령이다 |
+
+`<객체>`는 범위에 따라 다음과 같이 쓴다.
+
+| 범위 | 표기 |
+|---|---|
+| 모든 데이터베이스 | `*.*` |
+| 데이터베이스 하나 | `<데이터베이스명>.*` |
+| 테이블 하나 | `<데이터베이스명>.<테이블명>` |
 
 {% hint style="info" %}
-* 데이터베이스 사용자와 객체에 대한 권한을 부여하거나 회수하는 SQL 명령어를 의미한다.
-* 데이터베이스 보안을 유지하고, 특정 사용자에게 권한을 설정하는 역할을 수행하는 SQL의 하위 집합
+NOTE: 원본은 `GRANT SELECT, INSERT ON Customers TO user1;`처럼 사용자를 이름만 적었다. MariaDB/MySQL에서는 `'<사용자명>'@'<호스트>'` 형식이며, 사용자는 `CREATE USER`로 먼저 만들어 두는 것이 안전하다. 정정했다. 다른 DBMS는 문법이 다르다. 미검증이다.
 {% endhint %}
 
-* 사용자에게 데이터베이스 접근 권한을 부여하거나 제거하는 명령어
-* 데이터의 보안과 무결성을 유지하는 역할
+## 3. 권한 종류
 
-DCL 명령어: GRANT, REVOKE
+| 권한 | 설명 |
+|---|---|
+| `SELECT` | 데이터를 조회한다 |
+| `INSERT` | 데이터를 추가한다 |
+| `UPDATE` | 데이터를 수정한다 |
+| `DELETE` | 데이터를 삭제한다 |
+| `EXECUTE` | 저장 프로시저나 함수를 실행한다 (`ON PROCEDURE <이름>` 형식) |
+| `ALL PRIVILEGES` | 지정한 범위의 모든 권한 (`GRANT OPTION` 제외) |
 
-***
+## 4. 사용 예
 
-## GRANT (권한 부여)
+| 목적 | 명령 |
+|---|---|
+| 조회와 추가 권한 부여 | `GRANT SELECT, INSERT ON <데이터베이스명>.Customers TO '<사용자명>'@'localhost';` |
+| 다른 사용자에게 권한을 줄 수 있게 부여 | `GRANT UPDATE ON <데이터베이스명>.Products TO '<사용자명>'@'localhost' WITH GRANT OPTION;` |
+| 읽기 전용 권한 부여 | `GRANT SELECT ON <데이터베이스명>.Employees TO '<사용자명>'@'localhost';` |
+| 일부 권한 회수 | `REVOKE INSERT, UPDATE, DELETE ON <데이터베이스명>.Employees FROM '<사용자명>'@'localhost';` |
+| 부여된 권한 확인 | `SHOW GRANTS FOR '<사용자명>'@'localhost';` |
 
-* 특정 사용자에게 데이터베이스 객체(테이블, 뷰, 프로시저 등)에 대한 권한을 부여하는 명령어
-* 사용자가 특정 작업(SELECT, INSERT, UPDATE, DELETE, EXECUTE 등)을 수행할 수 있도록 설정
-* WITH GRANT OPTION을 사용하면 부여받은 사용자가 다른 사용자에게 권한을 부여할 수 있다.
+{% hint style="danger" %}
+WARNING: `GRANT ALL PRIVILEGES`는 지정한 범위의 모든 권한을 준다. 특히 `*.*` 범위는 서버 전체 관리 권한이다. 일반 사용자에게 쓰지 않는다. 원본의 `GRANT ALL PRIVILEGES ON Orders TO user2;` 예시는 필요한 권한만 나열하는 방식으로 바꿔 쓴다.
+{% endhint %}
 
-{% code title="GRANT 문법" %}
-```sql
-GRANT 권한명 ON 객체명 TO 사용자명 [WITH GRANT OPTION];
-```
-{% endcode %}
-
-{% code title="예시" %}
-```sql
--- 'user1'에게 Customers 테이블에 대한 SELECT, INSERT 권한 부여
-GRANT SELECT, INSERT ON Customers TO user1;
-
--- 'user2'에게 모든 권한 부여
-GRANT ALL PRIVILEGES ON Orders TO user2;
-
--- 'user3'가 다른 사용자에게도 권한을 부여할 수 있도록 설정
-GRANT UPDATE ON Products TO user3 WITH GRANT OPTION;
-```
-{% endcode %}
-
-***
-
-## REVOKE (권한 회수)
-
-* 특정 사용자에게 부여된 데이터베이스 객체에 대한 권한을 회수하는 명령어
-* GRANT로 부여한 권한을 회수하는 역할
-* 특정 권한만 회수할 수도 있고, 전체 권한을 제거할 수도 있다.
-
-{% code title="REVOKE 문법" %}
-```sql
-REVOKE 권한명 ON 객체명 FROM 사용자명;
-```
-{% endcode %}
-
-{% code title="예시" %}
-```sql
--- 'user1'에게 부여된 SELECT, INSERT 권한 회수
-REVOKE SELECT, INSERT ON Customers FROM user1;
-
--- 'user2'의 모든 권한 제거
-REVOKE ALL PRIVILEGES ON Orders FROM user2;
-
--- 'user3'의 특정 권한만 제거
-REVOKE UPDATE ON Products FROM user3;
-```
-{% endcode %}
-
-***
-
-## DCL과 사용자 권한
-
-| 권한 유형          | 설명               |
-| -------------- | ---------------- |
-| SELECT         | 데이터를 조회할 수 있는 권한 |
-| INSERT         | 데이터를 삽입할 수 있는 권한 |
-| UPDATE         | 데이터를 수정할 수 있는 권한 |
-| DELETE         | 데이터를 삭제할 수 있는 권한 |
-| EXECUTE        | 프로시저 또는 함수 실행 권한 |
-| ALL PRIVILEGES | 모든 권한 부여         |
+{% hint style="danger" %}
+WARNING: `REVOKE ALL PRIVILEGES`는 사용자의 해당 범위 권한을 모두 없앤다. 실행 전에 `SHOW GRANTS`로 현재 권한을 기록한다. 서비스 계정에 쓰면 애플리케이션 접속이 끊길 수 있다.
+{% endhint %}
 
 {% hint style="warning" %}
-일반 사용자는 필요 최소한의 권한만 부여받아야 보안이 강화된다.\
-DBA(데이터베이스 관리자)는 전체 권한을 가질 수 있다.
+CAUTION: 사용자에게는 필요한 최소 권한만 부여한다(최소 권한 원칙). 데이터베이스 관리자(DBA)만 전체 권한을 가진다. 실습 절차는 DB-SQL-008-MP를 따른다.
 {% endhint %}
 
-***
+## 5. 참조
 
-## DCL과 보안 (Security)
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [사용자 권한 부여·회수 실습](sql_privilege_practice.md) | DB-SQL-008-MP | 실습 절차 |
+| [DB 성능 튜닝 및 사용자 관리](../operations/dbperformanceinfo.md) | | 사용자 관리 |
+| [MariaDB 기본 사용법](../operations/mariadb.md) | | MariaDB 접속과 기본 명령 |
 
-* DCL을 사용하면 특정 사용자가 데이터베이스에서 수행할 수 있는 작업을 제한할 수 있다.
-* 데이터베이스 보안을 강화하여 불법적인 데이터 접근 및 조작을 방지할 수 있다.
+## 6. 개정 이력
 
-{% code title="예시" %}
-```sql
--- 'user4'에게 READ-ONLY 권한 부여
-GRANT SELECT ON Employees TO user4;
-
--- 'user5'의 권한 회수 (데이터 수정 방지)
-REVOKE INSERT, UPDATE, DELETE ON Employees FROM user5;
-```
-{% endcode %}
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | REF 형식으로 재작성. MariaDB/MySQL의 사용자 표기와 객체 범위를 보충하고, 실습은 DB-SQL-008-MP로 분리했다 |
