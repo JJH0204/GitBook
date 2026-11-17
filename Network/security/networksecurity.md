@@ -3,7 +3,7 @@
 ### 목표
 
 * 네트워크에 대한 이해
-* [네트워크 관리사](https://krjaeh0.gitbook.io/j-log/atelier/certifications/security/infosecuritycertification)자격증 취득
+* 네트워크 관리사 자격증 취득
 
 ### 보안 솔루션
 
@@ -19,7 +19,7 @@
 {% step %}
 ### 네트워크
 
-[네트워크](https://krjaeh0.gitbook.io/j-log/atelier/certifications/security/infosecuritycertification)
+네트워크
 {% endstep %}
 
 {% step %}

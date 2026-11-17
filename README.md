@@ -67,5 +67,4 @@ metaLinks: {}
 | [DB](https://krjaeh0.gitbook.io/j-log/database) | 데이터베이스 개요, 설계, SQL |
 | [DevTool](https://krjaeh0.gitbook.io/j-log/devtool) | Git, VS Code, 빌드 시스템, 개발 환경 |
 | [Projects](https://krjaeh0.gitbook.io/j-log/projects) | 프로젝트 기록 |
-| [Atelier](https://krjaeh0.gitbook.io/j-log/atelier) | 커리어, 취업 준비, 자격증, 회고 |
 | [Daylog](https://krjaeh0.gitbook.io/j-log/daylog) | 업데이트 기록 |
