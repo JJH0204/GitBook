@@ -19,6 +19,7 @@
 * [TCP/IP 4계층 모델](fundamentals/tcpip4layer.md)
 * [네트워크 토폴로지 (Topology)](fundamentals/topology.md)
 * [UTP 케이블 배선 (UTP Cabling)](fundamentals/utp_cabling.md)
+* [UTP 케이블 제작](fundamentals/utp_crimping.md)
 
 ## IP Addressing & NAT
 
@@ -26,6 +27,7 @@
 * [서브넷팅 계산 (Subnetting)](ip-addressing-and-nat/subnetting.md)
 * [IP 프로토콜 개요 (IP)](ip-addressing-and-nat/ip.md)
 * [IPv4 주소 체계 (IPv4)](ip-addressing-and-nat/ipv4.md)
+* [IPv4 주소 대역 표 (Address Ranges)](ip-addressing-and-nat/ipv4addressranges.md)
 * [IPv6 주소 체계 (IPv6)](ip-addressing-and-nat/ipv6.md)
 * [게이트웨이 설정 (Gateway Setup)](ip-addressing-and-nat/gatewaysetup.md)
 * [동적 호스트 설정 프로토콜 (DHCP)](ip-addressing-and-nat/dhcp.md)
@@ -42,6 +44,7 @@
 * [HTTP 프로토콜 (HTTP)](protocols/http.md)
 * [HTTPS 프로토콜 (HTTPS)](protocols/https.md)
 * [도메인 네임 시스템 (DNS)](protocols/dns.md)
+* [DNS 서버 구축 (BIND)](protocols/dns-server-bind.md)
 * [HTTP 메서드 상세 (HTTP Method)](protocols/http_method.md)
 * [HTTP 상태 코드 (HTTP Status Code)](protocols/httpstatuscode.md)
 * [네트워크 포트 번호 (Port)](protocols/port.md)
@@ -53,11 +56,16 @@
 * [라우팅 개념 및 동작 원리](routing-and-switching/routing.md)
 * [라우팅 실습 (Packet Tracer)](routing-and-switching/routing-1.md)
 * [EIGRP 라우팅 프로토콜](routing-and-switching/eigrp.md)
+* [EIGRP 라우팅 설정](routing-and-switching/eigrp-config.md)
 * [OSPF 라우팅 프로토콜](routing-and-switching/ospf.md)
+* [OSPF 라우팅 설정](routing-and-switching/ospf-config.md)
 * [RIP 라우팅 프로토콜](routing-and-switching/rip.md)
+* [RIP 라우팅 설정](routing-and-switching/rip-config.md)
 * [스패닝 트리 프로토콜 (STP)](routing-and-switching/stp.md)
 * [가상 랜 (VLAN)](routing-and-switching/vlan.md)
 * [VLAN 트렁킹 프로토콜 (VTP)](routing-and-switching/vtp.md)
+* [VLAN, 트렁크, VTP 설정](routing-and-switching/vlan-config.md)
+* [라우팅·스위칭 확인 명령 요약](routing-and-switching/routing-show-commands.md)
 
 ## Security
 
@@ -65,6 +73,7 @@
 * [가상 사설망 (VPN)](security/vpn.md)
 * [SSL 및 TLS 프로토콜](security/ssl.md)
 * [시큐어 셸 (SSH)](security/ssh.md)
+* [SSH 원격 서버 접속](security/ssh-connection.md)
 * [방화벽 장치 유형 (Firewall)](security/firewall.md)
 * [Cisco 가상 방화벽 (ASAv)](security/asav.md)
 
@@ -74,11 +83,14 @@
 * [네트워크 상태 모니터링 (netstat)](tools-and-operations/netstat.md)
 * [프록시 도구와 Burp Suite](tools-and-operations/proxytool.md)
 * [서버 상태 점검 스크립트](tools-and-operations/servercheckscript.md)
+* [리눅스 보안 점검 스크립트 오류 정정](tools-and-operations/linuxsecuritycheckscript.md)
 
 ## Servers & Storage
 
 * [서버 분류 및 유형](servers-and-storage/server.md)
 * [복수 배열 독립 디스크 (RAID)](servers-and-storage/raid.md)
+* [RAID 레벨 비교](servers-and-storage/raid-levels.md)
+* [스토리지 연결 방식 (DAS, NAS, SAN)](servers-and-storage/storage-types.md)
 
 ## 강의 (Lectures)
 
