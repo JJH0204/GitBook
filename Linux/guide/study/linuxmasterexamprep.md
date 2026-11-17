@@ -1,5 +1,27 @@
 # 리눅스마스터 기출 문제 및 해설
 
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-STU-002-INS |
+| 유형 | INS (점검: 문제별 정답 확인) |
+| 목적 | 기출 문제를 풀고 정답과 해설로 이해도를 점검한다 |
+| 확인 상태 | 미검증 (원본 정답과 해설을 정리한 것이며 공식 정답과 대조하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 사용 방법
+
+1. 문제 제목을 펼치지 않고 선택지를 읽는다.
+2. 답을 정한 뒤 펼쳐 정답과 해설을 확인한다.
+3. 틀린 문제는 해설과 관련 문서를 읽고 다시 푼다.
+
+{% hint style="info" %}
+NOTE: 아래 정답 중 원본이 비어 있거나 모순이던 문항은 정정하고 CAUTION으로 표시했다. 응시 전에 공식 문제 공개 페이지(LNX-STU-001-REF 4절)로 대조한다.
+{% endhint %}
+
+## 문제 목록
+
 <details>
 
 <summary>문제: 다음 명령어에 대한 설명으로 가장 적절한 것은? [root&#x26;ihd root]# cat /etc/passwd | grep -v linuxmaster</summary>
@@ -81,7 +103,7 @@
 
 * 선택지\
   가. 리처드 스톨만(Richard Stallman)\
-  나. 리누스 토발즈(Linus Tovalds)\
+  나. 리누스 토르발스(Linus Torvalds)\
   다. 앤드류 타넨바움(Andrew Tanenbaum)\
   라. 빌 게이츠(Bill Gates)
 * 정답: 가. 리처드 스톨만(Richard Stallman)
@@ -145,9 +167,13 @@
   나. map=/boot/map : LILO에 의해서 자동으로 생성되는 파일\
   다. install=/boot/boot.b : 부트 섹터 위치 정보를 가진 파일\
   라. timeout=50 : 키보드 입력이 없을 시 자동 부팅시간 50초 설정
-* 정답: 가. boot-/dev/hda : LILO가 설치될 위치
+* 정답: 라. timeout=50 : 키보드 입력이 없을 시 자동 부팅시간 50초 설정
 * 해설:\
-  `boot=`는 부트 로더가 사용할 장치를 지정한다. 일반적으로 `/dev/hda`는 첫 번째 IDE 드라이브를 가리킨다.
+  `timeout` 값의 단위는 1/10초다. `timeout=50`은 5초이므로 "50초"라는 설명이 틀리다. `boot=/dev/hda`는 LILO가 설치될 장치를 지정하며 `/dev/hda`는 첫 번째 IDE 드라이브다.
+
+{% hint style="warning" %}
+CAUTION: 원본 정답이 "가. boot-/dev/hda"(오타)였고 해설과 모순이어서 라로 정정했다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -178,6 +204,10 @@
 * 정답: 나. LILO는 컴퓨터 바이오스(BIOS)의 정보를 참조하지 않는다.
 * 해설:\
   LILO는 부트로더로서 BIOS 정보를 참조한다.
+
+{% hint style="warning" %}
+CAUTION: 선택지 라(GRUB은 부트 디스크 부팅을 지원하지 않는다)도 사실과 다르다는 지적이 있어 공식 정답 확인이 필요하다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -235,9 +265,13 @@
   2. \[b]
   3. \[c]
   4. \[e]
-* 정답: 4. \[e]
+* 정답: 3. \[c]
 * 해설:\
-  GRUB에서 항목을 편집하려면 커서를 해당 항목에 두고 'e'키를 누른다.
+  `c`는 GRUB 명령행(command line)으로 들어가는 키다. 설정 파일이 지워져 편집할 메뉴 항목이 없으면 `c`로 명령을 직접 입력한다. `e`는 기존 메뉴 항목을 편집하는 키다.
+
+{% hint style="warning" %}
+CAUTION: 원본 정답은 "e"였다. 메뉴 항목이 없는 상태라는 조건에 맞춰 "c"로 정정했다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -268,6 +302,10 @@
 * 정답: 1. 2
 * 해설:\
   a로 시작하고 뒤에 한 글자가 있는 파일들을 상세히 출력한 라인 수를 wc -l로 센 결과.
+
+{% hint style="warning" %}
+CAUTION: 원본에 디렉터리 목록 그림이 없어 정답 2를 검증할 수 없다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -438,6 +476,7 @@
   나. /etc/shadow 파일에서 패스워드는 x로 표시되어 /etc/shadow 파일의 포인터를 유지하고 있다.\
   다. /etc/shadow 파일의 expire 필드는 암호와 계정이 만료되는 날짜의 정보를 가지고 있다.\
   라. /etc/passwd 파일은 사용자 계정에 대해 uid, gid, 기본 셸 등의 정보를 포함하고 있다.
+* 정답: 가. /etc/shadow는 일반 사용자는 읽기 권한만 가지며, 쓰기 및 실행은 할 수 없도록 지정되어있다.
 * 해설:\
   /etc/shadow는 일반 사용자에게 읽기 권한조차 주어지지 않으며, root만 읽기/쓰기 권한을 가진다.
 
@@ -452,6 +491,7 @@
   2. MAP=/boot/map : LILO에 의해서 자동으로 생성되는 파일
   3. INSTALL=/boot/boot.b : 부트 섹터 위치 정보를 가진 파일
   4. TIMEOUT=50 : 키보드 입력이 없을 시 자동 부팅시간 50초 설정
+* 정답: 1. BOOT=/dev/gda : LILO가 설치 될 위치
 * 해설:\
   /dev/gda는 잘못된 디바이스 이름이다. 일반적으로는 /dev/sda나 /dev/hda 등을 사용한다.
 
@@ -526,8 +566,13 @@
   2. hostname 명령을 수행한다.
   3. ifconfig 명령을 수행한다.
   4. /etc/resolv.conf 파일을 점검한다.
+* 정답: 1, 4
 * 해설:\
-  hostname으로 호스트 이름 설정을 확인하고, /etc/resolv.conf에서 DNS 서버 설정을 확인하는 것이 우선이다.
+  "unknown host"는 이름 해석 실패다. 이름 해석 설정 파일인 /etc/host.conf와 DNS 서버 설정 파일인 /etc/resolv.conf를 먼저 점검한다.
+
+{% hint style="warning" %}
+CAUTION: 원본은 정답을 적지 않았고 해설은 2번(hostname)과 4번을 가리켰다. 1·4번으로 정리했으며 공식 정답 확인이 필요하다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -555,9 +600,13 @@
   2. 홈 디렉토리 정보를 간직하고 있는 PWD 환경변수의 내용을 출력하고 있다.
   3. 시스템 관리자의 권한으로만 위 환경변수를 확인해 볼 수 있다.
   4. 일반적으로 디렉토리를 이동하면 PWD 변수를 수동으로 다시 설정해 주어야 한다.
-* 정답: 2. 현재 작업 디렉토리의 절대 경로를 저장하는 PWD 환경변수의 내용을 출력하고 있다. (선택지 1과 2의 의미가 유사하므로 맥락상 2번이 적절)
+* 정답: 1. 현재 작업 디렉토리의 위치를 확인해 보고 있다.
 * 해설:\
-  PWD는 현재 작업 디렉토리의 절대 경로를 저장하며, 모든 사용자가 접근 가능하고 자동으로 갱신된다.
+  PWD는 현재 작업 디렉토리의 절대 경로를 저장하며, 모든 사용자가 접근 가능하고 자동으로 갱신된다. 선택지 2는 PWD를 "홈 디렉토리 정보"라고 설명해 틀리다.
+
+{% hint style="warning" %}
+CAUTION: 원본 정답은 선택지 2였으나 선택지 2의 설명이 사실과 달라 1번으로 정정했다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -600,24 +649,13 @@
   2. 시스템을 shutdown 한다.
   3. 시스템 실행 수준(run level)을 3으로 변경시킨다.
   4. 다중 사용자(multi-user) 모드에서는 수행하지 않는다.
-* 정답: 3, 4 중 틀린 설명(문맥상 3과 4는 부정확; 특히 4번은 틀림)
+* 정답: 4. 다중 사용자(multi-user) 모드에서는 수행하지 않는다.
 * 해설:\
   reboot은 파일 시스템을 안전하게 언마운트하고 시스템을 재시작한다. 특정 runlevel로 변경한다고 단정할 수 없으며, 다중 사용자 모드에서도 reboot는 수행될 수 있다.
 
-</details>
-
-<details>
-
-<summary>문제: 리처드 스톨먼에 의해 설립된 단체는?</summary>
-
-* 선택지
-  1. FSF
-  2. ISO
-  3. ANSI
-  4. IETF
-* 정답: 1. FSF
-* 해설:\
-  FSF는 자유 소프트웨어를 위한 단체로 GNU 프로젝트 등을 주도했다.
+{% hint style="warning" %}
+CAUTION: 원본 정답이 "3, 4 중"으로 모호했다. 4번으로 정리했으며 3번 설명의 정확성은 확인하지 못했다. 미검증이다.
+{% endhint %}
 
 </details>
 
@@ -675,8 +713,29 @@
   2. Scientific Linux
   3. SUSE
   4. Knoppix
-* 정답: (주어진 선택지 중 없음)
+* 정답: 3. SUSE
 * 해설:\
-  주어진 선택지들은 각각 Debian 계열, RHEL 계열, SUSE 계열 등으로 분류되며, 슬랙웨어 계열은 Slackware, Zenwalk, Salix OS 등이 있다.
+  SUSE는 초기에 Slackware를 기반으로 시작해 슬랙웨어 계열로 분류한다. Kali Linux와 Knoppix는 Debian 계열, Scientific Linux는 RHEL 계열이다.
+
+{% hint style="warning" %}
+CAUTION: 원본은 "선택지 중 없음"이었다. SUSE의 출신을 근거로 3번으로 정정했으며 공식 정답 확인이 필요하다. 미검증이다.
+{% endhint %}
 
 </details>
+
+## 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [linuxmasterlevel2.md](linuxmasterlevel2.md) | LNX-STU-001-REF | 리눅스마스터 2급 시험 안내 |
+| [lilo.md](../storage-boot/lilo.md) | | LILO |
+| [disk_druid.md](../storage-boot/disk_druid.md) | | Disk Druid |
+| [fdisk.md](../operations/linux_admin/system_mgmt/fdisk.md) | | fdisk |
+| [MBR (외부)](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/architecture/mbr) | | 외부 문서 |
+| [netstat (외부)](https://krjaeh0.gitbook.io/j-log/network/tools-and-operations/netstat) | | 외부 문서 |
+
+## 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | INS 형식으로 재작성. 정답이 비었거나 모순된 문항을 정정하고 CAUTION으로 표시했다. 중복된 FSF 문제 1건을 합쳤다 |
