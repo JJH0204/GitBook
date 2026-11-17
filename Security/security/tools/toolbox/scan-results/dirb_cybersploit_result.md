@@ -1,32 +1,63 @@
 # DIRB 스캔: Cybersploit 1
 
-{% code title="dirb-output.txt" %}
-```
------------------
-DIRB v2.22    
-By The Dark Raver
------------------
+## 작업 식별
 
-START_TIME: Wed Sep 25 22:11:18 2024
-URL_BASE: http://192.168.56.105/
-WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-SCN-005-REF |
+| 유형 | REF (출력 읽는 법) |
+| 목적 | DIRB의 디렉터리·파일 무차별 탐색 출력을 읽는다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱) |
+| 확인 상태 | 미검증 (원본 출력과 일반 지식을 정리한 것이며 스캔을 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
------------------
+{% hint style="danger" %}
+WARNING: 허가받지 않은 웹 서버에 대한 무차별 요청은 불법이다. 격리된 실습망의 소유·관리 대상에서만 수행한다.
+{% endhint %}
 
-                                                                             GENERATED WORDS: 4612
+## 1. 도구 개요
 
----- Scanning URL: http://192.168.56.105/ ----
-                                                                             + http://192.168.56.105/cgi-bin/ (CODE:403|SIZE:290)                        
-+ http://192.168.56.105/hacker (CODE:200|SIZE:3757743)                      
-+ http://192.168.56.105/index (CODE:200|SIZE:2333)                          
-+ http://192.168.56.105/index.html (CODE:200|SIZE:2333)                     
-+ http://192.168.56.105/robots (CODE:200|SIZE:79)                           
-+ http://192.168.56.105/robots.txt (CODE:200|SIZE:79)                       
-+ http://192.168.56.105/server-status (CODE:403|SIZE:295)                   
-                                                                               
------------------
-END_TIME: Wed Sep 25 22:11:20 2024
-DOWNLOADED: 4612 - FOUND: 7
-                                                   
-```
-{% endcode %}
+DIRB는 단어 목록(wordlist)의 각 단어를 URL 경로로 만들어 웹 서버에 요청하고, 응답 코드로 존재 여부를 판단하는 도구다. 이 출력은 `http://<대상 IP>/`를 `common.txt`(4,612개 단어)로 탐색한 결과다. 호출 형식은 `dirb <URL> [wordlist]`다.
+
+## 2. 출력 구조
+
+| 줄·필드 | 뜻 |
+|---|---|
+| `URL_BASE` | 탐색 시작 URL |
+| `WORDLIST_FILES` | 사용한 단어 목록 파일 |
+| `GENERATED WORDS` | 요청할 단어 수 (4612) |
+| `+ <URL> (CODE:nnn\|SIZE:n)` | 발견된 경로, HTTP 응답 코드, 응답 본문 바이트 수 |
+| `DOWNLOADED / FOUND` | 보낸 요청 수와 발견된 경로 수 |
+| `START_TIME` / `END_TIME` | 시작·종료 시각. 이 실습은 약 2초 걸렸다 |
+
+## 3. 이 출력에서 읽을 수 있는 정보
+
+| 경로 | 코드 | 크기(바이트) | 해석 |
+|---|---|---|---|
+| `/cgi-bin/` | 403 | 290 | 존재하지만 접근이 금지되어 있다 |
+| `/hacker` | 200 | 3,757,743 | 약 3.7MB의 큰 응답이다. 이미지·파일일 수 있다 |
+| `/index`, `/index.html` | 200 | 2,333 | 같은 크기이므로 같은 파일이다 (MultiViews 때문에 확장자 없이도 응답한다. [SEC-SCN-001-REF](nikto_cybersploit_result.md) 참조) |
+| `/robots`, `/robots.txt` | 200 | 79 | 크롤러 제외 규칙 파일이다. 숨기려는 경로가 적혀 있을 수 있다 |
+| `/server-status` | 403 | 295 | Apache 상태 페이지가 있으나 외부 접근이 막혀 있다 |
+
+HTTP 응답 코드의 뜻은 [HTTP 상태 코드](../../../../../Network/protocols/httpstatuscode.md)를 참조한다.
+
+## 4. 탐지·방어
+
+| 항목 | 내용 |
+|---|---|
+| 서버 로그의 흔적 | Apache `access_log`에 한 출발지가 몇 초 안에 4,612건의 요청을 보내고, 대부분 404 응답이 기록된다. User-Agent는 기본값(`dirb` 계열 문자열)으로 남을 수 있다. 존재하지 않는 경로의 404가 대량으로 쌓이는 것이 특징이다 |
+| 탐지 | 출발지별 404 비율과 분당 요청 수에 임계값을 두는 로그 규칙, WAF의 요청 빈도 제한으로 탐지한다 |
+| 노출 축소 | `robots.txt`에 민감 경로를 적지 않는다. 불필요한 파일·디렉터리를 웹 루트에서 제거한다. 관리 경로는 IP 제한이나 인증으로 막고, 요청 빈도 제한(rate limit)을 건다 |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [nikto_cybersploit_result.md](nikto_cybersploit_result.md) | SEC-SCN-001-REF | Nikto 스캔: Cybersploit 1 |
+
+## 6. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | AMM 형식 REF로 재구성. 출력 원문을 요약 표로 대체하고 IP를 가림 |
