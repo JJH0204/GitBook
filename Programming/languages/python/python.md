@@ -51,4 +51,3 @@ class 클래스이름:
 
 * [암호화 및 복호화](https://krjaeh0.gitbook.io/j-log/security/security/fundamentals/theory/encryptionndeencryption)
 * [poetry](https://krjaeh0.gitbook.io/j-log/devtool/env-setup/poetry)
-* [Django\_VS\_Flask](django_vs_flask.md)

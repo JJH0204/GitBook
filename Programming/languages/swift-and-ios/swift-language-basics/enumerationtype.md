@@ -76,7 +76,7 @@ switch targetPlanet {
 }
 ```
 
-### [프로토콜(Protocol)](https://krjaeh0.gitbook.io/j-log/network/protocols/network_protocol)을 응용한 작업
+### [프로토콜(Protocol)](../swift_protocol.md)을 응용한 작업
 
 * 아래 코드는 CaseIterable 프로토콜을 채택하여 필요한 부가 기능을 사용할 수 있도록 한 예시다.
 

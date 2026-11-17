@@ -56,7 +56,7 @@ project(
 * 주석은 (#)을 사용하면 된다.
 * CMake 버전별 지원 기능의 차이가 커 최소 버전을 3.0 이상으로 설정해 놓는다.
 * project()에 프로젝트 정보를 간단히 명시 (프로젝트 이름은 필수)
-* 실행 파일을 빌드하기 위해서 CMakeLists.txt 와 소스코드 파일은 같은 경로에 있어야 한다.
+* 소스코드 파일이 CMakeLists.txt와 같은 폴더에 있을 필요는 없다. 경로를 `add_executable`에 적어 주면 된다(아래 `${SOURCE_DIR}` 예 참고).
 * CMake에서 권장하는 빌드 파일 생성 방법으로 빌드 파일과 작업하는 디렉토리는 서로 분리한다. build 라는 별도의 폴더를 만들어 사용
 
 사용 예시:
@@ -109,7 +109,7 @@ add_executable(linkedGraph ${SOURCE_DIR}/mainGraph.c) #<- 변수 사용 예시
 * .h파일 같이 라이브러리를 한 폴더에서 관리할 경우 아래와 같이 해당 폴더를 프로젝트에 추가할 수 있다.
 
 ```
-# 추가 라이브러리 링크 혹은 옵션 지정
+# 헤더 파일 검색 경로 추가 (라이브러리 링크는 target_link_libraries로 한다)
 include_directories(include)
 ```
 {% endstep %}
