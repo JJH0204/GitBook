@@ -22,6 +22,7 @@
   * [macOS 환경 변수 설정](env-setup/macosenvvariablesetup.md)
   * [Windows Python 환경 설정 (pyenv)](env-setup/pythonsettingwin.md)
   * [Poetry 패키지 관리자](env-setup/poetry.md)
+  * [Poetry 설치와 사용](env-setup/poetryinstallation.md)
 * [Git 가이드 (Git)](git/README.md)
   * [Git 기본 설정 및 계정 해제](git/git.md)
   * [VS Code Git 및 GitHub 연동](git/vscodegithubintegration.md)

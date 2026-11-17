@@ -1,128 +1,85 @@
 # Poetry 패키지 관리자
 
-## Poetry 개요
+## 작업 식별
 
-**Poetry**는 Python 프로젝트의 \*\*의존성 관리(dependency management)\*\*와 \*\*패키지 관리(package management)\*\*를 쉽게 해주는 도구입니다. 기존의 `pip`과 `virtualenv` 또는 `venv`를 통합한 현대적인 대안으로, Python 개발 환경을 더 깔끔하고 체계적으로 관리할 수 있게 도와줍니다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | DEV-ENV-004-DO |
+| 유형 | D&O (개념·원리) |
+| 목적 | Poetry의 역할, 구성 요소, 동작 순서를 설명하고 pip + venv와 비교한다 |
+| 확인 상태 | 미검증 (원본 페이지와 공식 문서 지식을 정리한 것이며 직접 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-{% stepper %}
-{% step %}
-### 의존성 관리
+{% hint style="info" %}
+NOTE: 이 문서는 개념 설명이다. 설치와 사용 절차는 DEV-ENV-005-MP를 따른다.
+{% endhint %}
 
-* 프로젝트에서 필요한 Python 패키지 및 라이브러리를 `pyproject.toml` 파일에 정의하고, 해당 패키지를 설치 및 관리합니다.
-* **자동 의존성 해결**: 패키지 간 충돌이 없도록 적합한 버전을 찾아 설치합니다.
-{% endstep %}
+## 1. 목적
 
-{% step %}
-### 가상 환경 관리
+**Poetry**는 Python 프로젝트의 **의존성 관리(dependency management)**와 **패키지 관리(package management)**를 한 도구로 처리한다. `pip`과 `venv`를 따로 쓰던 작업을 하나로 합쳐, 프로젝트별 개발 환경을 일관되게 유지한다.
 
-* 프로젝트별 독립적인 Python 가상 환경을 자동으로 생성하고 연결합니다.
-* 별도의 `virtualenv` 설정 없이도 간단히 사용 가능합니다.
-{% endstep %}
+## 2. 구성 요소
 
-{% step %}
-### 패키지 배포 지원
+| 번호 | 이름 | 위치 | 역할 |
+|---|---|---|---|
+| 1 | `poetry` 명령 | 시스템 `PATH` | 의존성 추가·설치·실행·배포를 처리한다 |
+| 2 | `pyproject.toml` | 프로젝트 최상위 디렉터리 | 프로젝트 정보와 의존성을 선언한다 (PEP 518 표준 형식) |
+| 3 | `poetry.lock` | 프로젝트 최상위 디렉터리 | 해결된 정확한 패키지 버전을 고정한다. 팀원이 같은 버전을 설치하게 한다 |
+| 4 | 가상환경 | Poetry 기본 저장 위치 | 프로젝트별 독립 Python 환경이다. Poetry가 자동으로 만들고 연결한다 |
+| 5 | PyPI | 원격 저장소 | 패키지를 내려받고 배포하는 Python Package Index다 |
 
-* Poetry를 통해 작성한 코드를 Python 패키지로 만들어 PyPI(Python Package Index)에 배포할 수 있습니다.
-{% endstep %}
+## 3. 동작 원리
 
-{% step %}
-### 직관적인 명령어
-
-* 패키지 설치, 제거, 업데이트 등의 작업을 간단한 명령어로 처리할 수 있습니다.
-{% endstep %}
-{% endstepper %}
-
-***
-
-## Poetry 사용의 장점
-
-{% stepper %}
-{% step %}
-### 프로젝트 단위로 의존성 관리
-
-* 프로젝트의 의존성을 명확히 관리해 다른 프로젝트와 충돌을 방지합니다.
-* `pyproject.toml` 파일에 의존성을 기록하여 공유할 수 있습니다.
-{% endstep %}
-
-{% step %}
-### 동시 가상 환경 관리
-
-* Python 버전과 패키지를 가상 환경 안에서 자동으로 설정합니다.
-{% endstep %}
-
-{% step %}
-### 빠르고 편리한 명령어
-
-* 패키지 설치, 제거, 의존성 확인 등을 하나의 도구로 처리할 수 있습니다.
-{% endstep %}
-
-{% step %}
-### PEP 518 지원
-
-* `pyproject.toml` 표준을 사용해 Python 패키지의 의존성을 선언합니다.
-* 기존의 `requirements.txt`보다 더 직관적인 설정을 제공합니다.
-{% endstep %}
-{% endstepper %}
-
-***
-
-## 설치 및 기본 사용법
-
-### 설치
-
-Poetry는 아래 명령어로 설치할 수 있습니다:
-
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
+```
+poetry add <패키지> > pyproject.toml 갱신 > 의존성 해결 > poetry.lock 기록 > 가상환경에 설치
 ```
 
-설치 후 환경 변수 설정을 확인한 다음 명령어를 사용할 수 있습니다.
+1. `poetry add`가 `pyproject.toml`에 의존성을 기록한다.
+2. Poetry가 패키지 간 충돌이 없는 버전 조합을 찾는다(자동 의존성 해결).
+3. 결과를 `poetry.lock`에 기록한다.
+4. 프로젝트 전용 가상환경에 패키지를 설치한다.
+5. 다른 사람이 저장소를 받아 `poetry install`을 실행하면 `poetry.lock`의 버전 그대로 설치된다.
 
-### 프로젝트 초기화
+### 주요 기능
 
-새로운 Python 프로젝트를 시작하려면:
+* **의존성 관리**: 필요한 패키지를 `pyproject.toml`에 선언하고 설치·갱신한다.
+* **가상환경 관리**: 별도 `virtualenv` 설정 없이 프로젝트마다 독립 환경을 만든다.
+* **패키지 배포**: 작성한 코드를 PyPI에 배포할 수 있다.
+* **명령어 통합**: 설치, 제거, 갱신, 의존성 확인을 `poetry` 하나로 처리한다.
 
-```bash
-poetry init
-```
+### 장점
 
-질문에 답하며 프로젝트의 이름, 버전, 의존성 등을 설정하면 `pyproject.toml` 파일이 생성됩니다.
+* 프로젝트별로 의존성이 분리돼 다른 프로젝트와 충돌하지 않는다.
+* `pyproject.toml`과 `poetry.lock`을 저장소에 올려 팀이 같은 환경을 쓴다.
+* `requirements.txt`보다 직관적인 선언 형식(PEP 518)을 쓴다.
 
-### 패키지 설치
+### Poetry와 pip + venv 비교
 
-Poetry로 의존성을 설치하려면:
+| 기능 | Poetry | pip + venv |
+|---|---|---|
+| 의존성 관리 | 자동 의존성 해결 및 갱신 | 수동으로 해결해야 한다 |
+| 가상환경 관리 | 자동 생성 및 연결 | 수동으로 만들어야 한다 |
+| 패키지 버전 고정 | `poetry.lock` 파일 | `requirements.txt` 사용 |
+| 배포·빌드 지원 | PyPI 배포 내장 | 추가 도구가 필요하다 |
 
-```bash
-poetry add <패키지명>
-```
+팀 협업이나 큰 프로젝트에서 의존성을 일관되게 관리해야 할 때 Poetry를 도입할 만하다.
 
-예: `poetry add requests`는 `requests` 패키지를 설치하고 `pyproject.toml`에 기록합니다.
+## 4. 약어·용어
 
-### 가상 환경 실행
+| 용어 | 뜻 |
+|---|---|
+| PyPI | Python Package Index. Python 패키지 공개 저장소 |
+| PEP 518 | `pyproject.toml`로 빌드 요구사항을 선언하는 Python 표준 문서 |
+| 의존성(dependency) | 프로젝트가 동작하는 데 필요한 외부 패키지 |
+| 가상환경(virtual environment) | 프로젝트별로 분리된 Python 실행 환경 |
+| lock 파일 | 해결된 패키지 버전을 고정해 둔 파일 |
 
-Poetry가 관리하는 가상 환경을 활성화하려면:
+## 내 말로 채우기
 
-```bash
-poetry shell
-```
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-### 의존성 설치
-
-다른 팀원이 프로젝트를 복제한 후 필요한 패키지를 설치하려면:
-
-```bash
-poetry install
-```
-
-***
-
-## Poetry와 기존 도구 비교
-
-| 기능         |               Poetry |            pip + venv |
-| ---------- | -------------------: | --------------------: |
-| 의존성 관리     |     자동 의존성 해결 및 업데이트 |            수동으로 해결 필요 |
-| 가상 환경 관리   |           자동 생성 및 연결 |            수동으로 생성 필요 |
-| 패키지 버전 고정  | `poetry.lock` 파일로 관리 | `requirements.txt` 사용 |
-| 배포 및 빌드 지원 |        PyPI 배포 내장 지원 |              추가 도구 필요 |
-
-Poetry는 특히 팀 협업이나 대규모 프로젝트에서 의존성을 효과적으로 관리해야 할 때 큰 이점을 제공합니다. 팀원과 통일된 개발 환경을 유지하거나 패키지 관리를 간소화하려고 한다면 도입을 고려해볼 만합니다. 😊
+- [ ] `pyproject.toml`과 `poetry.lock`은 각각 어떤 역할을 하고, 왜 둘 다 저장소에 올릴까?
+- [ ] pip + venv로 작업하다 겪었던 불편함은 무엇이고, Poetry가 그것을 어떻게 줄여 줄까?
+- [ ] 내 프로젝트에 Poetry를 쓰겠다면 어떤 이유 때문인가?
