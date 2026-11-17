@@ -1,17 +1,40 @@
 # Day 19 · MonoBehaviour 생명주기 🎮
 
-> 4주차 Unity 코어와 트러블슈팅 · 60분 · 준비물: 🎮 Unity 6 (`practice/UnityLab`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-020-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | MonoBehaviour 이벤트 함수의 호출 순서와 조건을 설명하고 로그로 확인한다 |
+| 적용 대상 | Unity 6, `practice/UnityLab`. 🎮 표시 날 |
+| 소요 시간 | 4주차 Unity 코어와 트러블슈팅 · 60분 (읽기 20, 실습 30, 문제 10) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - `Awake` → `OnEnable` → `Start` → `FixedUpdate` → `Update` → 코루틴 재개 → `LateUpdate` → `OnDisable` → `OnDestroy`의 정확한 순서와 실행 조건을 설명할 수 있다.
 - 왜 "내 초기화는 `Awake`, 남 참조는 `Start`"라는 원칙이 생겼는지, 그리고 `Instantiate`와 `Destroy` 호출 시점에 각 이벤트가 언제 도는지 설명할 수 있다.
 - `FixedUpdate`가 한 프레임에 0번~여러 번 돌 수 있는 이유와 `Time.timeScale = 0`일 때의 동작을 설명할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 이벤트 함수 | 호출 시점 | 역할 |
+|---|---|---|
+| `Awake` | GameObject가 활성이면 인스턴스당 1번 (컴포넌트 `enabled`와 무관) | 내 내부 참조·컬렉션 초기화 |
+| `OnEnable` | 활성화될 때마다 (`Awake` 직후, `Start` 이전 포함) | 이벤트 구독, 풀에서 꺼낼 때 리셋 |
+| `Start` | 컴포넌트가 활성인 상태에서 첫 `Update` 직전 1번 | 다른 오브젝트·매니저 참조, 초기 상호작용 |
+| `FixedUpdate` | 고정 시간 간격마다 프레임당 0~N번 | 물리 적용 |
+| `Update` | 렌더링 프레임당 1번 | 입력 처리, 일반 게임 로직 |
+| 코루틴 재개 (`yield return null`) | `Update` 이후 | 다음 프레임에 이어 실행 |
+| `LateUpdate` | 그 프레임의 모든 `Update` 이후 | 카메라 추적처럼 다른 오브젝트 갱신 뒤 필요한 작업 |
+| `OnDisable` | 비활성화·파괴 시 | 이벤트 구독 해제 |
+| `OnDestroy` | 파괴될 때 (프레임 말미) | 정적 참조·리소스 해제 |
 
-### 1-1. 전체 생명주기 순서 한눈에 보기
+## 3. 동작 원리
+
+### 3-1. 전체 생명주기 순서 한눈에 보기
 
 Unity의 `PlayerLoop`는 매 프레임 정해진 순서대로 `MonoBehaviour`의 메시지 함수들을 호출한다.
 
@@ -22,7 +45,7 @@ Unity의 `PlayerLoop`는 매 프레임 정해진 순서대로 `MonoBehaviour`의
 [해제]    OnDisable ──▶ OnDestroy (프레임 끝)      *앱 종료 시: OnApplicationQuit
 ```
 
-### 1-2. Awake, OnEnable, Start의 결정적 차이
+### 3-2. Awake, OnEnable, Start의 결정적 차이
 
 세 함수 모두 초기화에 쓰이지만 **실행 시점과 횟수, 활성화 조건**이 다르다.
 
@@ -36,14 +59,14 @@ Unity의 `PlayerLoop`는 매 프레임 정해진 순서대로 `MonoBehaviour`의
 씬에 있는 여러 오브젝트들의 **`Awake` 실행 순서는 보장되지 않는다.** A의 `Awake`에서 B의 프로퍼티를 읽으면 B의 `Awake`가 아직 안 돌아 `NullReferenceException`이 날 수 있다. 반면 모든 활성 오브젝트의 `Awake`와 `OnEnable`이 다 끝난 뒤에야 `Start` 단계로 넘어가므로, 각자 자기 데이터는 `Awake`에서 준비해 두고 남의 데이터를 읽는 작업은 `Start`에서 하면 안전하다.
 그래도 `Awake`끼리 순서가 꼭 필요하다면 `Project Settings > Script Execution Order`나 클래스의 `[DefaultExecutionOrder(-100)]` 어트리뷰트로 명시한다.
 
-### 1-3. Instantiate와 Destroy가 실행되는 정확한 시점
+### 3-3. Instantiate와 Destroy가 실행되는 정확한 시점
 
 - **`Instantiate(prefab)`를 호출한 순간**:
   `Instantiate` 함수가 리턴하기 **전에(동기적으로 그 줄 안에서)** 새 오브젝트의 **`Awake`와 `OnEnable`이 즉시 실행**된다. 따라서 `var enemy = Instantiate(prefab); enemy.Init(hp);`를 작성할 때 `enemy`의 `Awake`는 `Init()`보다 먼저 끝나 있다. 반면 **`Start`는 즉시 돌지 않고** 그 프레임(또는 다음 프레임)의 `Update` 직전에 실행된다.
 - **`Destroy(obj)`를 호출한 순간**:
-  그 줄에서 즉시 파괴되지 않는다. 파괴 예약만 걸어 두고 **현재 프레임의 `Update`/`LateUpdate`가 끝난 뒤 렌더링 직전(프레임 말미)**에 `OnDisable` → `OnDestroy`가 실행되고 네이티브 객체가 파괴된다(Day 20). 에디터 툴 코드가 아닌 런타임에 즉시 파괴하는 `DestroyImmediate`를 쓰면 현재 순회 중인 루프가 깨지므로 런타임에는 `Destroy`를 쓴다.
+  그 줄에서 즉시 파괴되지 않는다. 파괴 예약만 걸어 두고 **현재 프레임의 `Update`/`LateUpdate`가 끝난 뒤 렌더링 직전(프레임 말미)**에 `OnDisable` → `OnDestroy`가 실행되고 네이티브 객체가 파괴된다(Day 20). 런타임에는 즉시 파괴하는 `DestroyImmediate` 대신 `Destroy`를 쓴다. `DestroyImmediate`는 순회 중인 컬렉션과 참조를 깨뜨릴 수 있고 에디터 툴 코드용이다.
 
-### 1-4. FixedUpdate와 Time.timeScale
+### 3-4. FixedUpdate와 Time.timeScale
 
 `Update`는 렌더링 프레임마다 1번 호출되므로 프레임 속도에 따라 간격(`Time.deltaTime`)이 들쭉날쭉하다. 반면 물리 엔진은 일정한 시간 간격(`Fixed Timestep`, 기본 0.02초 = 50Hz)으로 적분해야 결과가 안정적이다.
 
@@ -55,13 +78,24 @@ Unity의 `PlayerLoop`는 매 프레임 정해진 순서대로 `MonoBehaviour`의
 - **입력은 `Update`, 물리는 `FixedUpdate`**:
   `Input.GetKeyDown`은 한 렌더링 프레임 동안만 `true`다. 만약 이를 `FixedUpdate`에서 읽으면, 그 프레임에 `FixedUpdate`가 0번 돌면 입력이 씹히고 2번 돌면 점프가 두 번 나간다. 단발성 입력은 `Update`에서 받아 플래그에 저장하고 `FixedUpdate`에서 소비한다.
 
----
 
-## 2. 손으로 확인 (30분)
+## 4. 약어·용어
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+| 용어 | 뜻 |
+|---|---|
+| `PlayerLoop` | Unity가 프레임마다 도는 최상위 루프. 이벤트 함수 호출 순서를 정한다 |
+| `Fixed Timestep` | 물리 시뮬레이션 간격. 기본 0.02초(50Hz) |
+| `Maximum Allowed Timestep` | 한 프레임에서 `FixedUpdate`가 따라잡을 수 있는 최대 시간 |
+| `Time.timeScale` | 게임 시간 배율. 0이면 `FixedUpdate`가 호출되지 않는다 |
+| Script Execution Order | 스크립트 간 이벤트 함수 호출 순서를 지정하는 설정 |
 
-### 실습 1: LifecycleLogger로 6가지 시나리오의 호출 순서 예측·검증 (30분)
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
+
+### 실습 1: LifecycleLogger로 7가지 시나리오의 호출 순서 예측·검증 (30분)
 
 `practice/UnityLab`에 아래 두 스크립트를 만들고, 실행하기 전에 각 시나리오에서 콘솔에 찍힐 로그 순서와 프레임 번호(`F#`)를 **먼저 예측해 표에 적은 뒤** 실행해 비교한다.
 
@@ -140,6 +174,10 @@ public class LifecycleLogger : MonoBehaviour
 
 시나리오를 키보드 입력으로 실행하는 컨트롤러 스크립트도 함께 붙인다.
 
+{% hint style="info" %}
+NOTE: `Input.GetKeyDown`은 `Project Settings > Player > Active Input Handling`이 `Both`(또는 `Input Manager (Old)`)일 때만 동작한다. 새 Input System 전용이면 버전 확인 필요.
+{% endhint %}
+
 ```csharp
 // Unity: LifecycleScenarioRunner.cs
 using UnityEngine;
@@ -209,9 +247,8 @@ public class LifecycleScenarioRunner : MonoBehaviour
 
 </details>
 
----
 
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -245,12 +282,20 @@ public class LifecycleScenarioRunner : MonoBehaviour
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [이벤트 함수의 실행 순서 (Unity 공식 문서)](https://docs.unity3d.com/Manual/ExecutionOrder.html)
 - [MonoBehaviour API 문서](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html)
 - [Time과 프레임 속도 관리 (Unity 공식 문서)](https://docs.unity3d.com/Manual/TimeFrameManagement.html)
+
+이전: [Day 18 [실습] 이벤트 버스](day18-lab-event-bus.md) · 다음: [Day 20 UnityEngine.Object와 null](day20-unity-object-null.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] `Awake`와 `Start` 중 어디에 무엇을 두는지 내 프로젝트 코드의 예로 설명하면?
+- [ ] `FixedUpdate`에서 입력을 읽다가 문제가 생긴 적이 있는가, 혹은 생길 수 있는 곳은 어디인가?

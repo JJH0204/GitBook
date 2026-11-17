@@ -1,17 +1,36 @@
 # Day 05 · 델리게이트, 람다, 클로저
 
-> 1주차 C# 메모리 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day05`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-006-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | 델리게이트·람다·클로저의 할당 조건을 설명하고, 이벤트 구독 해제 누락으로 생기는 누수와 `MissingReferenceException`을 막는다. |
+| 적용 대상 | .NET 8 이상 콘솔(`dotnet new console -o practice/day05`), Unity 6(C# 9)와 다른 점은 본문에 표시 |
+| 소요 시간 | 60분 (1주차 C# 메모리, 읽기 20분 + 확인 실습 30분 + 확인 문제 10분) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
 - 델리게이트 변환과 람다 식이 언제 힙 할당을 일으키고 언제 캐시되는지 설명할 수 있다.
 - 클로저(`closure`)가 값이 아니라 변수를 캡처한다는 뜻과 컴파일러가 만드는 표시 클래스(`display class`)를 설명할 수 있다.
 - `event` 구독 해제를 잊었을 때 왜 메모리 누수와 Unity `MissingReferenceException`이 발생하는지 설명하고 고칠 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| 델리게이트(`Action`, `Func<T>`) | 힙 (참조 타입, 64비트 .NET 인스턴스 64 B) | 대상 객체(`Target`)와 메서드 포인터를 담는다 |
+| 메서드 그룹 변환 | 메서드를 델리게이트 자리에 넘기는 지점 | 인스턴스 메서드는 넘길 때마다 새 델리게이트를 할당한다 |
+| 비캡처 람다 | 람다 식 | 컴파일러가 숨은 `static` 필드에 1회 만들어 재사용한다 |
+| 캡처 람다(클로저) | 람다 식 | 표시 클래스 인스턴스와 델리게이트를 매번 할당한다 (회당 88 B) |
+| `event` | 발행자 클래스 | `+=`/`-=`만 노출한다. 구독자 참조를 델리게이트가 붙잡는다 |
+| `OnEnable` / `OnDisable` | `MonoBehaviour` | 구독과 해제를 짝지어 두는 자리 |
 
-### 1-1. 델리게이트는 참조 타입이다
+## 3. 동작 원리
+
+### 3-1. 델리게이트는 참조 타입이다
 
 `Action`, `Func<T>` 같은 **델리게이트(`delegate`)**는 내부에 대상 객체 참조(`Target`)와 메서드 포인터(`Method`)를 담는 **클래스(참조 타입)**다. 64비트 .NET에서 델리게이트 인스턴스 하나는 **64바이트**다.
 
@@ -24,7 +43,11 @@ Execute(MyMethod); // 메서드 그룹 변환: 호출할 때마다 new Action(th
 - **인스턴스 메서드 그룹(`this.MyMethod`)**: C# 버전에 상관없이 넘길 때마다 새 델리게이트(64B)를 힙에 할당한다. 반복 호출한다면 필드에 `Action _cached;`로 저장해 재사용해야 한다.
 - **`static` 메서드 그룹(`StaticMethod`)**: **C# 11(.NET 7+)부터는 컴파일러가 자동 캐시**하지만, **Unity 6(C# 9)은 캐시하지 않아 호출마다 델리게이트를 새로 할당**한다(Mono/IL2CPP의 델리게이트 크기는 .NET과 다르다).
 
-### 1-2. 람다와 클로저(`closure`)
+{% hint style="info" %}
+NOTE: 메서드 그룹 캐시는 C# 11 컴파일러 기능이다. 사용하는 Unity 버전의 C# 버전에 따라 다르므로 버전 확인 필요.
+{% endhint %}
+
+### 3-2. 람다와 클로저(`closure`)
 
 람다 식은 외부 변수를 **캡처(`capture`)하는지**에 따라 컴파일 결과가 완전히 달라진다.
 
@@ -35,7 +58,7 @@ Execute(MyMethod); // 메서드 그룹 변환: 호출할 때마다 new Action(th
 
 C# 9부터는 람다 앞에 `static` 키워드(`static x => x + 1`)를 붙여 실수로 지역 변수나 `this`를 캡처하는 것을 컴파일 타임에 막을 수 있다. Unity 6에서도 쓸 수 있다.
 
-### 1-3. 클로저는 "값"이 아니라 "변수"를 캡처한다
+### 3-3. 클로저는 "값"이 아니라 "변수"를 캡처한다
 
 ```csharp
 var actions = new List<Action>();
@@ -48,7 +71,7 @@ foreach (var a in actions) a(); // 출력: 333
 `for`문의 `i`는 루프 전체에서 변수 하나다. 컴파일러는 `i`를 표시 클래스의 필드 하나로 끌어올리고(`hoisting`), 세 람다가 그 객체 하나를 공유한다. 루프가 끝날 때 `i`가 3이 되었으므로 모두 3을 찍는다.
 반면 **`foreach`의 반복 변수는 C# 5부터 매 반복마다 새 변수로 취급**되어 각 클로저가 서로 다른 값을 갖는다. `for`문에서는 루프 안에 `int copy = i;` 지역 변수를 만들어 캡처하면 해결된다.
 
-### 1-4. `event`와 메모리 누수
+### 3-4. `event`와 메모리 누수
 
 `event`는 델리게이트 필드 주위에 `add`(`+=`)와 `remove`(`-=`) 접근자만 노출한 래퍼다. 외부 클래스에서 직접 호출(`Invoke`)하거나 `= null`로 덮어쓸 수 없다. 델리게이트는 **불변(`immutable`)**이라서 `+=`나 `-=`를 할 때마다 내부 호출 목록 배열을 복사한 **새 델리게이트 객체**가 만들어진다.
 
@@ -67,11 +90,21 @@ Unity에서 구독 해제를 안 한 채 구독자 `GameObject`가 `Destroy`되�
 1. C# 래퍼 객체(`MonoBehaviour`)가 메모리에 계속 남는다(누수).
 2. 이벤트가 발생할 때 이미 파괴된 네이티브 객체의 `transform`이나 `gameObject`에 접근해 **`MissingReferenceException`**이 발생한다(Day 20).
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 클로저(closure) | 람다가 바깥 지역 변수·`this`를 캡처해 수명을 연장하는 기능 |
+| 표시 클래스(display class) | 캡처된 변수를 필드로 갖도록 컴파일러가 만드는 숨은 클래스 |
+| 호이스팅(hoisting) | 캡처된 지역 변수를 표시 클래스의 필드로 끌어올리는 일 |
+| 메서드 그룹(method group) | 괄호 없이 쓴 메서드 이름. 델리게이트로 변환된다 |
+| `MissingReferenceException` | 파괴된 Unity 오브젝트에 접근할 때 발생하는 예외 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 3절 동작 원리로 돌아간다.
+{% endhint %}
 
 ### 실습 1: `for` 루프 캡처 버그 예측과 수정 (10분)
 
@@ -245,9 +278,7 @@ class Subscriber { public void Handle() { } }
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -275,13 +306,21 @@ class Subscriber { public void Handle() { } }
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [람다 식 및 익명 함수 — 외부 변수 캡처 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/lambda-expressions#capture-of-outer-variables-and-variable-scope-in-lambda-expressions)
 - [대리자 사용 (C# 프로그래밍 가이드)](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/delegates/using-delegates)
 - [event (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/keywords/event)
 - [이벤트를 구독 및 구독 취소하는 방법](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/events/how-to-subscribe-to-and-unsubscribe-from-events)
+
+이전: [Day 04 · struct 제대로 쓰기](day04-struct-in-practice.md) · 다음: [Day 06 · \[실습\] 상태 패턴](day06-lab-state-pattern.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: Day 05의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] 클로저가 "값이 아니라 변수를 캡처한다"는 말을 `for` 루프 예로 내 말로 설명하면?
+- [ ] 내가 이벤트를 구독하고 해제를 잊어 문제가 된 경험이 있는가? 어떻게 찾았는가?

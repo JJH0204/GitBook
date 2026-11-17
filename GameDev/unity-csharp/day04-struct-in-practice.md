@@ -1,17 +1,36 @@
 # Day 04 · struct 제대로 쓰기
 
-> 1주차 C# 메모리 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day04`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-005-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | struct를 쓸 기준과 방어적 복사, `readonly struct`, `in`, `Span<T>`의 동작을 설명하고 GC 할당 없는 코드를 작성한다. |
+| 적용 대상 | .NET 8 이상 콘솔(`dotnet new console -o practice/day04`), Unity 6(C# 9)와 다른 점은 본문에 표시 |
+| 소요 시간 | 60분 (1주차 C# 메모리, 읽기 20분 + 확인 실습 30분 + 확인 문제 10분) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
 - Unity 내장 struct들의 크기를 알고 언제 struct를 만들고 언제 피해야 하는지 기준을 말할 수 있다.
 - 방어적 복사(`defensive copy`)가 왜 일어나고 `readonly struct`와 `in` 매개변수가 어떻게 맞물리는지 설명할 수 있다.
 - `Span<T>`와 `ReadOnlySpan<T>`로 부분 문자열 할당 없이 데이터를 다룰 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| Unity 내장 struct | `Vector3`(12 B), `Quaternion`·`Color`(16 B), `Bounds`(24 B), `Matrix4x4`(64 B) | struct 크기 기준 감각을 준다 |
+| `readonly struct` | 타입 선언 | 모든 필드를 불변으로 강제하고 방어적 복사를 없앤다 |
+| `in` 매개변수 | 메서드 매개변수 | 읽기 전용 참조(8바이트 주소)로 전달한다 |
+| `ref` / `out` / `ref return` | 매개변수·반환값 | 복사 없이 원본 위치를 읽고 쓴다 |
+| `Span<T>` / `ReadOnlySpan<T>` | 지역 변수 (`ref struct`) | 배열·문자열·스택 메모리의 구간을 할당 없이 가리킨다 |
+| `stackalloc` | 지역 변수 초기화 | 스택에 메모리를 확보한다. GC와 무관하다 |
 
-### 1-1. 언제 struct를 쓰는가 — Unity 내장 타입 크기
+## 3. 동작 원리
+
+### 3-1. 언제 struct를 쓰는가 — Unity 내장 타입 크기
 
 .NET 설계 지침은 아래 네 조건을 모두 만족할 때 struct를 권장한다.
 1. 크기가 작다(대략 **16바이트 이하**).
@@ -27,7 +46,7 @@
 | `RaycastHit` | 좌표, 법선, 거리, 콜라이더 ID 등 | 약 44 B (버전·아키텍처에 따라 다름) | `out RaycastHit hit`으로 참조 전달 |
 | `Matrix4x4` | `float` × 16 | 64 B | 값으로 넘기면 매번 64B 복사 |
 
-### 1-2. 방어적 복사(`defensive copy`)와 `readonly struct`
+### 3-2. 방어적 복사(`defensive copy`)와 `readonly struct`
 
 `readonly` 필드나 `in` 매개변수에 들어 있는 struct는 **원본이 바뀌면 안 된다.** 그런데 컴파일러 입장에서 일반 struct의 메서드가 내부 필드를 바꿀지 안 바꿀지 알 수 없으면, 메서드를 부르기 전에 **임시 복사본을 만들어 복사본에 대해 메서드를 호출**한다. 이것이 **방어적 복사(`defensive copy`)**다.
 
@@ -63,7 +82,7 @@ readonly struct SafeVec3
 }
 ```
 
-### 1-3. `in` / `ref` / `out`과 `ref return`
+### 3-3. `in` / `ref` / `out`과 `ref return`
 
 | 키워드 | 의미 | 주요 용도 |
 |---|---|---|
@@ -78,15 +97,17 @@ ref Counter slot = ref arr[0]; // 복사본이 아니라 arr[0] 자리 자체
 slot.Increment();              // arr[0].Value가 1이 됨
 ```
 
-**주의**: `readonly`가 아닌 큰 struct를 `in`으로 넘기면 메서드 안에서 멤버를 호출할 때마다 방어적 복사가 일어나 값 전달보다 오히려 느려질 수 있다. **`in`은 항상 `readonly struct`와 짝지어 쓴다.**
+{% hint style="warning" %}
+CAUTION: `readonly`가 아닌 큰 struct를 `in`으로 넘기면 메서드 안에서 멤버를 호출할 때마다 방어적 복사가 일어나 값 전달보다 오히려 느려질 수 있다. `in`은 항상 `readonly struct`와 짝지어 쓴다.
+{% endhint %}
 
-### 1-4. 가변(`mutable`) struct가 위험한 세 곳
+### 3-4. 가변(`mutable`) struct가 위험한 세 곳
 
 1. **프로퍼티/인덱서 반환값**: `list[0].Value = 1;`은 복사본 수정이라 CS1612 에러가 난다([Day 01](day01-value-vs-reference.md) 참고).
 2. **`foreach` 반복 변수**: 반복 변수는 읽기 전용이다. `item.Value = 1;`은 CS1654 컴파일 에러가 나지만, `item.Increment();`는 컴파일이 **되고** 방어적 복사본만 고쳐서 아무 효과가 없다. 에러가 안 나는 쪽이 더 위험하다.
 3. **`readonly` 필드**: 위에서 본 방어적 복사로 수정이 조용히 버려진다.
 
-### 1-5. `Span<T>`와 `stackalloc` 맛보기
+### 3-5. `Span<T>`와 `stackalloc` 맛보기
 
 `Span<T>`와 `ReadOnlySpan<T>`는 배열, 문자열, 스택 메모리의 **연속된 구간을 힙 할당 없이 가리키는 `ref struct`**다. `ref struct`는 무조건 스택에만 살아야 해서 클래스의 필드가 될 수 없고, 박싱되거나 `async`/`yield` 메서드에서 경계를 넘어 쓰일 수 없다.
 
@@ -97,11 +118,25 @@ ReadOnlySpan<char> slice = "12,34,56".AsSpan(0, 2); // 부분 문자열 할당 �
 
 Unity 6(.NET Standard 2.1)에서도 `Span<T>`, `ReadOnlySpan<T>`, `stackalloc`, `int.Parse(ReadOnlySpan<char>)`를 그대로 쓸 수 있다. 단 `CollectionsMarshal.AsSpan(list)` 같은 API는 최신 .NET 전용이라 Unity에는 없다.
 
----
+{% hint style="info" %}
+NOTE: 사용할 수 있는 `Span<T>` 관련 API는 Unity 버전과 스크립팅 백엔드(Mono/IL2CPP)에 따라 다르다. 버전 확인 필요.
+{% endhint %}
 
-## 2. 손으로 확인 (30분)
+## 4. 약어·용어
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+| 용어 | 뜻 |
+|---|---|
+| 방어적 복사(defensive copy) | `readonly` 필드·`in` 매개변수의 struct 메서드 호출 전에 컴파일러가 만드는 임시 복사본 |
+| 불변(immutable) | 생성 뒤 값이 바뀌지 않는 성질 |
+| `ref struct` | 스택에만 존재하는 struct. 클래스 필드, 박싱, `async`/`yield` 경계 너머 사용이 불가하다 |
+| 슬라이스(Slice) | `Span`의 시작 위치와 길이만 바꿔 일부를 가리키는 연산 |
+| CS1654 | `foreach` 반복 변수의 멤버를 대입할 때 나는 컴파일러 오류 |
+
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 3절 동작 원리로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 방어적 복사 버그 재현과 두 가지 수정 (10분)
 
@@ -260,9 +295,7 @@ Span  파싱: 0 B (sum=1020000)
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -290,13 +323,21 @@ Span  파싱: 0 B (sum=1020000)
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [구조체 형식 (C# 참조) — readonly struct 및 방어적 복사](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/builtin-types/struct)
 - [in 매개 변수 한정자 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/keywords/method-parameters#in-parameter-modifier)
 - [변경 가능한 구조체가 위험한 이유 — 성능 함정 해결](https://learn.microsoft.com/ko-kr/dotnet/csharp/write-safe-efficient-code)
 - [Memory<T> 및 Span<T> 사용 지침](https://learn.microsoft.com/ko-kr/dotnet/standard/memory-and-spans/memory-t-usage-guidelines)
+
+이전: [Day 03 · GC와 할당](day03-gc-allocation.md) · 다음: [Day 05 · 델리게이트, 람다, 클로저](day05-delegate-closure.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: Day 04의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] 방어적 복사가 일어나는 이유와 `readonly struct`가 이를 해결하는 방식을 내 말로 설명하면?
+- [ ] 내가 만든 struct 중 class로 바꿔야 했거나 반대로 struct로 바꿀 만한 것이 있는가?

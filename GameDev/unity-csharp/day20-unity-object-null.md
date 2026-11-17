@@ -1,17 +1,36 @@
 # Day 20 · UnityEngine.Object와 null 🎮
 
-> 4주차 Unity 코어와 트러블슈팅 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day20`), 🎮 Unity 6 (`practice/UnityLab`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-021-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | UnityEngine.Object의 가짜 null과 `?.`/`??` 우회 문제를 설명하고 코드로 재현한다 |
+| 적용 대상 | .NET 8 이상 콘솔(실습 1) + Unity 6, `practice/UnityLab`(실습 2). 🎮 표시 날 |
+| 소요 시간 | 4주차 Unity 코어와 트러블슈팅 · 60분 (읽기 20, 실습 30, 문제 10) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - `UnityEngine.Object`가 C# 관리 래퍼(`managed wrapper`)와 C++ 네이티브 객체 두 조각으로 이루어진 구조와 `가짜 null(fake null)`의 정체를 설명할 수 있다.
 - 파괴된 Unity 오브젝트에 `?.`, `??`, `??=`, `is null`을 쓰면 왜 오버로드된 `==`를 우회해 `MissingReferenceException`이나 버그를 내는지 설명할 수 있다.
 - 파괴된 C# 래퍼나 언로드되지 않은 에셋이 메모리에 남는 누수 경로를 찾고 막을 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 구성 요소 | 위치 | 역할 |
+|---|---|---|
+| C# 래퍼(wrapper) | C# 관리 힙 (GC 관리) | 네이티브 객체를 가리키는 포인터 `m_CachedPtr`와 `m_InstanceID`를 든 얇은 객체 |
+| 네이티브 객체 | C++ 네이티브 메모리 (엔진이 관리) | 메시 정점, 텍스처 픽셀, 트랜스폼 계층 같은 실제 데이터 |
+| 오버로드된 `==`, `!=`, `bool` 변환 | `UnityEngine.Object` | 네이티브 포인터가 파괴됐으면 `null`로 판정한다 |
+| `?.`, `??`, `??=`, `is null` | C# 언어 | 오버로드를 무시하고 순수 참조만 검사한다 |
+| `Destroy` | `UnityEngine.Object` | 프레임 말미에 네이티브 객체를 해제한다 |
 
-### 1-1. 반쪽짜리 객체: C# 래퍼와 C++ 네이티브 객체
+## 3. 동작 원리
+
+### 3-1. 반쪽짜리 객체: C# 래퍼와 C++ 네이티브 객체
 
 `GameObject`, `Component`(`MonoBehaviour`, `Transform` 등), `ScriptableObject`, `Texture2D`, `Mesh`는 모두 `UnityEngine.Object`를 상속한다. 이들은 일반 C# 객체와 달리 **두 개의 메모리 공간에 걸쳐** 산다.
 
@@ -27,7 +46,7 @@
 - **진짜 무거운 데이터**(메시 정점, 텍스처 픽셀, 트랜스폼 계층)는 C++ 네이티브 쪽에 있다.
 - **C# 객체는 얇은 껍데기(래퍼, `wrapper`)**다. 내부에 네이티브 객체를 가리키는 포인터(`m_CachedPtr`)만 들고 있다.
 
-### 1-2. Destroy와 "가짜 null (Fake Null)"
+### 3-2. Destroy와 "가짜 null (Fake Null)"
 
 `Destroy(gameObject)`를 호출하면 **그 프레임 끝에 C++ 네이티브 객체가 해제**되고 C# 래퍼의 내부 포인터는 `0`(`IntPtr.Zero`)이 된다. 하지만 C# 관리 힙에 있는 래퍼 객체 자체는 누군가 참조 변수를 들고 있는 한 GC가 마음대로 지울 수 없다.
 
@@ -41,7 +60,7 @@ Unity는 개발자가 파괴 여부를 쉽게 확인하도록 `UnityEngine.Objec
 | `obj is null` | 순수 C# 참조 주소가 `0`인지 비교 (연산자 오버로드 무시) | **`false`** (C# 껍데기는 아직 살아 있음!) |
 | `ReferenceEquals(obj, null)` | 순수 C# 참조 동일성 비교 | **`false`** |
 
-### 1-3. 왜 Unity 오브젝트에 `?.`, `??`, `??=`를 쓰면 위험한가
+### 3-3. 왜 Unity 오브젝트에 `?.`, `??`, `??=`를 쓰면 위험한가
 
 C#의 null 조건부 연산자(`?.`)와 null 병합 연산자(`??`, `??=`)는 타입이 오버로드한 `==`를 부르지 않고 **순수 C# 참조가 진짜 `null`인지만** 본다.
 
@@ -57,21 +76,35 @@ Transform fallback = target ?? defaultTarget;
 
 Rider나 Visual Studio가 Unity 컴포넌트에 `?.`나 `??`를 쓰면 *"Lifetime check of Unity object is bypassed"* 경고를 띄우는 이유가 바로 이것이다. Unity 오브젝트가 살아 있는지 확인할 때는 명시적으로 `if (target != null)` 또는 `if (target)`을 쓴다.
 
-### 1-4. 에디터 전용 가짜 객체와 핫 패스에서의 `== null` 비용
+{% hint style="info" %}
+NOTE: 경고 문구와 표시 여부는 IDE와 버전에 따라 다르다(버전 확인 필요).
+{% endhint %}
 
-- **에디터 전용 주의점**: 에디터에서는 인스펙터에 할당하지 않은 `[SerializeField]` 필드나 실패한 `GetComponent`가 진짜 `null` 대신 **"어느 필드가 비었는지 친절한 에러(`UnassignedReferenceException` 등)를 띄우기 위한 가짜 C# 래퍼 객체"**를 들어 있을 때가 있다. 이는 에디터 전용 동작이며 빌드에서는 진짜 `null`이다.
+### 3-4. 에디터 전용 가짜 객체와 핫 패스에서의 `== null` 비용
+
+- **에디터 전용 주의점**: 에디터에서는 인스펙터에 할당하지 않은 `[SerializeField]` 필드나 실패한 `GetComponent`가 진짜 `null` 대신 **"어느 필드가 비었는지 친절한 에러(`UnassignedReferenceException` 등)를 띄우기 위한 가짜 C# 래퍼 객체"**가 들어 있을 때가 있다. 이는 에디터 전용 동작이며 빌드에서는 진짜 `null`이다.
 - **`== null`의 비용**: 일반 C# 객체의 `null` 체크는 레지스터 비교 1클럭이지만, `UnityEngine.Object`의 `== null`(및 `if (obj)`)은 오버로드된 메서드를 타며 상황에 따라 네이티브 브리지 확인이 들어간다. 매 프레임 수천 번 도는 루프 안에서는 `== null`을 반복 호출하지 말고 `bool hasTarget = target != null;`이나 `ReferenceEquals`(파괴될 일이 없는 참조일 때)로 캐싱한다.
 
-### 1-5. 래퍼 누수와 에셋 메모리 누수
+### 3-5. 래퍼 누수와 에셋 메모리 누수
 
 1. **파괴된 C# 래퍼 누수**: `Destroy(enemy.gameObject)`를 호출했어도 정적 리스트(`static List<Enemy>`)나 해제하지 않은 이벤트(`EventBus`, Day 05, 18)가 `enemy` 컴포넌트를 계속 잡고 있으면, C++ 객체는 사라졌지만 **C# 래퍼와 그 컴포넌트가 필드로 잡고 있는 모든 일반 C# 배열·문자열은 영원히 GC되지 않는다.**
 2. **에셋(`Texture`, `Mesh`, `AudioClip`) 누수**: 씬의 `GameObject`는 씬이 닫히면 파괴되지만, 로드된 에셋은 참조가 끊겨도 즉시 내려가지 않을 수 있다. `Addressables.Release`를 짝지어 호출하거나 `Resources.UnloadUnusedAssets()`로 정리해야 네이티브 메모리가 반환된다.
 
----
 
-## 2. 손으로 확인 (30분)
+## 4. 약어·용어
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+| 용어 | 뜻 |
+|---|---|
+| 가짜 null(fake null) | C# 참조는 살아 있으나 네이티브 객체가 파괴되어 `== null`이 `true`가 되는 상태 |
+| `m_CachedPtr` | 래퍼가 가진 네이티브 객체 포인터. 파괴되면 `IntPtr.Zero`가 된다 |
+| `MissingReferenceException` | 파괴된 오브젝트의 멤버에 접근할 때 나는 예외 |
+| 래퍼 누수 | 정적 리스트·구독이 파괴된 래퍼를 계속 잡아 GC되지 않는 상태 |
+
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
 
 ### 실습 1 (콘솔): FakeUnityObject를 직접 만들어 가짜 null 재현하기 (15분)
 
@@ -210,9 +243,8 @@ public class UnityNullCheckLab : MonoBehaviour
 
 </details>
 
----
 
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -240,12 +272,20 @@ public class UnityNullCheckLab : MonoBehaviour
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [UnityEngine.Object API 문서 및 null 비교 설명](https://docs.unity3d.com/ScriptReference/Object.html)
 - [Object.Destroy API 문서](https://docs.unity3d.com/ScriptReference/Object.Destroy.html)
 - [연산자 오버로딩 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/operator-overloading)
+
+이전: [Day 19 MonoBehaviour 생명주기](day19-monobehaviour-lifecycle.md) · 다음: [Day 21 직렬화와 ScriptableObject](day21-serialization-scriptableobject.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] `Destroy`한 오브젝트를 참조하는 변수가 내 코드 어디에 남을 수 있는가?
+- [ ] `?.`를 Unity 오브젝트에 쓰고 싶어질 때 어떤 코드로 바꾸겠는가?
