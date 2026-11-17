@@ -9,7 +9,7 @@ SwiftUI는 2019년에 Apple에 의해 도입된 비교적 새로운 UI 프레임
 UI 코드가 간결하고 이해하기 쉽습니다.
 
 • **크로스 플랫폼 호환성**\
-iOS, macOS, watchOS, tvOS 등 여러 Apple 플랫폼에서 사용할 수 있습니다.
+iOS, macOS, watchOS, tvOS 등 여러 Apple 플랫폼(Apple 플랫폼에 한정)에서 사용할 수 있습니다.
 
 • **동적 UI**\
 간단한 방법으로 상태 변화에 따라 UI가 자동으로 업데이트 됩니다.

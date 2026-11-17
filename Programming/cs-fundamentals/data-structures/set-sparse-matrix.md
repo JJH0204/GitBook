@@ -50,7 +50,7 @@ int main()
 	int matrix2[ROWS][COLS];
 	
 	MatrixTranspose(matrix, matrix2);
-	MatrixPrint(matrix1);
+	MatrixPrint(matrix);
 	MatrixPrint(matrix2);
 	return 0;
 }

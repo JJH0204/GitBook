@@ -11,12 +11,12 @@
 * Swift 언어에 익숙해질 때까지 여기서 코드를 작성해보고 테스트하면 좋습니다.
 {% endhint %}
 
-## [Swift](swift.md)
+## Swift
 
 ### UIView (뷰)
 
 ### UIKit (유저 인터페이스 킷)
 
-### [프로젝트 생성](https://krjaeh0.gitbook.io/j-log/gamedev/gameplayprogrammer/shadergraph/goranitvshadertimeline)
+### 프로젝트 생성
 
 통합 캘린더 어플 만들기

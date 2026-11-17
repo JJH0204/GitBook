@@ -85,7 +85,7 @@ print(dog.call(_dog: Lemi, _name: "레미"))
 
 //print(DDomi.age)    // 프로퍼티를 private 으로 설정해 접근을 제한했다.
 
-/* 구조체는 접근 제어 키워드를 설정하지 않으면 public 으로 동작한다. */
+/* 구조체는 접근 제어 키워드를 설정하지 않으면 internal(같은 모듈 안에서만 접근)로 동작한다. */
 
 /* static 키워드를 활용해 dog 객체의 수량을 관리할 수 있다. */
 print("현재 \(dog.getCount()) 마리 서식 중")

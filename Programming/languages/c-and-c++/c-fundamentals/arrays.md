@@ -14,7 +14,7 @@ int main(void)
         a_numbers[i] = 10 * i;
     }
 
-    printf("The 7th number in ther array is %d.", a_numbers[6]);
+    printf("The 7th number in the array is %d.", a_numbers[6]);
 
     /* TODO: define the grades variable here */
     int grades[3];

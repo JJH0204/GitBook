@@ -13,8 +13,7 @@ https://growing-dev101.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-V
 {% column %}
 ### For Mac
 
-* [맥 OS 에서 VSCode C/C++ 초기 세팅](https://krjaeh0.gitbook.io/j-log/programming/languages/c-and-c++/setup/c_for_mac)
-* [Run in Terminal 설정](https://krjaeh0.gitbook.io/j-log/programming/languages/c-and-c++/setup/c_for_mac)
+* [맥 OS 에서 VSCode C/C++ 초기 세팅](https://krjaeh0.gitbook.io/j-log/programming/languages/c-and-c++/setup/intro)
 * Mac OS 환경변수 설정방법
 {% endcolumn %}
 {% endcolumns %}

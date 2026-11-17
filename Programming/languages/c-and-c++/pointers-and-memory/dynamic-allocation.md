@@ -42,6 +42,7 @@ void printDynamicAlloc(person * p)
 {
     if (p == NULL)
     {
+        // 주의: free()는 포인터를 NULL로 바꾸지 않는다. 해제된 포인터를 다시 쓰면 UB이므로 해제 직후 p = NULL;로 직접 지운다
         printf("메모리가 정리되었습니다~\n");
         return;
     }
