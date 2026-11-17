@@ -1,5 +1,76 @@
 # HTTP 쿠키 및 속성 (Cookie)
 
-* Client -> Server
-* `Set-Cookie:` Server -> Client
-* `HttpOnly` / `Secure (HTTPS)`
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRG-HTU-003-DO |
+| 유형 | D&O (개념) |
+| 목적 | 쿠키가 요청 사이에 상태를 유지하는 방식과 보안 속성을 설명한다 |
+| 확인 상태 | 미검증 (원본 메모에 일반 웹 지식을 보충했다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 원본은 세 줄 메모였다. 3절 이후의 설명과 속성 표는 원본에 없던 내용이며 일반 웹 지식으로 보충했다. 확인 필요.
+{% endhint %}
+
+## 1. 목적
+
+HTTP는 요청마다 독립적으로 처리되며 이전 요청을 기억하지 않는다(무상태, stateless). 쿠키(Cookie)는 서버가 브라우저에 작은 데이터를 저장시키고, 브라우저가 이후 요청에 그 데이터를 자동으로 붙이게 하는 방법이다. 로그인 유지 같은 상태 유지에 쓴다.
+
+## 2. 구성 요소
+
+| 헤더 | 방향 | 역할 |
+|---|---|---|
+| `Set-Cookie` | 서버 → 클라이언트 (응답) | 브라우저에 쿠키를 저장하라고 지시한다 |
+| `Cookie` | 클라이언트 → 서버 (요청) | 저장된 쿠키를 서버에 되돌려 보낸다 |
+
+### 2.1 주요 속성
+
+| 속성 | 역할 |
+|---|---|
+| `HttpOnly` | JavaScript(`document.cookie`)로 쿠키를 읽지 못하게 한다. XSS로 쿠키가 탈취되는 위험을 줄인다 |
+| `Secure` | HTTPS 연결에서만 쿠키를 전송한다 |
+| `SameSite` | 다른 사이트에서 시작된 요청에 쿠키를 붙일지 제한한다(`Strict`, `Lax`, `None`). CSRF 위험을 줄인다 |
+| `Domain` / `Path` | 쿠키를 보낼 도메인과 경로 범위를 지정한다 |
+| `Expires` / `Max-Age` | 쿠키의 만료 시점을 지정한다. 없으면 브라우저를 닫을 때 삭제되는 세션 쿠키다 |
+
+{% hint style="info" %}
+NOTE: `SameSite=None`은 `Secure`와 함께 써야 한다.
+{% endhint %}
+
+## 3. 동작 원리
+
+1. 클라이언트가 서버에 로그인 요청을 보낸다.
+2. 서버가 응답에 `Set-Cookie: sid=<세션 식별자>; HttpOnly; Secure`를 담는다.
+3. 브라우저가 쿠키를 저장한다.
+4. 브라우저가 같은 서버로 보내는 이후 요청에 `Cookie: sid=<세션 식별자>`를 자동으로 붙인다.
+5. 서버가 세션 식별자로 이용자를 구분한다.
+
+세션(session)은 서버가 이용자별 상태를 저장하는 방식이며, 쿠키에는 그 상태를 찾는 식별자만 담는 구성이 일반적이다. 쿠키는 이용자가 조회·수정할 수 있으므로 비밀번호 같은 민감 정보를 직접 담지 않는다.
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| 쿠키(Cookie) | 서버가 브라우저에 저장시키는 작은 데이터 |
+| 세션(Session) | 서버 쪽에서 유지하는 이용자별 상태 |
+| 세션 쿠키 | 만료 시점이 없어 브라우저 종료 시 삭제되는 쿠키 |
+| XSS | Cross-Site Scripting. 페이지에 악성 스크립트를 삽입하는 공격 |
+| CSRF | Cross-Site Request Forgery. 이용자 모르게 요청을 보내게 하는 공격 |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [devtools_applicationtab.md](../browser-and-devtools/devtools_applicationtab.md) | PRG-BRW-005-MP | 개발자 도구 Application 탭 |
+| [http.md](../../../../Network/protocols/http.md) | NET-PRT-007-DO | HTTP 프로토콜 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] HTTP가 무상태인데 로그인이 유지되는 이유를 쿠키와 세션으로 설명한다.
+- [ ] `HttpOnly`와 `Secure`가 각각 막는 위험을 적는다.
