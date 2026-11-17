@@ -5,6 +5,10 @@
 * 비선점(Non-Preemptive): 프로세스 종료까지 다른 프로세스가 CPU 점유 불가능
 * 선점(Preemptive): 다른 프로세스가 CPU 요청 시 실행중인 프로세스를 중단
 
+{% hint style="warning" %}
+아래 분류에서 Priority·Deadline(EDF)·Rate Monotonic은 선점/비선점 모두로 구현할 수 있다. RM은 선점형 고정 우선순위 방식이 정석이다. SJF가 평균 대기 시간을 최소로 하는 것은 비선점 기준이며, 선점까지 포함하면 SRT가 최적이다.
+{% endhint %}
+
 ## 비선점(Non-Preemptive) 스케줄링
 
 ### Priority (우선순위 방식)
@@ -184,7 +188,7 @@
 ### 장점
 
 * 평균 대기 시간, 평균 반환 시간이 매우 우수
-* 실시간 처리 능력이 매우 뛰어남
+* 평균 대기 시간 면에서 최적이다(하드 실시간 보장과는 무관하며, 실시간용은 EDF·RM이다)
 {% endstep %}
 
 {% step %}

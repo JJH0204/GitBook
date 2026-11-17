@@ -169,7 +169,7 @@
       * [URL 구조 및 분석 (URL)](cs_basics/web_technologies/http-and-urls/url.md)
       * [URL 인코딩 (URL Encoding)](cs_basics/web_technologies/http-and-urls/url_encoding.md)
       * [HTTP 쿠키 및 속성 (Cookie)](cs_basics/web_technologies/http-and-urls/cookie.md)
-      * [HTTP 상태 코드 (RFC 2616)](cs_basics/web_technologies/http-and-urls/rfc_2616_code.md)
+      * [HTTP 상태 코드](cs_basics/web_technologies/http-and-urls/rfc_2616_code.md)
     * [브라우저 및 개발자 도구 (DevTools)](cs_basics/web_technologies/browser-and-devtools/README.md)
       * [웹 브라우저 동작 원리 (Browser)](cs_basics/web_technologies/browser-and-devtools/webbrowser.md)
       * [개발자 도구 디버깅 (DevTools)](cs_basics/web_technologies/browser-and-devtools/webdevelopertools.md)
