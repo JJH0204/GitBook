@@ -1,7 +1,38 @@
 # 애플리케이션 보안 참고 링크
 
-* [WAF](../security/defensive-security/defense/waf.md)
-* DataBase 보안
-* [Wargame](../ctf-and-wargame/wargame.md)
-* Setoolkit
-* DB보안과제
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-NOT-002-DO |
+| 유형 | D&O (개념, 참고 링크 모음) |
+| 목적 | 애플리케이션 보안 학습 주제와 관련 문서를 모은다 |
+| 확인 상태 | 미검증 (원본 목록을 정리한 것이다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 목적
+
+애플리케이션 보안 학습 주제를 한곳에 나열하고, 문서가 있는 항목은 링크로 연결한다.
+
+## 2. 구성 요소
+
+| 주제 | 문서 |
+|---|---|
+| 웹 애플리케이션 방화벽 | [waf.md](../security/defensive-security/defense/waf.md) |
+| 워게임 | [wargame.md](../ctf-and-wargame/wargame.md) (SEC-CTF-001-DO) |
+| 데이터베이스 보안 | 문서 없음 |
+| Setoolkit | 문서 없음 |
+| DB 보안 과제 | 문서 없음 |
+
+{% hint style="info" %}
+NOTE: 원본 목록 중 링크가 없는 세 항목은 별도 문서가 없어 "문서 없음"으로 표시했다. 확인 필요.
+{% endhint %}
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 위 주제 중 가장 먼저 정리하고 싶은 것과 이유를 적어 본다.
+- [ ] WAF가 막아 주는 것과 막지 못하는 것을 내 말로 적어 본다.
