@@ -1,2 +1,1 @@
-# SecondSemesterAssignment
-
+# 2학기 과제

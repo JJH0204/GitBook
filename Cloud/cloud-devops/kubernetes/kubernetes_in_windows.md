@@ -1,4 +1,4 @@
-# kubernetes\_in\_windows
+# Windows 환경 Kind 쿠버네티스 설치
 
 {% stepper %}
 {% step %}

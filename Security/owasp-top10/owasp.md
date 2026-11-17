@@ -1,4 +1,4 @@
-# OWASP
+# OWASP Top 10 개요
 
 This page links to the official OWASP Top 10 resource.
 

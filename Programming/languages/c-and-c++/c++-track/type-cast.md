@@ -1,4 +1,4 @@
-# Type Cast
+# 형변환 (Type Cast)
 
 {% stepper %}
 {% step %}

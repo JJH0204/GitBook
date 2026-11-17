@@ -1,4 +1,4 @@
-# Shell Script
+# 쉘 스크립트 프로그래밍 기초
 
 *   Shell 자동화를 위해 작성하는 Script
 
@@ -187,14 +187,14 @@ let size2=$(stat -c%s "$file2")
 
 if [ -f "$file1" ] && [ -f "$file2" ]; then
         echo "file1 equal file2"
-        if ["$size1" -gt 5 && "$size2" -lt 5](%22%24size1%22%20-gt%205%20%26%26%20%22%24size2%22%20-lt%205.md); then
+        if "$size1" -gt 5 && "$size2" -lt 5; then
                 echo "True"
         else
                 echo "False"
         fi
 else
         echo "file1 not equal file2"
-        if [| "$size2" -lt 5](%22%24size1%22%20-gt%205.md); then
+        if | "$size2" -lt 5; then
                 echo "True"
         else
                 echo "False"
@@ -570,7 +570,7 @@ find /var/log -type f -name "*.log" -mtime 1 -exec gzip {} \;
 * -mtime +n: 파일의 마지막 수정 날짜가 n 이상인 파일을 찾는다.
 * -exec: 찾은 파일들을 대상으로 수행할 작업을 지정한다.
 
-관련: [find\_time](/broken/pages/ff66cfac08e0878e730418dcf8e74bda386554ea)
+관련: [find\_time](../commands/find_time.md)
 
 {% stepper %}
 {% step %}
@@ -600,4 +600,4 @@ find /var/log -type f -name "*.log" -mtime +1 -exec rm -f {} \;
 
 ### 서버 점검 스크립트
 
-* 관련 페이지: [서버 점검 스크립트](/broken/pages/04ddcecbf00257c282e08db180b95decfe1f0530)
+* 관련 페이지: 서버 점검 스크립트

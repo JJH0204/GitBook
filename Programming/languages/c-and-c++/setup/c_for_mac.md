@@ -1,4 +1,4 @@
-# C\_for\_Mac
+# macOS C/C++ 환경 설정
 
 {% stepper %}
 {% step %}
@@ -20,7 +20,7 @@
 {% step %}
 ### Run in Terminal 설정
 
-자세한 설정은 [Run in Terminal 설정](/broken/pages/7d8169c5efeb213f5e7f86c6cc1c547fa79c3495)을 참고하세요.
+자세한 설정은 Run in Terminal 설정을 참고하세요.
 {% endstep %}
 
 {% step %}

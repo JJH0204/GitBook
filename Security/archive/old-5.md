@@ -1,4 +1,4 @@
-# old 5
+# Webhacking.kr: old 5
 
 아래는 mem/join.php 에 포함된 자바스크립트 난독화를 해제한 내용과 풀이(해결 방법)입니다.
 

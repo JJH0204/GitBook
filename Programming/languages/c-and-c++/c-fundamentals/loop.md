@@ -1,4 +1,4 @@
-# loop
+# 반복문 (Loops)
 
 {% code title="loops.c" %}
 ```c

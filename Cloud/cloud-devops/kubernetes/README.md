@@ -1,2 +1,1 @@
-# Kubernetes
-
+# 쿠버네티스 (Kubernetes)

@@ -1,4 +1,4 @@
-# GatewaySetup
+# 게이트웨이 설정 (Gateway Setup)
 
 ## Gateway란?
 

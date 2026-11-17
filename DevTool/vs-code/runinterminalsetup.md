@@ -1,4 +1,4 @@
-# RunInTerminalSetup
+# VS Code 터미널 실행 설정
 
 {% stepper %}
 {% step %}

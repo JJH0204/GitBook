@@ -1,4 +1,4 @@
-# pointers
+# 포인터 기본 (Pointers)
 
 {% code title="pointers.c" %}
 ```c

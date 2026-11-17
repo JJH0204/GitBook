@@ -1,4 +1,4 @@
-# CTF\_Venus
+# CTF: Venus
 
 ## \[정보수집]
 
@@ -119,7 +119,7 @@ hydra 192.168.56.112 -s 8080 http-form-post "/:username=^USER^&password=^PASS^:I
 {% step %}
 ### 쿠키 분석
 
-* [쿠키](file:///5659318/web/cookie.md) 값 형태가 이상하다. (의도적으로 쿠키를 암호화한 것 같다.)
+* [쿠키](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/cookie) 값 형태가 이상하다. (의도적으로 쿠키를 암호화한 것 같다.)
 * guest:guest > Z3Vlc3Q6dGhyZmc= > (base64) guest:thrfg &#x20;
 * venus:123456 > 쿠키에 변화가 없다
 * venus; dmVudXM6aXJhaGY=; venus:irahf > magellan:irahf

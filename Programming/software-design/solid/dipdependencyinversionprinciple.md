@@ -1,4 +1,4 @@
-# DIPDependencyInversionPrinciple
+# 의존관계 역전 원칙 (DIP)
 
 {% hint style="info" %}
 고수준 모듈은 저수준 모듈에 의존해서는 안 되며, 두 모듈 모두 추상화에 의존해야 합니다.

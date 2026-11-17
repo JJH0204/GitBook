@@ -1,4 +1,4 @@
-# logwatch
+# 로그 분석 및 보고 (Logwatch)
 
 로그를 보기 쉽게 보고서로 작성하고 관리자의 이메일로 전송하는 서비스: logwatch
 
@@ -113,9 +113,7 @@ logwatch --output stdout
  /dev/mapper/rl-root   17G  2.1G   15G  13% /
  /dev/sda1            960M  404M  557M  43% /boot
 
-
  ---------------------- Disk Space End -------------------------
-
 
  ###################### Logwatch End #########################
 ```

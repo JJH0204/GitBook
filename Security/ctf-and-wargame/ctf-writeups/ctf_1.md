@@ -1,4 +1,4 @@
-# CTF\_1
+# CTF: Earth (1)
 
 ***
 
@@ -54,7 +54,7 @@ nmap 192.168.56.103 -sV -v -p-
   &#x20;
 * `dirb https://terratest.earth.local/`에서 새로운 파일 확인\
   &#x20; \
-  [robots.txt](file:///5659318/security/robots.txt.md)
+  [robots.txt](../../notes/robots.txt.md)
 * `/testingnotes.*`가 허용된 것을 확인하고 접속 시도\
   &#x20;
 * terra 사용자가 로그인할 때 testdata.txt 파일을 활용해 로그인하고 암호화는 xor 방식이라는 것을 알게됨.

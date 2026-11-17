@@ -1,4 +1,4 @@
-# MinGWw64Installation
+# Windows MinGW-w64 설치
 
 Windows 환경에서 Visual Studio Code로 C/C++ 개발을 하기 위한 초기 설정에 꼭 필요합니다.
 

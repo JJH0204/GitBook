@@ -1,4 +1,4 @@
-# iptables
+# iptables 방화벽 규칙
 
 {% hint style="info" %}
 * CentOS에서는 firewalld를 이용해 접근 제어를 하기 때문에 iptables를 사용하지 않게 되었다.

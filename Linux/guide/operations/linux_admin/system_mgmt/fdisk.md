@@ -1,4 +1,4 @@
-# FDISK
+# fdisk 파티션 관리 유틸리티
 
 FDISK는 리눅스 시스템에서 하드 디스크 파티션을 관리하는 명령줄 유틸리티로, 사용자가 디스크 파티션 테이블을 생성·수정·삭제할 수 있게 해줍니다. 이 도구는 특히 MBR(Master Boot Record) 파티션 테이블을 지원하지만, GPT(GUID Partition Table)는 지원하지 않습니다. ([LFCS Certification Prep](https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/))
 

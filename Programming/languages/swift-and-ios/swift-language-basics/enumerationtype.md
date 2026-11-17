@@ -1,4 +1,4 @@
-# EnumerationType
+# 열거형 (Enumeration)
 
 * 관련된 값들을 그룹화하여 코드를 더 안전하고 쉽게 작성할 수 있도록 돕는 타입
 * 각 케이스가 하나의 구체적인 값과 연결될 수 있으며, 각 값의 의미를 명확하게 표현할 수 있다.
@@ -76,7 +76,7 @@ switch targetPlanet {
 }
 ```
 
-### [프로토콜(Protocol)](/broken/pages/3a8c9d85b0fd8374c5c4e5da9d23b69c7949397c)을 응용한 작업
+### [프로토콜(Protocol)](https://krjaeh0.gitbook.io/j-log/network/protocols/network_protocol)을 응용한 작업
 
 * 아래 코드는 CaseIterable 프로토콜을 채택하여 필요한 부가 기능을 사용할 수 있도록 한 예시다.
 

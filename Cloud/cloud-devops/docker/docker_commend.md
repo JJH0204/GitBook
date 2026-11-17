@@ -1,9 +1,9 @@
-# Docker\_commend
+# 도커 필수 명령어 (Docker Command)
 
 자주 사용하는 도커 명령어를 소개합니다.\
 더 많은 명령어와 옵션에 대한 자세한 설명은 [도커 공식 문서](https://docs.docker.com/engine/reference/commandline/docker/)에서 확인할 수 있습니다.
 
-### [`docker build`](/broken/pages/3967193d0af3381c948781c85245cca5f5a71ac0)
+### [`docker build`](docker_build.md)
 
 Dockerfile을 이용하여 이미지를 생성합니다.
 

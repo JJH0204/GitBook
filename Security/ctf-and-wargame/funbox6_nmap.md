@@ -1,4 +1,4 @@
-# funbox6\_nmap
+# CTF: Funbox 6 Nmap 스캔
 
 #### 1. 스캔 결과 주요 정보
 

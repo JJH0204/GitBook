@@ -1,4 +1,4 @@
-# GumiUnivSelfIntro
+# 구미대 자기소개서 초안
 
 ## 왜 게임을 만들고 싶은지
 

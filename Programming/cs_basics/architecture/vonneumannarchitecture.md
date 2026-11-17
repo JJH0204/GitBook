@@ -1,7 +1,7 @@
-# VonNeumannArchitecture
+# 폰 노이만 구조 (Von Neumann)
 
-* 근대 컴퓨터는 연산과 제어를 위해 [중앙처리장치(Central Processing Unit, CPU)](/broken/pages/39a4adb593184a38fe58a32ce1861773491ba78a), 저장을 위해 [기억장치(Memory)](/broken/pages/67b999a8b99f511c4040b4b186a9c56bfdaa65f1)를 사용한다.
-* 장치 간 데이터나 제어 신호를 교환할 수 있도록 [버스(Bus)](/broken/pages/802399cd56e4ba69e5a44cdc99e3749c5d192851)라는 전자 통로를 사용한다.
+* 근대 컴퓨터는 연산과 제어를 위해 중앙처리장치(Central Processing Unit, CPU), 저장을 위해 [기억장치(Memory)](../os_memory/memory-management/memory.md)를 사용한다.
+* 장치 간 데이터나 제어 신호를 교환할 수 있도록 [버스(Bus)](bus.md)라는 전자 통로를 사용한다.
 
 {% hint style="info" %}
 CPU안에 다른 저장장치가 왜 필요한가

@@ -1,4 +1,4 @@
-# Webhacking.kr
+# Webhacking.kr 워게임
 
 * php 코드 이해도 올리기
 
@@ -12,14 +12,14 @@
 {% endstep %}
 {% endstepper %}
 
-* [old-1](file:///2237607/ctf_writeups/old-1.md)@
-* [old-2](file:///2237607/ctf_writeups/old-2.md)
-* [old-3](file:///2237607/ctf_writeups/old-3.md)
-* [old-4](file:///2237607/ctf_writeups/old-4.md)
-* [old-5](file:///2237607/ctf_writeups/old-5.md)
-* [old-6](file:///2237607/ctf_writeups/old-6.md)@
-* [old-15](file:///2237607/ctf_writeups/old-15.md)
-* [old-16](file:///2237607/ctf_writeups/old-16.md)@
-* [old-26](file:///2237607/ctf_writeups/old-26.md)
-* [old-31](file:///2237607/ctf_writeups/old-31.md)
-* [old-39](file:///2237607/ctf_writeups/old-39.md)@
+* [old-1](../archive/old-1.md)@
+* [old-2](../archive/old-2.md)
+* old-3
+* [old-4](../archive/old-4.md)
+* [old-5](../archive/old-5.md)
+* [old-6](../archive/old-6.md)@
+* [old-15](../archive/old-15.md)
+* [old-16](../archive/old-16.md)@
+* [old-26](../archive/old-26.md)
+* [old-31](../archive/old-31.md)
+* [old-39](../archive/old-39.md)@

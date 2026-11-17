@@ -1,4 +1,4 @@
-# SwiftCharacteristics
+# Swift 언어 특징
 
 #### 안정성
 

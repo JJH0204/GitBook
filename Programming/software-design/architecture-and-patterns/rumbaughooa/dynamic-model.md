@@ -1,4 +1,4 @@
-# dynamic model
+# 동적 모델 (Dynamic Model)
 
 ## 동적 모델(Dynamic Model)이란?
 

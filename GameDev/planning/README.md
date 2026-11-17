@@ -1,2 +1,1 @@
-# Planning
-
+# 게임 기획 (Planning)

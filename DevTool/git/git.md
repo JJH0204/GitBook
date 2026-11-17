@@ -1,4 +1,4 @@
-# GIT
+# Git 기본 설정 및 계정 해제
 
 * [깃 과 옵시디언 연동 방법](https://alive-wong.tistory.com/65)
 * [깃 저장소 병합 방법](https://velog.io/@jisuuuu/Git-Repository%EB%93%A4-%ED%95%98%EB%82%98%EB%A1%9C-%ED%95%A9%EC%B9%98%EA%B8%B0)
@@ -63,9 +63,16 @@ Windows를 사용하는 경우 "자격 증명 관리자"에서 Git 관련 자격
 * [git\_commant\_add](https://hygge-wavy.tistory.com/m/94)
 * [git\_team\_add](https://velog.io/@gmlstjq123/%EB%82%B4-Github-Repository%EB%A1%9C-%ED%8C%80%EC%9B%90-%EC%B4%88%EB%8C%80%ED%95%98%EA%B8%B0)
 * [git\_web](https://brunch.co.kr/@everiwon/42)
-* [GIT 간단 사용법](/broken/pages/36b6037936aaf3cbfe40bcd8538e713a17cc198d)
+* GIT 간단 사용법
 
 git\_LF\_commit 관련:
 
 * https://guide.ncloud-docs.com/docs/sourcecommit-use-lfs
 * https://sbjjsurfing.tistory.com/110
+
+## Git SSH 키 연동 설정
+
+* [ssh-key 연동](https://velog.io/@euisuk-chung/Git-SSH%EB%A1%9C-GitHub-Repository-Clone)
+
+MyNote 리포지토리의 사이즈가 클론하기 어려울 정도로 용량이 많아 졌다.\
+http 연결로 클론하기 힘들 것 같아. ssh 연결을 시도하기로 했다.

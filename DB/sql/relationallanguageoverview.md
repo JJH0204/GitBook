@@ -1,4 +1,4 @@
-# RelationalLanguageOverview
+# 관계 언어 개요
 
 ## 관계 언어란?
 

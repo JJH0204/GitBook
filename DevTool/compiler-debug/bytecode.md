@@ -1,4 +1,4 @@
-# bytecode
+# 바이트코드 개념 (Bytecode)
 
 ## 바이트코드란?
 

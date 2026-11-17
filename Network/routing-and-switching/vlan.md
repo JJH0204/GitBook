@@ -1,4 +1,4 @@
-# VLAN
+# 가상 랜 (VLAN)
 
 * Virtual LAN의 약자
 * 가상의 논리적으로 분리된 네트워크를 구축할 때 사용한다.
@@ -24,7 +24,7 @@ IP 주소를 기반으로 VLAN을 구분하는 방식입니다.
 
 {% tab title="Switch Based" %}
 스위치에서 포트 또는 설정을 통해 VLAN을 구성하는 방식입니다.\
-자세한 내용은 기존 문서를 참고하세요: [Switch Based](file:///2435498/linux_admin/Switch%20Based.md)
+자세한 내용은 기존 문서를 참고하세요: [Switch Based](https://krjaeh0.gitbook.io/j-log/linux/guide/network-remote/switch-based)
 {% endtab %}
 
 {% tab title="Policy Based" %}

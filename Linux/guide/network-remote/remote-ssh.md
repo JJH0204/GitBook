@@ -1,4 +1,4 @@
-# Remote SSH
+# VS Code 원격 SSH 연결
 
 {% stepper %}
 {% step %}

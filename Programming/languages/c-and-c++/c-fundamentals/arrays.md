@@ -1,4 +1,4 @@
-# arrays
+# 배열 (Arrays)
 
 {% code title="arrays.c" %}
 ```c

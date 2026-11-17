@@ -1,4 +1,4 @@
-# PythonIDESetupForMac
+# macOS Python 환경 설정
 
 {% stepper %}
 {% step %}

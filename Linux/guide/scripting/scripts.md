@@ -1,4 +1,4 @@
-# scripts
+# 쉘 스크립트 작성 실습 예제
 
 Description This Nmap NSE script performs brute force password auditing against WordPress CMS/blog installations.
 
@@ -102,7 +102,6 @@ Wordpress default uri and form names:
 author = "Paulino Calderon <calderon@websec.mx>"
 license = "Same as Nmap--See https://nmap.org/book/man-legal.html"
 categories = {"intrusive", "brute"}
-
 
 portrule = shortport.http
 

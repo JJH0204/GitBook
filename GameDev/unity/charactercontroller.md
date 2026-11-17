@@ -1,31 +1,26 @@
-# CharacterController
+# 캐릭터 컨트롤러 이동 구현
 
 {% hint style="warning" %}
-Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document to fully interact with the drawing.\
 You can decompress drawing data with the command palette: "Decompress current Excalidraw file". For more info check in plugin settings under "Saving".
 {% endhint %}
 
-## Excalidraw Data
+CharacterController 컴포넌트를 활용해서 캐릭터 이동을 구현할 수 있다.
 
-### Text Elements
+Rigidbody에서 변경한 내용
 
-CharacterController 컴포넌트를 활용해서 캐릭터 이동을 구현할 수 있다. ^bFtpulvw
+컴포넌트 캐싱
 
-Rigidbody에서 변경한 내용 ^rkKTN34a
+characterController에 isGrounded 필드 값으로 바닥인지 확인이 가능하다.
 
-컴포넌트 캐싱 ^Cvn9mnI6
+키 입력을 Vector 객체에 저장
 
-characterController에 isGrounded 필드 값으로 바닥인지 확인이 가능하다. ^Rc25hweK
+CharacterController 컴포넌트에 이동 메서드 호출해 사용(왜... 에러가 발생하는 걸까?)
 
-키 입력을 Vector 객체에 저장 ^T6PwbWMj
+{
 
-CharacterController 컴포넌트에 이동 메서드 호출해 사용(왜... 에러가 발생하는 걸까?) ^Y0LJIDyp
+}
 
-{ ^GBGHHJZu
-
-} ^dZZUS5Se
-
-점프, 대쉬, 중력, 저항 으로 인한 물리 처리 결과 값을 \_calcVelocity 값에 저장하고 위와 같은 방법으로 CharacterController에 처리 ^vusiOwEm
+점프, 대쉬, 중력, 저항 으로 인한 물리 처리 결과 값을 \_calcVelocity 값에 저장하고 위와 같은 방법으로 CharacterController에 처리
 
 ### C# Example: CharControllerCharacter
 
@@ -162,10 +157,10 @@ public class CharControllerCharacter : MonoBehaviour
 ^FMkMovIf
 
 transform.positionWithLocalOffset assign attempt for 'CharControllerCharacter' is not valid.\
-Input positionWithLocalOffset is { NaN, NaN, NaN }. ^jetEcMDg
+Input positionWithLocalOffset is { NaN, NaN, NaN }.
 
 저항 값을 계산하는 로직에서 0을 나누려는 시도를 하여서 NaN 에러가 발생하는 것이었다...\
-에초에 말이 안되는 수식이긴 했어... ^R5P2VtMn
+에초에 말이 안되는 수식이긴 했어...
 
 잘못된 ProcessDrag (원본)
 
@@ -191,27 +186,9 @@ private void ProcessDrag()
 ```
 {% endcode %}
 
-무조건 1이상 값으로 나눗셈을 하여 저항 계산에서 0을 나누는 상황을 방지 ^Moro6RgW
+무조건 1이상 값으로 나눗셈을 하여 저항 계산에서 0을 나누는 상황을 방지
 
 중력 값도 양수가 아닌 음수로 설정해야 한다.\
-(양수는 하늘로 솓아오름) ^MfILSGQw
+(양수는 하늘로 솓아오름)
 
-흠... 다시 만들어야 겠는걸 ^zPEKGqwW
-
-### Embedded Files
-
-* a0ab0db23e5118b261abd740c89d55944aa6f832: \[\[topics/assets/images/스크린샷 2025-06-13 오후 11.28.29.png]]
-* 5779aec433ae8fc5bfb22aac40e55d20b2e98b04: \[\[topics/assets/images/스크린샷 2025-06-13 오후 11.08.47.png]]
-* b8a5fc8515824a5540e81720f1d71c0f3d07b6d4: \[\[topics/assets/images/스크린샷 2025-06-14 오후 11.39.23.png]]
-
-### Drawing (compressed)
-
-```compressed-json
-N4KAkARALgngDgUwgLgAQQQDwMYEMA2AlgCYBOuA7hADTgQBuCpAzoQPYB2KqATLZMzYBXUtiRoIACyhQ4zZAHoFAc0JRJQgEYA6bGwC2CgF7N6hbEcK4OCtptbErHALRY8RMpWdx8Q1TdIEfARcZgRmBShcZQUebQBGOJ4aOiCEfQQOKGZuAG1wMFAwYogSbggCADMeAA0AUX0hACEARUwAViaeAC16CmwANSMAdRTiyFhEcsDsKI5lYLGSzG4A
-
-dh4AZm0NgA4ATh2NngAGHlX29o3V/hKYbni9jfjtHYAWdvjXx53j49W9vgFSAUEjqbgfV4vHgANk+7R+7WOj2hN0gkgQhGU0nu0Mhq1WiVeDyOrw2G2h1yBFXmizQx1REGYUFIbAA1ggAMJsfBsUjlADEDwJ2GSDM0uGwrOULKEHGIXJ5fIk/Nw7WIO0qlSWkEqhHw+AAyrBaehJBKNIFtYzmWyEMNQZJuK8GUyWeyjTATYzuWUGTKsRxwjk6Qy2
-
-... (truncated for brevity — full compressed JSON remains unchanged in source)
-```
-
-(Note: the compressed JSON drawing is included verbatim in the original content above. In this markdown export it's preserved inside the code block.)
+흠... 다시 만들어야 겠는걸

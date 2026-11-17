@@ -1,6 +1,6 @@
-# Docker\_install
+# Ubuntu 환경 도커 설치
 
-* 우분투 리눅스 22.04에 [도커 엔진 설치](https://docs.docker.com/engine/install/ubuntu/)후 [도커](/broken/pages/f2e496ba96d43b71584a986e02ec027673a84321)를 사용
+* 우분투 리눅스 22.04에 [도커 엔진 설치](https://docs.docker.com/engine/install/ubuntu/)후 도커를 사용
 
 ## 도커 설치
 
@@ -59,4 +59,4 @@ sudo docker run hello-world
 
 ## 관련 문서
 
-* [Docker\_Build](/broken/pages/3967193d0af3381c948781c85245cca5f5a71ac0)
+* [Docker\_Build](docker_build.md)

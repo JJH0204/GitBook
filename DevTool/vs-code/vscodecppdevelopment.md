@@ -1,4 +1,4 @@
-# VSCodeCPPDevelopment
+# VS Code C 및 C++ 개발 환경 설정
 
 https://growing-dev101.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-VS-Code
 
@@ -7,21 +7,21 @@ https://growing-dev101.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-V
 ### For Windows
 
 * [윈도우 VSCode C/C++ 초기 세팅](https://m.blog.naver.com/dorergiverny/221889473340)
-* [MinGW-w64 설치 방법](/broken/pages/b52bb416b8f2893dce48d7e230a87722fcafbc49)
+* MinGW-w64 설치 방법
 {% endcolumn %}
 
 {% column %}
 ### For Mac
 
-* [맥 OS 에서 VSCode C/C++ 초기 세팅](file:///3578414/programming/C_for_Mac.md)
-* [Run in Terminal 설정](file:///3578414/programming/C_for_Mac.md)
-* [Mac OS 환경변수 설정방법](/broken/pages/ba3e92017854ff79f34abc9a87d7ca83526f4c32)
+* [맥 OS 에서 VSCode C/C++ 초기 세팅](https://krjaeh0.gitbook.io/j-log/programming/languages/c-and-c++/setup/c_for_mac)
+* [Run in Terminal 설정](https://krjaeh0.gitbook.io/j-log/programming/languages/c-and-c++/setup/c_for_mac)
+* Mac OS 환경변수 설정방법
 {% endcolumn %}
 {% endcolumns %}
 
 ## With Github
 
-* [VS\_Code Github 연동하기](/broken/pages/e755ee44c62d54f4b3cc6ae3aac799fa2e779f53)
+* VS\_Code Github 연동하기
 
 ## Expansion
 

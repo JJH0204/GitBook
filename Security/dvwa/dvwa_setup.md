@@ -1,4 +1,4 @@
-# dvwa\_setup
+# DVWA 가상머신 환경 설정
 
 {% stepper %}
 {% step %}

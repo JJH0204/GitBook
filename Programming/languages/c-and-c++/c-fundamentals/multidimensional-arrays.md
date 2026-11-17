@@ -1,4 +1,4 @@
-# multidimensional arrays
+# 다차원 배열 (Multidim Arrays)
 
 {% code title="multidim.c" %}
 ```c

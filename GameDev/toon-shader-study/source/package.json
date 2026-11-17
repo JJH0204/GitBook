@@ -1,0 +1,15 @@
+{
+  "name": "com.blueigloo.shader",
+  "version": "0.2.0",
+  "displayName": "BlueIgloo Toon Shader",
+  "description": "각자의 지옥 - URP 툰 셰이더 패키지 (CharacterToon / SceneToon / ToonShared)",
+  "unity": "6000.3",
+  "author": {
+    "name": "BlueIgloo",
+    "email": "admin@gitea.local"
+  },
+  "keywords": ["shader", "toon", "urp"],
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.3.0"
+  }
+}

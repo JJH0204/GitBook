@@ -2,11 +2,11 @@
 description: 컴파일러/인터프리터 개요, 디버깅, GDB, MinGW 등
 ---
 
-# 컴파일러 · 디버깅
+# 컴파일러 및 디버깅 (Compiler & Debug)
 
 도구별 설치/개념/사용 흐름으로 정리합니다.
 
-* [CompilerInterpreterOverview](compilerinterpreteroverview.md)
+* CompilerInterpreterOverview
 * [Debugger](debugger.md)
 * [gdb](gdb.md)
 * [MinGWw64Installation](mingww64installation.md)

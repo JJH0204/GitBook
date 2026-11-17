@@ -1,9 +1,9 @@
-# NetworkSecurity
+# 네트워크 보안 로드맵
 
 ### 목표
 
 * 네트워크에 대한 이해
-* [네트워크 관리사](file:///2435498/career/InfoSecurityCertification.md)자격증 취득
+* [네트워크 관리사](https://krjaeh0.gitbook.io/j-log/atelier/certifications/security/infosecuritycertification)자격증 취득
 
 ### 보안 솔루션
 
@@ -13,72 +13,72 @@
 {% step %}
 ### 네트워크 기초
 
-[네트워크 기초](/broken/pages/86f505d3c23f9f31b1bdfa5a74538a849a9410a2)
+네트워크 기초
 {% endstep %}
 
 {% step %}
 ### 네트워크
 
-[네트워크](file:///2435498/career/InfoSecurityCertification.md)
+[네트워크](https://krjaeh0.gitbook.io/j-log/atelier/certifications/security/infosecuritycertification)
 {% endstep %}
 
 {% step %}
 ### LAN과 WAN
 
-[LAN과 WAN](/broken/pages/f73c84f49ba8b65a02fde5d20aae8bf2e12e56b3)
+LAN과 WAN
 {% endstep %}
 
 {% step %}
 ### Server
 
-[Server](file:///2435498/cs_basics/Server.md)
+[Server](../servers-and-storage/server.md)
 {% endstep %}
 
 {% step %}
 ### ACL
 
-[ACL](file:///2435498/linux_admin/ACL.md)
+[ACL](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/linux_admin/security/acl)
 {% endstep %}
 
 {% step %}
 ### VPN
 
-[VPN](/broken/pages/74e990ba17737565c061e14b0b78ea0ab792d01f)
+[VPN](vpn.md)
 {% endstep %}
 
 {% step %}
 ### Firewall
 
-[Firewall](/broken/pages/f84ec18ca20b64c7f17e473d7e54c0417e360c58)
+[Firewall](firewall.md)
 {% endstep %}
 
 {% step %}
 ### DDoS
 
-[DDoS](file:///2435498/security/DDoS.md)
+[DDoS](https://krjaeh0.gitbook.io/j-log/security/security/offensive-security/system/ddos)
 {% endstep %}
 
 {% step %}
 ### Wireshark
 
-[Wireshark](/broken/pages/1fb85d4ed5ca5c3881631a190ff547d4d5ee3736)
+[Wireshark](https://krjaeh0.gitbook.io/j-log/security/security/defensive-security/defense/wireshark)
 {% endstep %}
 
 {% step %}
 ### NMS
 
-[NMS](/broken/pages/3d568a5be0f85655a687cf4211bbfe0b983ed6e9)
+NMS
 {% endstep %}
 
 {% step %}
 ### IDS
 
-[IDS](file:///2435498/security/IDS.md)
+[IDS](https://krjaeh0.gitbook.io/j-log/security/security/defensive-security/defense/ids)
 {% endstep %}
 
 {% step %}
 ### Suricata
 
-[Suricata](file:///2435498/security/Suricata.md)
+[Suricata](https://krjaeh0.gitbook.io/j-log/security/security/defensive-security/defense/suricata)
 {% endstep %}
 {% endstepper %}

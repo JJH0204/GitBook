@@ -1,4 +1,4 @@
-# old 15
+# Webhacking.kr: old 15
 
 * javascript 사용 하지 않음 설정
 * 소스를 볼 수 있게 된다.

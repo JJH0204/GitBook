@@ -1,4 +1,4 @@
-# CTF\_Quaoar
+# CTF: Quaoar
 
 {% stepper %}
 {% step %}

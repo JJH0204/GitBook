@@ -1,4 +1,4 @@
-# Metasploit
+# 메타스플로잇 (Metasploit)
 
 msfconsole 명령어
 

@@ -1,4 +1,4 @@
-# LinearDataStructureOverview
+# 선형 자료구조 개요 (Linear)
 
 ## 선형 자료 구조(Linear Data Structure)란?
 

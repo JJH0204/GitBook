@@ -1,4 +1,4 @@
-# LearningCurve
+# 러닝 커브 (Learning Curve)
 
 IT 업계에서 사용되는 용어로, 신기술을 학습하는 데 소요되는 시간을 나타내는 곡선입니다.
 

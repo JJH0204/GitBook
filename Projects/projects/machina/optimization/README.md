@@ -1,2 +1,1 @@
-# Optimization
-
+# 최적화 (Optimization)

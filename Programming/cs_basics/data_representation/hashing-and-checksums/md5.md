@@ -1,4 +1,4 @@
-# MD5
+# MD5 해시 알고리즘 (MD5)
 
 MD5는 메시지 다이제스트 알고리즘 5(Message Digest Algorithm 5)의 줄임말로, 1991년에 로널드 리베스트가 설계했어. 이 알고리즘은 입력 데이터를 고정된 128비트 해시 값으로 변환해줘. 해시 값은 흔히 32자리의 16진수로 표현되는데, 이는 데이터의 "디지털 지문" 같은 역할을 해 ([Wikipedia](https://en.wikipedia.org/wiki/MD5)) ([DebugPointer](https://debugpointer.com/security/md5-hash-overview)).
 

@@ -1,4 +1,4 @@
-# JungJaehoSelfIntroPrep
+# 데브옵스 자기소개서 준비 (DevOps)
 
 주 기술: AWS, k8s, Docker, git, Sell Script, Linux, ...
 

@@ -1,4 +1,4 @@
-# php
+# PHP 기초 문법 및 설정
 
 {% code title="example.php" %}
 ```php

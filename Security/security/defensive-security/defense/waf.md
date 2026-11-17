@@ -1,4 +1,4 @@
-# WAF
+# 웹 애플리케이션 방화벽 (WAF)
 
 ## Web Application Firewall - 웹 방화벽
 

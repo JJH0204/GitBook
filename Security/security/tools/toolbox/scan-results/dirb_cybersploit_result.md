@@ -1,4 +1,4 @@
-# dirb\_cybersploit\_result
+# DIRB 스캔: Cybersploit 1
 
 {% code title="dirb-output.txt" %}
 ```

@@ -1,4 +1,4 @@
-# nikto\_cybersploit2\_result
+# Nikto 스캔: Cybersploit 2
 
 * Command run:
 

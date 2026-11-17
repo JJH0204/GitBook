@@ -1,2 +1,1 @@
-# architecture
-
+# 컴퓨터 구조 (Architecture)

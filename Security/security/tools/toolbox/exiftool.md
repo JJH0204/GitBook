@@ -1,4 +1,4 @@
-# exiftool
+# ExifTool 메타데이터 분석
 
 ```sh
 man exiftool

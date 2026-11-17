@@ -1,4 +1,4 @@
-# WAF\_in\_Kubernetes
+# Kubernetes 환경의 WAF 구성
 
 {% stepper %}
 {% step %}

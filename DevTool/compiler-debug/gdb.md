@@ -1,4 +1,4 @@
-# gdb
+# GDB 디버거 사용법
 
 {% stepper %}
 {% step %}

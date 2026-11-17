@@ -1,2 +1,1 @@
-# Web basics
-
+# 웹 기초 (Web Basics)

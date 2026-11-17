@@ -1,4 +1,4 @@
-# CIDR
+# 사이더 표기법 (CIDR)
 
 * [관련 자료](https://ko.wikipedia.org/wiki/CIDR)
 

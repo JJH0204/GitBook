@@ -1,4 +1,4 @@
-# Struct
+# 구조체 (Struct)
 
 {% stepper %}
 {% step %}
@@ -95,6 +95,6 @@ Lemi.setAge(age: 9)    // 변수(var)선언된 Lemi라는 이름의 dog 객체�
 ```
 {% endcode %}
 
-[클래스 와 구조체의 차이점](/broken/pages/fba7b2b039833de8f21bb8c224cf4a4bc533a229)
+클래스 와 구조체의 차이점
 
 [클래스 와 구조체의 차이점](classvsstructdifference.md)

@@ -1,4 +1,4 @@
-# SQL\_Injection
+# SQL 인젝션 실습 (bWAPP)
 
 ## SQL\_Injection (GET/Search)
 
@@ -99,7 +99,7 @@ AJAX: Asynchronous JavaScript and XML(비동기 자바스크립트 xml)
 
 ### 메타익스플로잇
 
-[meterpreter](/broken/pages/2358b08190997828ed3b6dc8c71b7970bb3dca2b)
+[meterpreter](../security/tools/toolbox/metasploit.md)
 
 ### Self
 

@@ -1,4 +1,4 @@
-# MutualExclusion
+# 상호 배제 (Mutual Exclusion)
 
 ## 상호 배제(Mutual Exclusion)란?
 

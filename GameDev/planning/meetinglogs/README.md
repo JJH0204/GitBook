@@ -1,2 +1,1 @@
-# MeetingLogs
-
+# 회의록 (Meeting Logs)

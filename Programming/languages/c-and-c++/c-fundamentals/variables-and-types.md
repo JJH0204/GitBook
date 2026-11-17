@@ -1,4 +1,4 @@
-# variables and types
+# 변수와 자료형 (Variables)
 
 {% code title="example.c" %}
 ```c
