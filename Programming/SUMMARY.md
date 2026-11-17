@@ -177,7 +177,8 @@
       * [개발자 도구 Application 탭](cs_basics/web_technologies/browser-and-devtools/devtools_applicationtab.md)
       * [요소 검사 도구 (Inspect)](cs_basics/web_technologies/browser-and-devtools/inspect.md)
       * [개발자 도구 Elements 탭](cs_basics/web_technologies/browser-and-devtools/elements.md)
-      * [브라우저 개발자 도구 및 시크릿 모드](cs_basics/web_technologies/browser-and-devtools/browserdevtools.md)
+      * [브라우저 개발자 도구 개요](cs_basics/web_technologies/browser-and-devtools/browserdevtools.md)
+      * [시크릿 모드 (Secret Browsing Mode)](cs_basics/web_technologies/browser-and-devtools/incognito.md)
 
 ## Software Design
 
