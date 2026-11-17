@@ -1,17 +1,38 @@
 # Day 10 · UniTask와 Awaitable 🎮
 
-> 2주차 비동기 · 60분 · 준비물: 🎮 Unity 6 (URP 프로젝트), .NET SDK (콘솔 대체 실습용, `dotnet new console -o practice/day10`). UniTask는 선택(패키지 설치 필요)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-011-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | 게임에서 `Task`가 불편한 이유와, UniTask·Unity `Awaitable`이 할당을 줄이고 플레이어 루프에 붙는 방식을 코루틴·`Task`와 비교한다. |
+| 적용 대상 | Unity 6 (URP 프로젝트), .NET SDK 8 이상 콘솔 앱(대체 실습). UniTask는 선택 |
+| 소요 시간 | 60분 (2주차 비동기) |
+| 준비물 | 🎮 Unity 6 (URP), `dotnet new console -o practice/day10` (콘솔 대체 실습). UniTask는 패키지 설치 필요(선택) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - 게임에서 `Task`가 불편한 이유 네 가지를 말할 수 있다.
 - UniTask와 Unity `Awaitable`이 각각 어떻게 할당을 줄이고 플레이어 루프에 붙는지 설명할 수 있다.
 - 코루틴 / `Task` / UniTask / `Awaitable`을 표로 비교하고 상황에 맞게 고를 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| `UniTask` | Cysharp 패키지 | `struct` + 풀링된 소스로 할당을 줄이고 플레이어 루프 대기를 제공한다 |
+| `Awaitable` | Unity 내장 (2023.1 이상) | 내부 풀링된 클래스. 프레임·`FixedUpdate`·스레드 전환 대기를 제공한다 |
+| `PlayerLoopTiming` | UniTask | `UniTask.Yield`가 재개될 플레이어 루프 위치 |
+| `CancellationToken` | 공통 | `GetCancellationTokenOnDestroy()`(UniTask) 또는 `destroyCancellationToken`(Unity 2022.2 이상)로 오브젝트 파괴 시 취소한다 |
+| `Preserve()` | UniTask | 한 번만 `await`하는 제약을 풀어 복제 가능한 형태로 바꾼다 |
+| UniTask Tracker | `Window > UniTask Tracker` | 실행 중인 `UniTask`를 보여 준다 |
 
-### 1-1. `Task`가 게임에서 불편한 이유
+## 3. 동작 원리
+
+### 3-1. `Task`가 게임에서 불편한 이유
 
 | 문제 | 내용 |
 |---|---|
@@ -20,7 +41,7 @@
 | `timeScale` 무시 | `Task.Delay`는 실제 시간이다. 일시정지(`timeScale = 0`) 중에도 흘러간다 |
 | 스레드 의존 | 타이머와 `Task.Run`이 스레드를 쓴다. WebGL처럼 스레드가 없는 플랫폼에서는 기대대로 동작하지 않는다 |
 
-### 1-2. UniTask (Cysharp, 오픈소스)
+### 3-2. UniTask (Cysharp, 오픈소스)
 
 `UniTask`는 **`struct`** 이고, 완료 상태를 풀링된 `IUniTaskSource` 객체가 들고 있다. 그래서 비동기로 완료되는 호출도 **거의 할당이 없다.** Unity의 플레이어 루프에 직접 끼어들어 프레임 단위 대기를 제공한다.
 
@@ -36,7 +57,7 @@
 
 규칙: **`UniTask`는 한 번만 `await`한다.** 풀링된 소스를 재사용하기 때문이다. 여러 번 필요하면 `Preserve()`로 복제 가능한 형태로 바꾼다. 설치는 패키지 매니저의 git URL로 한다(저장소: [github.com/Cysharp/UniTask](https://github.com/Cysharp/UniTask), 설치 URL은 README를 확인한다).
 
-### 1-3. Unity `Awaitable` (Unity 2023.1부터 내장, Unity 6 포함)
+### 3-3. Unity `Awaitable` (Unity 2023.1부터 내장, Unity 6 포함)
 
 패키지 없이 쓰는 Unity 공식 대안이다. `Awaitable`은 **클래스이지만 내부에서 풀링**해서 할당을 줄인다.
 
@@ -49,9 +70,9 @@
 | `Awaitable.MainThreadAsync()` / `BackgroundThreadAsync()` | 메인 스레드 ↔ 백그라운드 스레드 전환 |
 | `Awaitable.FromAsyncOperation(op, ct)` | `AsyncOperation`을 `Awaitable`로 |
 
-`async Awaitable`, `async Awaitable<T>` 메서드를 만들 수 있다. 이것도 **한 번만 `await`** 한다. 풀링 방식과 세부 동작은 버전에 따라 다르다, 직접 측정해 확인한다.
+`async Awaitable`, `async Awaitable<T>` 메서드를 만들 수 있다. 이것도 **한 번만 `await`** 한다. 풀링 방식과 세부 동작은 버전에 따라 다르므로 직접 측정해 확인한다.
 
-### 1-4. 비교표
+### 3-4. 비교표
 
 | | 코루틴 | `Task` | UniTask | `Awaitable` |
 |---|---|---|---|---|
@@ -65,13 +86,26 @@
 
 고르는 기준: 오브젝트에 묶인 단순한 연출은 코루틴, 외부 패키지 없이 가볍게는 `Awaitable`, 팀이 이미 쓰고 있고 풍부한 조합/진단이 필요하면 UniTask. 팀에서 쓰는 것을 따르는 것이 가장 중요한 기준이다.
 
-> Unity 6 = C# 9. `async Awaitable`, `UniTask` 모두 C# 9에서 동작한다.
+{% hint style="info" %}
+NOTE: Unity 6 = C# 9. `async Awaitable`, `UniTask` 모두 C# 9에서 동작한다. `Awaitable`은 Unity 2023.1 이상에서만 있다. 사용하는 Unity 버전에서 API 이름을 확인한다(버전 확인 필요).
+{% endhint %}
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| UniTask | Cysharp의 오픈소스 비동기 라이브러리. `struct` 기반, 거의 할당 없음 |
+| `Awaitable` | Unity가 제공하는 `await` 가능 타입. `async Awaitable` 메서드를 만들 수 있다 |
+| 풀링(pooling) | 객체를 버리지 않고 모아 두었다가 재사용해 GC 할당을 줄이는 방식 |
+| `timeScale` | `Time.timeScale`. `0`이면 게임 시간이 멈춘다. `Task.Delay`는 영향을 받지 않는다 |
+| `PlayerLoopTiming` | `Update`, `FixedUpdate` 등 플레이어 루프의 단계 |
+| `IValueTaskSource` | 풀링 가능한 `ValueTask`의 완료 상태를 제공하는 .NET 인터페이스 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 `3. 동작 원리`로 돌아간다.
+{% endhint %}
 
 ### 실습 (Unity, 20분) 🎮: "3초 뒤 로그"를 세 가지로 만들고 GC Alloc 비교
 
@@ -284,7 +318,7 @@ class FrameLoop
 }
 ```
 
-출력(64비트, .NET 10에서 측정):
+원본 노트가 기록한 출력(64비트, .NET 10 환경. 이 문서 작성 중 다시 측정하지 않았다):
 ```
 async Task + 일반 awaiter     : 168 B/호출
 async ValueTask + 풀링 awaiter : 0 B/호출
@@ -296,9 +330,7 @@ async ValueTask + 풀링 awaiter : 0 B/호출
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -326,14 +358,22 @@ async ValueTask + 풀링 awaiter : 0 B/호출
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [Cysharp/UniTask (GitHub)](https://github.com/Cysharp/UniTask)
 - [Unity ScriptReference — Awaitable](https://docs.unity3d.com/ScriptReference/Awaitable.html)
 - [Unity ScriptReference — MonoBehaviour.destroyCancellationToken](https://docs.unity3d.com/ScriptReference/MonoBehaviour-destroyCancellationToken.html)
 - [ValueTask 구조체](https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.tasks.valuetask)
 - [IValueTaskSource 인터페이스](https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.tasks.sources.ivaluetasksource)
+
+이전: [Day 09 · Task와 async/await](day09-task-async-await.md) · 다음: [Day 11 · 취소, 예외, 수명](day11-cancellation-exceptions.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장
+- [ ] 코루틴, `Task`, UniTask, `Awaitable` 중 내 프로젝트에 고른다면 무엇이고 그 이유는 무엇인가?
+- [ ] `await`한 작업이 오브젝트가 파괴된 뒤에도 계속 실행되어 문제가 된 경험이 있는가? 없다면 어떤 상황에서 생길 수 있는가?

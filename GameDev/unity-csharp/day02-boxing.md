@@ -1,17 +1,35 @@
 # Day 02 · 박싱과 언박싱
 
-> 1주차 C# 메모리 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day02`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-003-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | 박싱과 언박싱의 동작을 설명하고, 숨은 박싱 지점을 찾아 제네릭 제약과 `IEquatable<T>`로 제거한다. |
+| 적용 대상 | .NET 8 이상 콘솔(`dotnet new console -o practice/day02`), Unity 6(C# 9)와 다른 점은 본문에 표시 |
+| 소요 시간 | 60분 (1주차 C# 메모리, 읽기 20분 + 확인 실습 30분 + 확인 문제 10분) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
 - 박싱(`boxing`)과 언박싱(`unboxing`)이 메모리에서 수행하는 작업을 단계별로 설명할 수 있다.
 - 코드에 `object`라는 단어가 없어도 박싱이 일어나는 숨은 지점 6가지를 찾을 수 있다.
 - 제네릭 제약(`where T : IFoo`)과 `IEquatable<T>`로 struct의 박싱을 제거할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| 박싱 | 값 타입을 `object`·인터페이스 변수에 대입하는 지점 | 힙에 객체를 할당하고 값을 복사한다 (64비트 최소 24B) |
+| 언박싱 | `(int)boxed` 같은 캐스트 | 타입 검사 후 값을 복사한다 |
+| 숨은 박싱 지점 6곳 | `object` 매개변수, `params object[]`, 비제네릭 컬렉션, 인터페이스 변수, 재정의 안 한 `ToString()`, `IEquatable<T>` 없는 struct 키 | 코드에 `object`가 없어도 박싱이 일어난다 |
+| `where T : IFoo` 제약 | 제네릭 메서드 선언 | 인터페이스 호출을 박싱 없이 컴파일한다 (`constrained.`) |
+| `IEquatable<T>` | struct 선언 | `Dictionary`·`HashSet`의 키 비교에서 박싱을 없앤다 |
 
-### 1-1. 박싱과 언박싱이 하는 일
+## 3. 동작 원리
+
+### 3-1. 박싱과 언박싱이 하는 일
 
 값 타입을 `object`나 인터페이스 타입 변수에 담으면 **박싱(`boxing`)**이 일어난다.
 
@@ -35,7 +53,7 @@ long ok = (long)(int)boxed; // 언박싱(int) 후 형변환(long)은 가능
 
 박싱이 비싼 이유는 세 가지다. **힙 할당**이 일어나고, **값 복사**가 일어나며, 나중에 **GC가 수거할 쓰레기**가 남는다.
 
-### 1-2. 눈에 잘 안 보이는 박싱 지점 6가지
+### 3-2. 눈에 잘 안 보이는 박싱 지점 6가지
 
 코드에 `(object)` 캐스트가 없어도 아래 자리에서는 값 타입이 박싱된다.
 
@@ -48,7 +66,7 @@ long ok = (long)(int)boxed; // 언박싱(int) 후 형변환(long)은 가능
 | 재정의 안 한 `ToString()` 등 | `myStruct.ToString()` (오버라이드 안 했을 때) | `ValueType`의 가상 메서드를 호출할 때 인스턴스를 박싱해 넘긴다 |
 | `IEquatable<T>` 없는 struct 키 | `Dictionary<MyStruct, int>` | 기본 비교자가 `object.Equals(object)`와 `ValueType.Equals`를 거치며 박싱한다(리플렉션까지 쓸 수 있음) |
 
-### 1-3. 문자열 보간(`$"..."`)과 Unity(C# 9)의 차이
+### 3-3. 문자열 보간(`$"..."`)과 Unity(C# 9)의 차이
 
 ```csharp
 int hp = 100;
@@ -58,7 +76,11 @@ string s = $"HP: {hp}";
 - **.NET 6+ / C# 10+**: 컴파일러가 `DefaultInterpolatedStringHandler`로 변환한다. `AppendFormatted<int>(int)` 제네릭 오버로드가 호출되어 **`hp`가 박싱되지 않는다**(결과 문자열 1개만 할당).
 - **Unity 6 (C# 9)**: 보간 핸들러가 없어 컴파일러가 `string.Format("HP: {0}", (object)hp)`로 낮춘다. 즉 **값 타입 인자마다 박싱**이 추가된다.
 
-### 1-4. 인터페이스로 인한 박싱을 제네릭 제약으로 막기
+{% hint style="info" %}
+NOTE: Unity의 C# 언어 버전은 Unity 버전마다 다르다. 사용하는 Unity 버전의 C# 버전을 확인한다. 버전 확인 필요.
+{% endhint %}
+
+### 3-4. 인터페이스로 인한 박싱을 제네릭 제약으로 막기
 
 struct가 인터페이스를 구현하는 것 자체는 박싱이 아니다. **인터페이스 타입으로 다룰 때** 박싱된다.
 
@@ -72,7 +94,7 @@ static int SumGeneric<T>(T p) where T : IPoint => p.X; // 박싱 없음 (0B)
 
 `where T : IPoint` 제약을 걸면 컴파일러는 IL에 `constrained.` 접두사를 붙이고, JIT(또는 IL2CPP)가 `PointS` 전용 코드를 만들어 박싱 없이 메서드를 직접 호출한다.
 
-### 1-5. Dictionary 키로 쓰는 struct에는 `IEquatable<T>`
+### 3-5. Dictionary 키로 쓰는 struct에는 `IEquatable<T>`
 
 `Dictionary<K, V>`는 키를 비교할 때 `EqualityComparer<K>.Default`를 쓴다. `K`가 `IEquatable<K>`를 구현하지 않은 struct이면 `ObjectEqualityComparer<K>`가 선택되어 비교할 때마다 `Equals(object)` 호출로 박싱이 일어난다.
 
@@ -88,11 +110,21 @@ struct GridCoord : IEquatable<GridCoord>
 
 `IEquatable<T>.Equals(T)`와 `override int GetHashCode()`를 함께 구현해야 `Dictionary`와 `HashSet`에서 박싱이 0바이트가 된다.
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 박싱(boxing) | 값 타입을 힙 객체로 감싸 참조 타입으로 바꾸는 변환 |
+| 언박싱(unboxing) | 박싱된 객체에서 정확한 원래 타입으로 값을 꺼내는 변환 |
+| `constrained.` | 제네릭 제약이 있는 호출에 컴파일러가 붙이는 IL 접두사 |
+| `DefaultInterpolatedStringHandler` | C# 10+ 문자열 보간 처리기. 값 타입 인자를 박싱하지 않는다 |
+| GC 할당 | 관리 힙에 새 객체를 만드는 일. 나중에 GC가 회수해야 한다 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 3절 동작 원리로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 6가지 케이스의 할당 바이트 예측·측정 (10분)
 
@@ -281,9 +313,7 @@ CallGeneric  : 0 B (sum=30000)
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -311,13 +341,21 @@ CallGeneric  : 0 B (sum=30000)
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [박싱 및 언박싱 (C# 프로그래밍 가이드)](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/types/boxing-and-unboxing)
 - [형식 매개 변수에 대한 제약 조건](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters)
 - [System.IEquatable<T> 인터페이스](https://learn.microsoft.com/ko-kr/dotnet/api/system.iequatable-1)
 - [SharpLab — C# to IL 디컴파일러](https://sharplab.io/)
+
+이전: [Day 01 · 값 타입과 참조 타입](day01-value-vs-reference.md) · 다음: [Day 03 · GC와 할당](day03-gc-allocation.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: Day 02의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] 박싱이 "힙 할당, 복사, GC 쓰레기" 세 가지 비용을 만드는 과정을 내 말로 설명하면?
+- [ ] 내가 쓴 코드에서 박싱이 숨어 있을 만한 곳은 어디인가?

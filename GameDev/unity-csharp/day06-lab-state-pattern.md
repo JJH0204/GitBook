@@ -1,17 +1,61 @@
 # Day 06 · [실습] 상태 패턴
 
-> 1주차 C# 메모리 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day06`)
+## 작업 식별
 
-## 오늘의 목표
-- `enum + switch` 유한 상태 기계(`FSM, Finite State Machine`)의 한계와 상태 패턴(`State pattern`)의 차이를 설명할 수 있다.
-- 상태 객체를 전이마다 `new`로 만들지 않고 미리 만들어 재사용해 무할당(`0 B`) FSM을 구현할 수 있다.
-- 동일한 전이 규칙을 `enum + switch`와 상태 패턴 두 방식으로 구현하고 출력이 100% 일치함을 검증할 수 있다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-007-MP |
+| 목적 | 같은 전이 규칙을 `enum + switch`와 상태 패턴 두 방식으로 구현하고, 상태 패턴이 전이 중 힙 할당 0 B임을 확인한다 |
+| 적용 대상 | .NET SDK 8 이상 콘솔 앱 (1주차 C# 메모리). 확장 과제 3은 Unity 6 |
+| 소요 시간 | 60분 (설계 읽기 10분, 구현 45분, 회고 5분) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
----
+{% hint style="info" %}
+NOTE: 구현은 AI, 코드 자동완성, 검색 없이 한다. 막히면 설계 개요와 `참조`의 문서만 본다. 참고 구현(부록 A)은 구현을 끝낸 뒤 펼친다.
+{% endhint %}
 
-## 1. 설계 읽기 (10분)
+## 1. 참조
 
-### 1-1. `enum + switch` vs 상태 패턴(`State pattern`)
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day03-gc-allocation.md](day03-gc-allocation.md) | GMD-UCS-004-DO | Day 03 · GC와 할당 |
+| [day05-delegate-closure.md](day05-delegate-closure.md) | GMD-UCS-006-DO | Day 05 · 델리게이트, 람다, 클로저 |
+| [day07-iterator-yield.md](day07-iterator-yield.md) | GMD-UCS-008-DO | Day 07 · IEnumerator와 yield의 정체 (다음 날) |
+
+외부 자료:
+- [Game Programming Patterns — State 장 (Robert Nystrom)](https://gameprogrammingpatterns.com/state.html)
+- [패턴 일치 — switch 식 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/switch-expression)
+- [Unity 매뉴얼 — 애니메이터 컨트롤러와 상태 머신](https://docs.unity3d.com/Manual/StateMachineBasics.html)
+
+이전: [Day 05 · 델리게이트, 람다, 클로저](day05-delegate-closure.md) · 다음: [Day 07 · IEnumerator와 yield의 정체](day07-iterator-yield.md)
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | .NET SDK | 8 이상 | `dotnet --version`으로 확인한다 |
+| 2 | 터미널 | 임의 | |
+| 3 | 코드 편집기 | VS Code 또는 Rider | AI 기능(Copilot, AI Assistant)을 끈다 |
+| 4 | Unity 6 (선택) | 구역 D의 확장 과제 3에서만 사용 | |
+
+## 3. 안전 사항
+
+{% hint style="info" %}
+NOTE: 작업 폴더 `practice/day06/` 밖의 파일을 건드리지 않는다. 이 작업은 데이터 손실 위험이 없다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | 작업 폴더를 만든다: `dotnet new console -o practice/day06` | `practice/day06/Program.cs`가 생긴다 |
+| 2 | 작업 폴더로 이동한다: `cd practice/day06` | `dotnet run`이 `Hello, World!`를 출력한다 |
+| 3 | 아래 `설계 개요`를 읽는다 (10분) | `enum + switch`와 상태 패턴의 차이를 한 문장으로 말할 수 있다 |
+
+## 설계 개요
+
+### 설계 1. `enum + switch` vs 상태 패턴(`State pattern`)
 
 캐릭터가 `Idle`, `Run`, `Jump`, `Attack`, `Hit` 5개 상태를 가질 때 가장 먼저 떠올리는 코드는 `enum`과 `switch`다.
 
@@ -22,19 +66,13 @@
 | 진입·퇴장 처리 | 전이하는 곳마다 이전 상태 정리·다음 상태 초기화를 챙겨야 해 흩어지기 쉬움 | `ChangeState`가 항상 `old.Exit()` → `new.Enter()`를 보장 |
 | 메모리 주의점 | 값(`enum`)만 바꾸므로 할당 없음 | 전이할 때마다 **`new JumpState()`를 호출하면 프레임마다 가비지 발생** → **초기화 때 1번만 생성해 캐시·재사용**해야 함 |
 
-### 1-2. 전이(`Transition`)는 누가 결정하는가
+### 설계 2. 전이(`Transition`)는 누가 결정하는가
 
 상태 패턴에서 전이 조건을 두는 위치는 두 가지 방식이 있다.
 1. **각 상태 객체가 결정**: `IdleState`가 입력을 보고 `ctx.ChangeState(ctx.Run)`을 호출한다. 상태별 규칙이 그 클래스 안에 응집된다.
 2. **컨텍스트(또는 전이 테이블)가 결정**: 피격(`Hit`)처럼 **모든 상태에서 공통으로 끼어드는 최우선 전이**는 컨텍스트(`ChangeState` 호출부)에서 먼저 처리하고, 일반 전이는 각 상태에 위임하면 중복이 줄어든다.
 
----
-
-## 2. 구현 (45분)
-
-> AI, 자동완성, 검색 없이. 아래 명세만 보고 직접 작성한다.
-
-### 요구사항
+## 요구사항
 
 1. **입력 형식**: 문자열 하나가 시뮬레이션 전체 입력이다. 각 글자 1개가 1프레임(0번 프레임부터 시작)의 입력을 뜻한다.
    - `.`: 입력 없음 / `r`: 달리기 유지 / `j`: 점프 / `a`: 공격 / `h`: 피격
@@ -56,9 +94,58 @@
    - **Step 2**: `ICharacterState` 인터페이스를 구현한 상태 클래스를 사용하는 `StatePatternCharacterFsm`을 작성한다. **상태 인스턴스는 생성자에서 한 번만 만들어 필드에 캐시하고 전이 시 재사용한다(`new` 금지).**
    - **Step 3**: 두 FSM에 동일한 입력 `".rrj.a.ah.."`을 넣고 결과 문자열이 완전히 같은지 `Debug.Assert`로 검증한 뒤 같으면 `"MATCH"`를 출력한다.
 
-### 테스트 시나리오와 예상 출력
+## 5. 절차
 
-입력 문자열 `".rrj.a.ah.."` (총 11프레임: 5번 프레임의 `'a'`는 점프 중이라 무시되고, 7번 프레임의 `Attack`은 8번 프레임의 `'h'`에 끊긴다):
+### A. Step 1: `enum + switch` FSM 구현
+
+1. (5-A-01) `Program.cs`에 `enum StateId { Idle, Run, Jump, Attack, Hit }`를 작성한다. → 결과: 5개 상태가 정의된다.
+2. (5-A-02) `EnumCharacterFsm` 클래스를 작성한다. `RunSimulation(string input)`은 프레임마다 전이 판정, 로그 기록, 타이머 감소 순서로 실행한다. → 결과: 입력 문자열 하나를 받아 로그 문자열을 반환한다.
+3. (5-A-03) 전이 로직은 `switch (_state)` 하나에 모은다. `'h'` 입력은 `switch` 앞에서 먼저 처리한다. → 결과: 요구사항의 우선순위 표와 같은 순서로 판정된다.
+4. (5-A-04) `dotnet run`으로 `".rrj.a.ah.."`를 넣고 로그를 출력한다. → 결과: `기능 확인` 1번의 예상 출력과 같은 줄이 나온다.
+
+### B. Step 2: 상태 패턴 FSM 구현
+
+{% hint style="warning" %}
+CAUTION: 상태 인스턴스는 생성자(필드 초기화)에서 한 번만 만든다. 전이 메서드 안에서 `new`를 호출하면 전이마다 GC 할당이 생겨 Step 3의 0 B 확인이 실패한다.
+{% endhint %}
+
+1. (5-B-01) `ICharacterState` 인터페이스를 작성한다. 멤버는 `Name`, `Enter`, `HandleInput`, `Update`, `Exit`다. → 결과: 상태별 동작이 인터페이스 하나로 정의된다.
+2. (5-B-02) `StatePatternCharacterFsm`에 상태 5개를 `readonly` 필드로 만든다. → 결과: 상태 인스턴스가 객체당 5개로 고정된다.
+3. (5-B-03) `ChangeState(next)`를 작성한다. 같은 상태면 반환하고, 아니면 `Exit` 호출 → 상태 교체 → `Enter` 호출 순서로 실행하고 로그를 남긴다. → 결과: 전이 때마다 `Exit`/`Enter`가 항상 한 쌍으로 호출된다.
+4. (5-B-04) `'h'` 입력을 `StepCore`에서 먼저 처리해 `Hit`로 전이한다. 나머지 입력은 현재 상태의 `HandleInput`에 위임한다. → 결과: 피격이 모든 상태에서 최우선으로 처리된다.
+5. (5-B-05) `RunSimulation`과 로그 없이 전이만 하는 `StepSilent`를 작성한다. → 결과: 할당 측정용 경로와 로그 출력 경로가 분리된다.
+
+### C. Step 3: 두 구현 비교와 할당 측정
+
+1. (5-C-01) 두 FSM에 같은 입력 `".rrj.a.ah.."`를 넣는다. → 결과: 로그 문자열 두 개가 나온다.
+2. (5-C-02) `Debug.Assert(enumLog == stateLog)`로 비교하고, 같으면 `MATCH`를 출력한다. → 결과: `MATCH`가 출력된다.
+3. (5-C-03) `GC.GetAllocatedBytesForCurrentThread()`를 `StepSilent` 반복 전후에 읽어 차이를 출력한다. → 결과: `State 패턴 전이 중 힙 할당: 0 B`가 출력된다.
+
+{% hint style="info" %}
+NOTE: `Debug.Assert`는 Release 빌드에서 컴파일 단계에서 제거된다. `dotnet run`은 기본이 Debug 구성이라 동작한다. 그래도 `MATCH` 출력 줄로 결과를 직접 확인한다.
+{% endhint %}
+
+### D. 확장(선택)
+
+1. (5-D-01) 계층형 상태(Hierarchical FSM): `Idle`과 `Run`의 공통 전이(`'j'` → `Jump`, `'a'` → `Attack`)를 상위 상태 `GroundedState`로 묶어 중복을 제거한다. → 결과: 두 상태의 `HandleInput`에서 공통 분기가 사라지고 출력은 그대로다.
+2. (5-D-02) 전이 이력 링버퍼: 최근 8번의 상태 전이를 `(frame, from, to)` struct 배열(`new` 없이 고정 크기 순환 버퍼)에 기록해 시뮬레이션 끝에 출력한다. → 결과: 마지막 8개 전이가 출력되고 전이 중 할당은 0 B다.
+3. (5-D-03) Unity 이식 🎮: `Update()`에서 키보드 입력(`Input.GetKey`)을 문자(`'r'`, `'j'`, `'a'`, `'h'`, `'.'`)로 변환해 `StatePatternCharacterFsm`을 구동한다. → 결과: 키 입력에 따라 `Exit`/`Enter` 로그가 콘솔에 찍힌다.
+
+{% hint style="info" %}
+NOTE: `Input.GetKey`는 구 `Input` 클래스 API다. Unity 6에서 새 Input System만 활성화하면 예외가 난다. `Project Settings > Player > Active Input Handling`을 `Both`로 바꾸거나 Input System API로 바꾼다. 버전 확인 필요.
+{% endhint %}
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 입력 `".rrj.a.ah.."`로 두 FSM의 로그를 출력한다 | 아래 예상 출력과 같다 (11프레임, `frame 0`~`frame 10`) | 줄 단위로 일치 |
+| 2 | 두 로그를 문자열 비교한다 | `MATCH` 출력 | `MISMATCH`가 아니다 |
+| 3 | 상태 패턴의 `StepSilent` 11회 전후 할당량 차이를 읽는다 | `0 B` | 정확히 0 |
+| 4 | 점프 중(`frame 3`~`5`)의 `'a'` 입력(`frame 5`)이 무시되는지 본다 | `frame 5: Jump`가 출력된다 | `Attack` 전이 줄이 없다 |
+| 5 | `frame 8`의 `'h'`가 `Attack`을 끊는지 본다 | `Exit Attack`, `Enter Hit` | 두 줄이 순서대로 있다 |
+
+입력 문자열 `".rrj.a.ah.."`는 총 11프레임이다. 5번 프레임의 `'a'`는 점프 중이라 무시되고, 7번 프레임의 `Attack`은 8번 프레임의 `'h'`에 끊긴다. 예상 출력:
 
 ```
 frame 0: Idle
@@ -88,11 +175,18 @@ MATCH
 State 패턴 전이 중 힙 할당: 0 B
 ```
 
-### 확장 과제 (시간이 남을 때)
+## 7. 복구
 
-1. **계층형 상태(`Hierarchical FSM`)**: `Idle`과 `Run`의 공통 전이(`'j'` → `Jump`, `'a'` → `Attack`)를 상위 상태 `GroundedState`로 묶어 중복을 제거한다.
-2. **전이 이력 링버퍼**: 최근 8번의 상태 전이를 `(frame, from, to)` struct 배열(`new` 없이 고정 크기 순환 버퍼)에 기록해 시뮬레이션 끝에 출력한다.
-3. **Unity 이식 🎮**: `Update()`에서 키보드 입력(`Input.GetKey`)을 위 문자(`'r'`, `'j'`, `'a'`, `'h'`, `'.'`)로 변환해 `StatePatternCharacterFsm`을 구동한다.
+1. (7-01) 작업 폴더를 삭제한다: `rm -rf practice/day06` (PowerShell: `Remove-Item -Recurse practice/day06`). → 결과: 폴더가 사라진다.
+2. (7-02) Unity 확장 과제를 했다면 변경한 `Active Input Handling` 값을 원래대로 돌린다. 씬은 저장 전이면 `Ctrl+Z`로 되돌린다. → 결과: 프로젝트 설정이 작업 전과 같다.
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지를 AMM 형식(Task 템플릿)으로 재작성. 요구사항·참고 구현·회고는 원문 보존, 구역별 절차와 기능 확인 표 추가 |
+
+## 부록 A. 참고 구현
 
 <details><summary>참고 구현</summary>
 
@@ -321,9 +415,7 @@ class StatePatternCharacterFsm
 
 </details>
 
----
-
-## 3. 회고 (5분)
+## 부록 B. 회고
 
 질문에 스스로 답해 본 뒤 펼친다.
 
@@ -344,13 +436,3 @@ Unity `Animator`는 애니메이션 클립의 블렌딩과 재생 타이밍을 �
 `StatePatternCharacterFsm` 생성 시 5개의 상태 객체와 로그용 `StringBuilder`를 힙에 한 번 할당했습니다. 전이(`ChangeState`)할 때마다 `new JumpState()`를 만들지 않고 미리 생성해 둔 상태 인스턴스 참조를 재사용했기 때문에, 프레임 루프 중 상태 전이로 인한 힙 할당은 0바이트입니다.
 
 </details>
-
----
-
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
-- [Game Programming Patterns — State 장 (Robert Nystrom)](https://gameprogrammingpatterns.com/state.html)
-- [패턴 일치 — switch 식 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/switch-expression)
-- [Unity 매뉴얼 — 애니메이터 컨트롤러와 상태 머신](https://docs.unity3d.com/Manual/StateMachineBasics.html)

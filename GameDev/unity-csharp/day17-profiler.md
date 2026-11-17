@@ -1,27 +1,49 @@
 # Day 17 · 프로파일러 읽는 법 🎮
 
-> 3주차 렌더링과 측정 · 60분 · 준비물: 🎮 Unity 6 (`practice/UnityLab`, URP)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-018-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | 프로파일러로 병목을 측정하는 순서와 Deep Profile·ProfilerMarker의 쓰임을 설명하고 확인한다 |
+| 적용 대상 | Unity 6 (URP), `practice/UnityLab`. 🎮 표시 날 |
+| 소요 시간 | 3주차 렌더링과 측정 · 60분 (읽기 20, 실습 30, 문제 10) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - 왜 에디터 프로파일링만 믿으면 안 되는지 설명하고 `Development Build`에서 측정하는 원칙을 지킬 수 있다.
 - CPU Usage 모듈의 `Hierarchy`(`Total` vs `Self`, `GC Alloc`)와 `Timeline`(메인·렌더·워커 스레드)을 읽고 진짜 병목 지점을 찾을 수 있다.
 - `Deep Profile`의 한계를 이해하고 `ProfilerMarker`로 의심 구간만 정밀하게 계측할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 이름 | 위치 | 역할 |
+|---|---|---|
+| CPU Usage 모듈 `Hierarchy` 뷰 | Profiler 창 | 함수별 `Total`, `Self`, `Calls`, `GC Alloc`을 정렬해 보여 준다 |
+| CPU Usage 모듈 `Timeline` 뷰 | Profiler 창 | 메인·렌더·Job 워커 스레드를 시간축으로 보여 준다 |
+| `Deep Profile` | Profiler 창 버튼 | 모든 C# 메서드에 계측 코드를 넣는다. 오버헤드가 크다 |
+| `ProfilerMarker` | C# 코드 | 지정한 구간만 낮은 오버헤드로 계측한다 |
+| Frame Debugger | `Window > Analysis` | 한 프레임의 드로우 콜을 하나씩 확인한다 |
+| Memory Profiler 패키지 | Package Manager | 두 시점의 메모리 스냅샷을 비교(`Diff`)한다 |
+| Profile Analyzer 패키지 | Package Manager | 두 프로파일 구간의 중앙값·상위 1%·마커별 차이를 비교한다 |
 
-### 1-1. 측정의 4가지 원칙
+## 3. 동작 원리
+
+### 3-1. 측정의 4가지 원칙
 
 1. **추측하지 말고 측정한다**: 코드를 눈으로 보고 "여기가 느릴 것이다"라고 고치면 엉뚱한 곳만 복잡해진다.
 2. **에디터 ≠ 빌드**: Unity 에디터에서 Play 모드로 찍은 프로파일러에는 Scene 뷰 렌더링, 인스펙터 갱신, 에디터 전용 검증, `OnGUI` 디버그 창, C# 디버그 체크 오버헤드가 섞여 있다. 최종 판단은 반드시 **`Development Build` + `Autoconnect Profiler`**에서 내린다.
 3. **같은 조건에서 전후(A/B) 비교한다**: 같은 카메라 위치, 같은 시드/연출, 같은 워밍업 상태에서 수정 전과 수정 후 수치를 비교한다.
 4. **평균 프레임만 보지 말고 최악 프레임(스파이크, 1% Low)을 본다**: 평균 60 FPS여도 1초에 한 번 80 ms짜리 스파이크가 튀면 플레이어는 "게임이 끊긴다"고 느낀다.
 
-**팀 프로젝트 교훈**:
+**팀 프로젝트 교훈**
+
 같은 전투 구간인데도 에디터에서는 스파이크 초과분의 81%가 메인 스레드의 VFX 초기화로 보였고, `Development Build`에서는 74%가 렌더 스레드 쪽에서 나타났다. 빌드의 던전 진입 최악 프레임(2,776ms)은 절반이 디버그 하네스의 `IMGUI` 텍스트 측정이었는데, 출시 빌드에는 없어야 할 개발용 코드다. 에디터에서는 방향만 잡고, 수치는 빌드에서 확정하며, 개발 빌드에만 있는 비용은 따로 표시해 둔다.
 
-### 1-2. CPU Usage 모듈: Hierarchy vs Timeline
+### 3-2. CPU Usage 모듈: Hierarchy vs Timeline
 
 CPU Usage 창 왼쪽 상단 드롭다운으로 두 가지 뷰를 오가며 본다.
 
@@ -30,7 +52,7 @@ CPU Usage 창 왼쪽 상단 드롭다운으로 두 가지 뷰를 오가며 본�
 | **Hierarchy** | 어떤 함수가 시간을 많이 썼고 `GC Alloc`을 얼마나 일으켰는지 정렬해 찾을 때 | - **`Total` vs `Self`**: `Total`은 하위 호출까지 합친 시간, **`Self`는 그 함수 자체에서 쓴 시간**이다. 진짜 범인은 `Self ms`가 높은 쪽에 있다.<br>- **`Calls`**: 프레임당 호출 횟수<br>- **`GC Alloc`**: 힙 할당 바이트. `GC Alloc` 열 헤더를 클릭해 내림차순 정렬하면 프레임당 할당 범인이 바로 나온다 |
 | **Timeline** | 호출 순서, 스레드 간 대기(메인 ↔ 렌더 ↔ Job 워커), 긴 프레임의 병목 위치를 시간축으로 볼 때 | - **Main Thread**와 **Render Thread**가 나란히 보인다. 어느 쪽이 다른 쪽을 기다리는지(`WaitForPresent...`) 한눈에 보인다 |
 
-### 1-3. 자주 만나는 프로파일러 마커 사전
+### 3-3. 자주 만나는 프로파일러 마커 사전
 
 | 마커 이름 | 의미와 대처 |
 |---|---|
@@ -42,7 +64,7 @@ CPU Usage 창 왼쪽 상단 드롭다운으로 두 가지 뷰를 오가며 본�
 | `Shader.CreateGPUProgram` / PSO 생성 마커 | 런타임 첫 셰이더/PSO 준비 스톨 (Day 16) |
 | `Loading.UpdatePreloading` / `AwakeFromLoad` | 에셋·씬 로딩 및 직렬화 복원 비용 |
 
-### 1-4. Deep Profile의 함정과 ProfilerMarker
+### 3-4. Deep Profile의 함정과 ProfilerMarker
 
 `Deep Profile` 버튼을 켜면 모든 C# 메서드 진입·퇴장에 계측 코드가 삽입된다.
 - **장점**: 어떤 하위 메서드가 범인인지 코드 수정 없이 바로 보인다.
@@ -69,17 +91,29 @@ public class MarkerExample : MonoBehaviour
 }
 ```
 
-### 1-5. 함께 쓰는 분석 도구 3가지
+### 3-5. 함께 쓰는 분석 도구 3가지
 
 - **Frame Debugger**: 한 프레임의 드로우 콜 순서와 배칭이 깨진 이유를 1드로우 단위로 확인 (Day 13, 14).
 - **Memory Profiler 패키지**: 두 시점의 메모리 스냅샷을 찍어 비교(`Diff`)함으로써 씬 전환 후에도 남아서 새는 에셋·래퍼 객체(Day 20)를 추적.
 - **Profile Analyzer 패키지**: 300프레임 같은 구간의 프로파일 데이터를 두 벌 불러와 중앙값(`Median`), 상위 1%, 마커별 시간 차이를 통계로 비교.
 
----
 
-## 2. 손으로 확인 (30분)
+## 4. 약어·용어
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+| 용어 | 뜻 |
+|---|---|
+| `Total` / `Self` | `Total`은 하위 호출을 포함한 시간, `Self`는 그 함수 본문 자체의 시간 |
+| `GC Alloc` | 해당 구간에서 일어난 힙 할당 바이트 |
+| 스파이크 | 평균보다 훨씬 긴 단일 프레임 |
+| 1% Low | 가장 느린 1% 프레임의 성능 지표 |
+| `Development Build` | 프로파일러 연결과 디버그 기능을 켠 빌드 |
+| `Autoconnect Profiler` | 개발 빌드 실행 시 에디터 프로파일러에 자동 연결하는 Build Settings 옵션 |
+
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 심어 둔 3가지 문제(GC, 스파이크, CPU 과부하)를 프로파일러로 잡고 고치기 (30분)
 
@@ -187,6 +221,10 @@ public class ProblemMaker : MonoBehaviour
 }
 ```
 
+{% hint style="info" %}
+NOTE: `FindObjectsByType<T>(FindObjectsSortMode)`는 Unity 2021.3.18 / 2022.2 이후 API다. 사용하는 Unity 버전에서 없으면 `FindObjectsOfType<T>()`로 바꾼다(버전 확인 필요).
+{% endhint %}
+
 1. Play 모드를 켜고 Profiler(`Window > Analysis > Profiler` → `CPU Usage` → `Hierarchy`)에서 200프레임가량 기록한 뒤 일시정지한다.
 2. 그래프에서 **평소 프레임**과 **위로 솟구친 스파이크 프레임**을 각각 클릭해 `Lab.StringBuild`, `Lab.PeriodicWork`, `Lab.FindTargets` 세 마커의 `Total ms`, `Self ms`, `GC Alloc`을 찾아 표에 적는다.
 3. 인스펙터에서 `useFixedVersion`을 체크한 뒤 다시 기록하여 수치가 어떻게 바뀌었는지 채운다.
@@ -197,9 +235,8 @@ public class ProblemMaker : MonoBehaviour
 | `Lab.PeriodicWork` (스파이크 프레임) | | | | | |
 | `Lab.FindTargets` (평소 프레임) | | | | | |
 
----
 
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -227,13 +264,21 @@ public class ProblemMaker : MonoBehaviour
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [프로파일러 창 개요 (Unity 공식 문서)](https://docs.unity3d.com/Manual/ProfilerWindow.html)
 - [CPU Usage 프로파일러 모듈 (Unity 공식 문서)](https://docs.unity3d.com/Manual/ProfilerCPU.html)
 - [ProfilerMarker API 문서](https://docs.unity3d.com/ScriptReference/Unity.Profiling.ProfilerMarker.html)
 - [Memory Profiler 패키지 문서](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@latest)
+
+이전: [Day 16 셰이더 variant와 첫 사용 스톨](day16-shader-variants-warmup.md) · 다음: [Day 18 [실습] 이벤트 버스](day18-lab-event-bus.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] 최근 내 프로젝트에서 "느리다"고 느낀 구간은 어디이고, 측정 없이 추측한 부분은 무엇이었나?
+- [ ] Timeline 뷰와 Hierarchy 뷰를 각각 언제 여는지 내 말로 설명하면?

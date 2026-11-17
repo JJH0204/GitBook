@@ -1,17 +1,43 @@
 # Day 15 · 오버드로우, 투명, 컬링 🎮
 
-> 3주차 렌더링과 측정 · 60분 · 준비물: 🎮 Unity 6 (`practice/UnityLab`, URP)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-016-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | 깊이 버퍼와 `Early-Z`, 반투명 오버드로우, 컬링 기법의 원리와 한계를 설명한다. |
+| 적용 대상 | Unity 6 (URP), `practice/UnityLab` |
+| 소요 시간 | 60분 (3주차 렌더링과 측정) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 준비물: 🎮 Unity 6 (`practice/UnityLab`, URP)
+{% endhint %}
+
+## 1. 학습 목표
+
 - 깊이 버퍼(`Z-buffer`)와 `Early-Z`가 어떻게 불투명 오브젝트의 픽셀 연산을 아껴 주는지 설명할 수 있다.
 - 반투명 오브젝트와 알파 테스트(`Alpha Clip`)가 왜 오버드로우(`overdraw`)와 필레이트(`fill rate`) 병목을 부르는지 설명할 수 있다.
 - 프러스텀 컬링(`frustum culling`)과 오클루전 컬링(`occlusion culling`)의 차이와 오클루전 컬링이 오히려 손해인 상황을 구분할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| 깊이 버퍼(`Z-buffer`) | GPU 렌더 타깃 옆 | 픽셀마다 카메라로부터의 거리를 기록한다 |
+| `Early-Z` | 프래그먼트 셰이더 직전 | 가려진 픽셀의 셰이더 실행을 건너뛴다 |
+| `ZWrite` | 머티리얼 / 셰이더 | 깊이 버퍼에 쓸지 정한다. 반투명은 끈다 |
+| Rendering Debugger | `Window > Analysis > Rendering Debugger` | 오버드로우를 색으로 보여 준다 |
+| 프러스텀 컬링 | CPU, 자동 | 시야 절두체와 `Bounds`가 겹치는지 검사한다 |
+| 오클루전 컬링 | CPU, 베이크 데이터 필요 | 정적 가림막 뒤의 오브젝트를 제외한다 |
+| `Camera.layerCullDistances` | 카메라 | 레이어별 최대 표시 거리를 정한다 |
+| `LOD Group` | 오브젝트 | 거리에 따라 메시 해상도를 바꾸거나 컬링한다 |
 
-### 1-1. 깊이 버퍼와 Early-Z: 불투명이 앞→뒤로 그려지는 이유
+## 3. 동작 원리
+
+### 3-1. 깊이 버퍼와 Early-Z: 불투명이 앞→뒤로 그려지는 이유
 
 화면의 한 픽셀에 오브젝트 10개가 겹쳐 있어도 결국 눈에 보이는 불투명 픽셀은 **가장 앞에 있는 1개**뿐이다. GPU는 픽셀마다 카메라로부터의 거리를 기록하는 **깊이 버퍼(`Depth Buffer`, `Z-buffer`)**를 둔다.
 
@@ -20,7 +46,7 @@
 2. 가장 앞의 오브젝트가 깊이 버퍼를 작은 깊이값으로 먼저 채운다.
 3. 뒤에 있는 오브젝트들은 래스터화 직후 `Early-Z`에서 "이미 앞에 뭔가 있다"고 판정되어 **프래그먼트 셰이더를 아예 실행하지 않고 버려진다.**
 
-### 1-2. 반투명과 알파 테스트가 비싼 이유: 오버드로우
+### 3-2. 반투명과 알파 테스트가 비싼 이유: 오버드로우
 
 한 픽셀이 한 프레임 동안 여러 번 칠해지는 현상을 **`오버드로우(overdraw)`**라고 한다.
 
@@ -34,13 +60,13 @@
 
 실무에서 오버드로우의 주범은 **파티클 이펙트(연기·불꽃이 화면 가득 겹침)**와 **전체 화면을 덮는 투명 UI 패널**이다. 빈 여백이 넓은 사각형(`Quad`)에 투명 텍스처를 씌우면 눈에 안 보이는 알파 0 영역까지 전부 프래그먼트 셰이더와 블렌딩을 탄다.
 
-### 1-3. 필레이트와 URP Rendering Debugger
+### 3-3. 필레이트와 URP Rendering Debugger
 
 GPU가 초당 화면에 칠할 수 있는 픽셀 수를 **`필레이트(fill rate)`**라고 한다. 고해상도(4K, 모바일 레티나 디스플레이)에서 큰 반투명 이펙트가 여러 겹 겹치면 드로우 콜이 몇 개 안 돼도 필레이트와 메모리 대역폭 한계로 프레임이 급락한다. 특히 모바일 GPU(`TBDR`, 타일 기반 지연 렌더링)는 대역폭이 작고 발열에 민감해 오버드로우와 `discard`(`clip`)에 훨씬 취약하다.
 
 URP에서 오버드로우를 눈으로 확인하려면 **`Window > Analysis > Rendering Debugger`**를 열고 `Rendering` 패널의 `Overdraw Mode`를 켠다(위치와 이름은 URP 버전에 따라 조금 다르다). 많이 겹쳐 칠해진 픽셀일수록 밝게(또는 겹친 횟수 색으로) 빛난다.
 
-### 1-4. 안 보이는 것은 아예 제출하지 않기: 컬링과 LOD
+### 3-4. 안 보이는 것은 아예 제출하지 않기: 컬링과 LOD
 
 픽셀을 아끼는 것보다 더 좋은 것은 아예 드로우 콜을 제출하지 않는 **`컬링(culling)`**이다.
 
@@ -57,11 +83,23 @@ URP에서 오버드로우를 눈으로 확인하려면 **`Window > Analysis > Re
 - `SkinnedMeshRenderer`(캐릭터 애니메이션)가 루트 본에서 멀리 이동했는데 원본 바운딩 박스는 제자리에 남아 있으면,
 카메라가 아직 캐릭터를 보고 있는데도 CPU가 "시야 밖"으로 착각해 통째로 꺼버린다. 이때는 메시의 `Bounds`를 넉넉히 키우거나, `SkinnedMeshRenderer`의 `Update When Offscreen`(비용 있음)을 확인한다.
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 오버드로우(overdraw) | 한 픽셀이 한 프레임에 여러 번 칠해지는 현상 |
+| `Early-Z` | 프래그먼트 셰이더 실행 전에 하는 깊이 테스트 최적화 |
+| `Alpha Clip` / `discard` | 셰이더 안에서 픽셀을 버려 구멍을 내는 방식 |
+| `TBDR` | 타일 기반 지연 렌더링. 모바일 GPU 구조 |
+| `Bounds` (AABB) | 렌더러를 감싸는 축 정렬 경계 상자. 컬링 검사에 쓴다 |
+| `Occluder` / `Occludee` | 가리는 오브젝트 / 가려지는 오브젝트 |
+| `LOD` | 거리별 세부 수준(Level of Detail) |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: 이 절은 AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 불투명 50겹 vs 반투명 50겹 오버드로우와 해상도 실험 (20분)
 
@@ -155,11 +193,9 @@ public class BrokenBoundsDemo : MonoBehaviour
 | `customBoundsCenter`가 `(0, 0, 50)`일 때 카메라를 살짝 돌리면 큐브가 왜 사라지는가? | |
 | 카메라와의 거리가 `smallDetailCullDistance(10m)`를 넘을 때 일어나는 일은? | |
 
----
+## 6. 확인 문제
 
-## 3. 면접 대비 (10분)
-
-소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
+소리 내어 30초 안에 답해 본 뒤 펼쳐서 비교한다.
 
 **Q1. 반투명(Transparent) 오브젝트가 불투명(Opaque) 오브젝트보다 렌더링 비용이 비싼 이유는 무엇인가요?**
 <details><summary>모범 답안</summary>
@@ -185,13 +221,21 @@ public class BrokenBoundsDemo : MonoBehaviour
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [오클루전 컬링 (Unity 공식 문서)](https://docs.unity3d.com/Manual/OcclusionCulling.html)
 - [URP Rendering Debugger (Unity 공식 문서)](https://docs.unity3d.com/Manual/urp/features/rendering-debugger.html)
 - [LOD Group (Unity 공식 문서)](https://docs.unity3d.com/Manual/class-LODGroup.html)
 - [Camera.layerCullDistances API 문서](https://docs.unity3d.com/ScriptReference/Camera-layerCullDistances.html)
+
+이전: [Day 14 · 배칭 🎮](day14-batching.md) · 다음: [Day 16 · 셰이더 variant와 첫 사용 스톨 🎮](day16-shader-variants-warmup.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 적는다.
+- [ ] 반투명 이펙트가 불투명보다 비싼 이유를 내 말로 설명하면?
+- [ ] 오클루전 컬링을 켜지 않는 편이 나은 내 프로젝트(또는 가상의 게임) 사례는?

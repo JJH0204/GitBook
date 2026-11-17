@@ -1,17 +1,37 @@
 # Day 07 · IEnumerator와 yield의 정체
 
-> 2주차 비동기 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day07`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-008-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | `foreach`의 덕 타이핑과 `yield return` 이터레이터가 상태 기계로 변환되는 원리, 지연 실행의 함정을 설명한다. |
+| 적용 대상 | .NET SDK 8 이상 콘솔 앱 |
+| 소요 시간 | 60분 (2주차 비동기) |
+| 준비물 | `dotnet new console -o practice/day07` |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - `foreach`가 인터페이스가 없어도 덕 타이핑(`duck typing`)으로 동작하는 원리와 `Dispose()` 호출 규칙을 설명할 수 있다.
 - `yield return` 메서드가 컴파일러에 의해 어떤 상태 기계(`state machine`) 클래스로 변환되는지 손으로 재현할 수 있다.
 - 지연 실행(`deferred execution`)의 함정과 이터레이터 호출 시 발생하는 힙 할당을 설명할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| `GetEnumerator()` | 순회 대상 (`IEnumerable<T>` 또는 같은 이름의 메서드) | `foreach`가 처음 호출해 열거자를 얻는다 |
+| `MoveNext()` / `Current` | 열거자 | 다음 요소로 이동하고 현재 값을 돌려준다 |
+| `Dispose()` | 열거자 (`IDisposable`) | 루프가 끝나거나 `break`/예외로 나갈 때 `finally`에서 호출된다 |
+| 컴파일러가 만든 상태 기계 클래스 | `yield return`이 있는 메서드 | `_state`, `Current`, 승격된 지역 변수를 필드로 가진다 |
+| `IEnumerable<T>` / `IEnumerator<T>` | `System.Collections.Generic` | 이터레이터 메서드의 반환 타입 |
 
-### 1-1. `foreach`의 진짜 모습 — 덕 타이핑(`duck typing`)
+## 3. 동작 원리
+
+### 3-1. `foreach`의 진짜 모습 — 덕 타이핑(`duck typing`)
 
 `foreach (var x in collection)`은 반드시 `IEnumerable<T>`를 구현해야만 동작하는 것이 아니다. 컴파일러는 **이름과 시그니처만 맞으면**(덕 타이핑) 아래 코드로 풀어 쓴다.
 
@@ -38,7 +58,7 @@ finally
 
 [Day 03](day03-gc-allocation.md)에서 `List<int>`를 바로 `foreach`하면 0바이트였던 이유가 바로 이것이다.
 
-### 1-2. `yield return`은 스레드도 마법도 아닌 "상태 기계 클래스"다
+### 3-2. `yield return`은 스레드도 마법도 아닌 "상태 기계 클래스"다
 
 메서드 안에 `yield return`이나 `yield break`가 하나라도 있으면, 컴파일러는 그 메서드의 본문을 실행하는 대신 **`IEnumerator<T>`(또는 `IEnumerable<T>`)를 구현한 숨은 클래스를 생성**한다.
 
@@ -53,7 +73,7 @@ finally
 
 따라서 **`yield` 메서드를 호출하는 순간에는 본문 코드가 한 줄도 실행되지 않는다.** 단지 이 숨은 상태 기계 객체를 **`new`로 힙에 1번 할당**해 돌려줄 뿐이다. 실제 본문 코드는 소비자가 첫 `MoveNext()`를 부를 때 비로소 첫 `yield return`까지 달린다.
 
-### 1-3. 지연 실행(`deferred execution`)의 함정
+### 3-3. 지연 실행(`deferred execution`)의 함정
 
 ```csharp
 // 나쁜 예: count에 -1을 넘겨도 호출 시점에는 예외가 안 나고, 나중에 foreach를 돌릴 때 터진다!
@@ -78,11 +98,23 @@ static IEnumerable<int> SafeRange(int count)
 
 또 다른 함정은 `IEnumerable<T>`를 반환받아 **두 번 `foreach`를 돌리면 상태 기계가 두 번 생성되어 처음부터 다시 계산한다**는 점이다.
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 덕 타이핑(duck typing) | 인터페이스 구현 여부가 아니라 이름과 시그니처가 맞으면 통과시키는 방식. `foreach`의 `GetEnumerator`/`MoveNext`/`Current` 규칙 |
+| 열거자(enumerator) | 순회 위치를 가진 객체. `MoveNext()`와 `Current`를 제공한다 |
+| 이터레이터(iterator) | `yield return`/`yield break`를 포함해 열거자로 변환되는 메서드 |
+| 상태 기계(state machine) | `_state` 값으로 "어디까지 실행했는가"를 기억하는, 컴파일러 생성 클래스 |
+| 승격(hoisting) | 지역 변수와 매개변수를 상태 기계의 필드로 옮기는 것 |
+| 지연 실행(deferred execution) | 이터레이터 호출 시 본문이 실행되지 않고 첫 `MoveNext()`에서 실행되는 성질 |
+| 박싱(boxing) | 값 타입을 `object`/인터페이스로 바꿔 힙 객체에 넣는 것. `List<T>`를 `IEnumerable<T>` 변수로 순회하면 구조체 열거자가 박싱된다 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 `3. 동작 원리`로 돌아간다.
+{% endhint %}
 
 ### 실습 1: `yield`와 `foreach` 교차 실행 순서 예측하기 (10분)
 
@@ -255,9 +287,7 @@ static class EnumerableExt
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -285,13 +315,21 @@ static class EnumerableExt
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [반복기 (C# 프로그래밍 가이드)](https://learn.microsoft.com/ko-kr/dotnet/csharp/iterators)
 - [yield 문 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/statements/yield)
 - [foreach, in (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/statements/iteration-statements#the-foreach-statement)
 - [SharpLab — yield 상태 기계 디컴파일 확인](https://sharplab.io/)
+
+이전: [Day 06 · [실습] 상태 패턴](day06-lab-state-pattern.md) · 다음: [Day 08 · Unity 코루틴의 내부 🎮](day08-unity-coroutine.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장
+- [ ] `foreach`가 `IEnumerable<T>`를 구현하지 않은 타입도 순회할 수 있는 이유를 내 말로 설명하면?
+- [ ] `yield return`을 쓴 메서드를 호출했는데 본문이 실행되지 않아 당황한 경험이 있는가? 없다면 어떤 코드에서 생길 수 있는가?

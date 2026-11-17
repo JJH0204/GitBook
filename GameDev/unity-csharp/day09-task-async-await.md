@@ -1,17 +1,38 @@
 # Day 09 · Task와 async/await
 
-> 2주차 비동기 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day09`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-010-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | `async`/`await`의 상태 기계 변환, `SynchronizationContext`에 따른 재개 위치, Unity에서의 스레드 규칙을 설명한다. |
+| 적용 대상 | .NET SDK 8 이상 콘솔 앱, Unity 6 (설명) |
+| 소요 시간 | 60분 (2주차 비동기) |
+| 준비물 | `dotnet new console -o practice/day09` |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - `async` 메서드가 상태 기계로 바뀌고 `await`가 `GetAwaiter()`로 풀리는 과정을 설명할 수 있다.
 - `await` 뒤에 어느 스레드에서 재개되는지(`SynchronizationContext`)를 콘솔과 Unity로 나눠 설명할 수 있다.
 - `Task.Run` 안에서 Unity API를 부르면 안 되는 이유와 `ConfigureAwait(false)`의 뜻을 설명할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| 상태 기계 | 컴파일러가 `async` 메서드에서 생성 | 지역 변수를 필드로 승격하고 `_state`로 재개 지점을 기억한다 |
+| `AsyncTaskMethodBuilder` | 컴파일러 생성 코드 | 반환 `Task`를 만들고 결과·예외를 채운다 |
+| awaiter (`GetAwaiter()`의 반환) | 대기 대상 | `IsCompleted`, `OnCompleted`, `GetResult()`를 제공한다 |
+| `SynchronizationContext` | 스레드 | `await` 뒤 이어갈 코드를 보낼 곳. 콘솔은 없음, Unity는 `UnitySynchronizationContext` |
+| `Task.Run` | 스레드 풀 | 무거운 계산을 메인 스레드 밖에서 실행한다 |
+| `ConfigureAwait(false)` | `await` 대상 | 컨텍스트를 캡처하지 않고 끝난 스레드에서 이어간다 |
 
-### 1-1. `async` 메서드 = 상태 기계 + 빌더
+## 3. 동작 원리
+
+### 3-1. `async` 메서드 = 상태 기계 + 빌더
 
 [Day 07](day07-iterator-yield.md)의 `yield` 메서드처럼, `async` 메서드도 컴파일러가 **상태 기계**로 바꾼다. 차이는 소비자다. `yield`는 `foreach`가 `MoveNext()`를 부르고, `async`는 **`await`한 대상이 끝났을 때 상태 기계의 `MoveNext()`가 다시 불린다.**
 
@@ -23,7 +44,7 @@
 
 Release의 `struct` 상태 기계는 **끝까지 동기적으로 완료되면 힙에 올라가지 않는다.** 처음으로 "아직 안 끝난" `await`를 만나면 힙의 박스로 옮겨진다. Unity에서 어느 쪽인지는 코드 최적화 모드(Debug/Release)에 따라 다르다.
 
-### 1-2. `await x`는 무엇으로 풀리나
+### 3-2. `await x`는 무엇으로 풀리나
 
 ```csharp
 // await x; 가 풀린 모습 (개념)
@@ -43,7 +64,7 @@ else
 
 `await`는 `Task`에만 되는 게 아니다. **`GetAwaiter()` 메서드가 있고, 그 반환형에 `IsCompleted`, `OnCompleted`(`INotifyCompletion`), `GetResult()`가 있으면 무엇이든** `await`할 수 있다. `foreach`의 덕 타이핑과 같은 발상이다. 실습 3에서 직접 만든다.
 
-### 1-3. 어디서 재개되나: `SynchronizationContext`
+### 3-3. 어디서 재개되나: `SynchronizationContext`
 
 `await`는 `OnCompleted`를 걸기 전에 **`SynchronizationContext.Current`를 캡처**한다. 대상이 끝나면 이어갈 코드를 그 컨텍스트의 `Post`로 보낸다.
 
@@ -54,12 +75,12 @@ else
 
 `ConfigureAwait(false)`는 "컨텍스트를 캡처하지 않겠다"는 뜻이다. 끝난 스레드(보통 풀 스레드)에서 그대로 이어간다. 라이브러리 코드에서는 불필요한 전환을 피하려고 쓴다. **Unity 게임 코드에서는 메인 스레드로 돌아오는 것이 필요하므로 보통 쓰지 않는다.**
 
-### 1-4. 스레드와 Unity
+### 3-4. 스레드와 Unity
 
 - `Task.Run(...)`은 **스레드 풀**에서 실행한다. Unity API(`transform`, `GameObject` 등)는 **메인 스레드 전용**이라서, `Task.Run` 안에서 부르면 대개 예외가 나고, 아니더라도 동작이 보장되지 않는다.
 - 안전한 패턴: 무거운 계산만 `Task.Run`에서 하고, `await`로 돌아온 뒤(메인 스레드) 결과를 Unity API에 쓴다.
 
-### 1-5. 비용과 함정
+### 3-5. 비용과 함정
 
 | 주제 | 내용 |
 |---|---|
@@ -67,14 +88,28 @@ else
 | `ValueTask` | 구조체. 결과가 **자주 동기로 나오는** 메서드(캐시 히트 등)에서 할당을 줄인다. 한 번만 `await`해야 한다 |
 | `Task.Delay` | 실제 시간(타이머)을 쓴다. `Time.timeScale`과 무관하다. 게임 시간으로 기다리려면 Day 10 |
 | `async void` | 호출자가 `await`도 예외 처리도 못 한다. 이벤트 핸들러에만 쓴다 (Day 11) |
+| 취소 | `Task`는 Unity 플레이 종료나 오브젝트 파괴로 자동 취소되지 않는다. 에디터에서 Play를 멈춰도 `Task.Delay` 뒤의 코드가 이어질 수 있다. 취소 방법은 Day 11 |
 
-> Unity 6 = C# 9 + Mono/IL2CPP. `async`/`await`와 `Task`는 쓸 수 있지만, 위의 컨텍스트 동작은 Unity 전용 `UnitySynchronizationContext` 덕분이다. WebGL처럼 스레드가 없는 플랫폼에서는 `Task.Run`/`Task.Delay`가 기대대로 동작하지 않는다.
+{% hint style="info" %}
+NOTE: Unity 6 = C# 9 + Mono/IL2CPP. `async`/`await`와 `Task`는 쓸 수 있지만, 위의 컨텍스트 동작은 Unity 전용 `UnitySynchronizationContext` 덕분이다. WebGL처럼 스레드가 없는 플랫폼에서는 `Task.Run`/`Task.Delay`가 기대대로 동작하지 않는다.
+{% endhint %}
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| awaiter | `await`가 호출하는 `IsCompleted`/`OnCompleted`/`GetResult()` 묶음을 가진 객체 |
+| `SynchronizationContext` | `Post`로 콜백을 특정 스레드·루프에 보내는 추상 클래스 |
+| `UnitySynchronizationContext` | Unity 메인 스레드에서 `await` 이후 코드를 실행하게 하는 컨텍스트 |
+| 스레드 풀(thread pool) | `Task.Run`과 타이머가 쓰는 .NET 작업 스레드 집합 |
+| `ValueTask` | 결과가 자주 동기로 나오는 비동기 메서드의 할당을 줄이는 구조체. 한 번만 `await`한다 |
+| `async void` | `Task`를 돌려주지 않는 비동기 메서드. 호출자가 완료·예외를 다룰 수 없다 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 `3. 동작 원리`로 돌아간다.
+{% endhint %}
 
 ### 실습 1: `await` 전후의 스레드 id (5분)
 
@@ -136,7 +171,7 @@ async Task Demo()
     ctx.Stop();
 }
 
-ctx.Post(_ => _ = Demo(), null);   // 루프 안(= main)에서 시작
+ctx.Post(_ => Demo(), null);        // 루프 안(= main)에서 시작. 반환된 Task는 쓰지 않는다
 ctx.Run();                          // main 스레드는 여기서 큐만 처리한다
 Console.WriteLine("loop end");
 
@@ -254,9 +289,7 @@ frame 3: A done
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -290,13 +323,21 @@ frame 3: A done
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [Task 기반 비동기 패턴 (TAP)](https://learn.microsoft.com/ko-kr/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap)
 - [async 및 await를 사용한 비동기 프로그래밍](https://learn.microsoft.com/ko-kr/dotnet/csharp/asynchronous-programming/)
 - [SynchronizationContext 클래스](https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.synchronizationcontext)
-- [Unity 매뉴얼 — Awaitable과 async/await 지원](https://docs.unity3d.com/ScriptReference/Awaitable.html)
+- [Unity ScriptReference — Awaitable](https://docs.unity3d.com/ScriptReference/Awaitable.html)
+
+이전: [Day 08 · Unity 코루틴의 내부 🎮](day08-unity-coroutine.md) · 다음: [Day 10 · UniTask와 Awaitable 🎮](day10-unitask-awaitable.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장
+- [ ] `await` 앞뒤에서 코드가 실행되는 스레드가 달라질 수 있는 이유를 콘솔과 Unity로 나눠 내 말로 설명하면?
+- [ ] 내가 `async void`를 썼거나 쓸 뻔한 곳이 있는가? 그 자리에 무엇을 써야 하는가?
