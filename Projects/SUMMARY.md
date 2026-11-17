@@ -58,6 +58,10 @@
     * [인스톨러 구축 및 배포 자동화 (Inno Setup)](projects/allban/dev-and-deploy/inno-setup/README.md)
       * [NSSM 서비스 관리 전환 (NSSM)](projects/allban/dev-and-deploy/inno-setup/neem.exe.md)
 * [오픈클로 AI 어시스턴트 (OpenClaw)](projects/openclaw-ai-assistant-project-lisa.md)
+* [자체 호스팅 개발 서버 (forge)](projects/forge-selfhost/README.md)
+  * [도입 전: NAS 시절과 사고](projects/forge-selfhost/before-nas.md)
+  * [도입 과정](projects/forge-selfhost/process.md)
+  * [도입 결과와 회고](projects/forge-selfhost/results-and-retrospective.md)
 
 ## 보류
 
