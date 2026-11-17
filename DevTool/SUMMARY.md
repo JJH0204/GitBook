@@ -6,6 +6,8 @@
   * [CMake 개요 및 활용](build-system/cmake.md)
   * [Ninja 빌드 시스템](build-system/ninja.md)
   * [CMakeLists.txt 작성 가이드](build-system/cmakelists.txt.md)
+  * [Ninja 설치와 CMake 빌드](build-system/ninjabuild.md)
+  * [CMakeLists.txt 예제 모음](build-system/cmakelistsreference.md)
 * [컴파일러 및 디버깅 (Compiler & Debug)](compiler-debug/README.md)
   * [디버거 개요 (Debugger)](compiler-debug/debugger.md)
   * [Windows MinGW-w64 설치](compiler-debug/mingww64installation.md)
