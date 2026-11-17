@@ -1,122 +1,115 @@
 # 스위치 기반 VLAN 구성
 
-스위치에 연결된 포트를 기반으로 VLAN을 구성하는 기술
+## 작업 식별
 
-## 과정1
-
-{% stepper %}
-{% step %}
-### VLAN 생성 및 포트 할당
-
-* Subnetting을 통해 단말 장치에 우선적으로 독립된 IP를 할당한다.\
-  링크: ../network/Subnetting.md
-* 스위치 접속 및 전역 설정 모드 진입:
-
-```
-enable
-conf t
-```
-
-* VLAN 생성:
-
-```
-vlan <번호>
-name <vlan이름>
-exit
-```
-
-* 포트 접속 및 VLAN 할당:
-
-```
-int <포트이름>
-switchport mode access
-switchport access vlan <번호>
-exit
-```
-
-위 과정을 VLAN 개수만큼 반복 수행한다.
-{% endstep %}
-
-{% step %}
-### Switch 간 연결(Trunk) 설정
-
-* 스위치 간 연결 정보를 각 스위치에서 관리해야 한다.\
-  연결 방식: Trunk (관리 규칙: trunk protocol)\
-  관련 링크: ../network/VTP\_Revision.md, trunk%20protocol.md
-* 다른 스위치와 연결된 포트 설정:
-
-```
-int <포트이름>
-switchport mode trunk
-exit
-```
-
-이 설정은 서로 연결된 스위치 각각에서 수행해야 한다.
-{% endstep %}
-
-{% step %}
-### Router (Gateway) 설정
-
-* 라우터 접속 및 전역 설정 모드 진입:
-
-```
-enable
-conf t
-```
-
-* 인터페이스 활성화: (참고 링크: obsidian://open?vault=MyNote\&file=Gateway%20%EC%84%A4%EC%A0%95)
-
-```
-no shutdown
-```
-
-* 스위치와 연결된 인터페이스의 VLAN 서브인터페이스 접속:
-
-```
-int <인터페이스>.<vlan번호>
-```
-
-* 트렁크(Encapsulation) 설정:
-
-```
-encapsulation <protocol이름> <vlan번호>
-# 예: encapsulation dot1Q 10
-```
-
-* Gateway IP 할당:
-
-```
-ip address <아이피> <서브넷마스크>
-```
-{% endstep %}
-{% endstepper %}
-
-## Native VLAN
-
-***
-
-링크: Native%20VLAN.md
-
-## Switch 연결 관리
-
-***
-
-Switch 끼리 연결되어 있는 경우 이 연결 정보를 각 Switch에서 관리해야 한다.\
-이 연결 방식을 Trunk라고 하고 관리 규칙을 trunk protocol이라고 한다.\
-관련 링크: trunk%20protocol.md
-
-## Router 설정
-
-***
-
-같은 네트워크의 장치끼리 통신은 원활하지만 다른 네트워크와 통신을 불가능한 상태다. 이 문제를 Router 설정을 통해 해결할 수 있다.
-
-## VTP
-
-***
-
-링크: ../network/VTP.md
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-NRM-006-MP |
+| 목적 | 스위치 포트 기반 VLAN을 만들고, 스위치 간 트렁크와 라우터 서브인터페이스(게이트웨이)를 설정한다 |
+| 적용 대상 | Cisco IOS 계열 스위치·라우터 |
+| 소요 시간 | 약 30분 |
+| 확인 상태 | 미검증 (원본 페이지를 정리한 것이며 장비에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="info" %}
-VLAN 생성 및 Trunk 설정은 각 스위치에서 개별적으로 적용해야 합니다. Router의 서브인터페이스 및 encapsulation 설정은 스위치 측의 트렁크 설정과 일치해야 합니다.
+NOTE: VLAN은 하나의 스위치를 논리적으로 나눈 네트워크다. 같은 VLAN의 장치끼리는 통신되지만 다른 VLAN과는 라우터 설정 없이 통신되지 않는다. 구성 원리는 VLAN 개념 문서를 따른다. 원본에 있던 Native VLAN, Trunk protocol 링크는 대상 파일이 없어 삭제했다.
 {% endhint %}
+
+## 1. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [가상 랜 (VLAN)](../../../Network/routing-and-switching/vlan.md) | | VLAN 개념과 방식 |
+| [VLAN 트렁킹 프로토콜 (VTP)](../../../Network/routing-and-switching/vtp.md) | | VLAN 정보 동기화 |
+| [서브넷팅](../../../Network/ip-addressing-and-nat/subnetting.md) | | 단말별 독립 IP 계획 |
+| [스위치 및 라우터 원격 접속 설정](remoteterminalaccess.md) | LNX-NRM-004-MP | 장치 원격 접속 |
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양 | 비고 |
+|---|---|---|---|
+| 1 | 스위치 | Cisco IOS 계열, 1대 이상 | 트렁크 구성에는 2대 이상 |
+| 2 | 라우터 | 서브인터페이스 지원 | VLAN 간 통신에 쓴다 |
+| 3 | 콘솔 접속 수단 | 콘솔 케이블과 터미널 프로그램 | |
+| 4 | VLAN 계획표 | VLAN 번호, 이름, 포트, IP 대역 | 시작 전에 작성한다 |
+
+## 3. 안전 사항
+
+{% hint style="danger" %}
+WARNING: 트렁크·포트 모드·VLAN 할당 변경은 원격 접속 단절 위험이 있다. 관리 중인 포트나 관리 VLAN을 바꾸면 접속이 끊긴다. 콘솔로 연결해 작업하고, 변경 전 `show running-config` 출력을 저장해 설정을 백업한다.
+{% endhint %}
+
+{% hint style="warning" %}
+CAUTION: VLAN 생성과 트렁크 설정은 각 스위치에서 개별적으로 수행한다. 라우터의 서브인터페이스·`encapsulation` 설정은 스위치 쪽 트렁크 설정과 일치해야 한다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | VLAN 계획표를 작성한다. 단말마다 독립된 IP 대역을 정한다 | 서브넷팅 문서를 따른다 |
+| 2 | 각 장치의 설정을 백업한다: `show running-config` | 출력을 파일로 저장한다 |
+| 3 | 장치에 콘솔로 접속한다 | 프롬프트가 보인다 |
+
+## 5. 절차
+
+### A. VLAN 생성과 포트 할당 (각 스위치)
+
+1. (5-A-01) 특권 모드로 진입한다: `enable`
+2. (5-A-02) 전역 설정 모드로 진입한다: `conf t` → 결과: 프롬프트가 `(config)#`가 된다.
+3. (5-A-03) VLAN을 만든다: `vlan <번호>`
+4. (5-A-04) VLAN 이름을 지정한다: `name <VLAN 이름>`
+5. (5-A-05) VLAN 설정 모드를 빠져나온다: `exit`
+6. (5-A-06) 포트로 이동한다: `int <포트 이름>`
+7. (5-A-07) 포트를 액세스 모드로 지정한다: `switchport mode access`
+8. (5-A-08) 포트를 VLAN에 할당한다: `switchport access vlan <번호>`
+9. (5-A-09) 포트 설정 모드를 빠져나온다: `exit` → 결과: VLAN 하나의 구성이 끝난다.
+10. (5-A-10) 5-A-03~09를 VLAN 개수만큼 반복한다.
+
+### B. 스위치 간 트렁크 설정
+
+스위치끼리 연결된 정보는 각 스위치에서 관리해야 한다. 이 연결 방식이 트렁크다.
+
+{% hint style="danger" %}
+WARNING: 트렁크 설정 대상 포트가 현재 접속 경로이면 접속이 끊긴다. 콘솔로 접속한 상태에서 수행한다.
+{% endhint %}
+
+1. (5-B-01) 다른 스위치와 연결된 포트로 이동한다: `int <포트 이름>`
+2. (5-B-02) 트렁크 모드로 지정한다: `switchport mode trunk`
+3. (5-B-03) 포트 설정 모드를 빠져나온다: `exit`
+4. (5-B-04) 연결된 상대 스위치에서도 5-B-01~03을 수행한다. → 결과: 양쪽 포트가 트렁크로 동작한다.
+
+### C. 라우터(게이트웨이) 설정
+
+같은 VLAN끼리는 통신되지만 다른 VLAN과는 통신되지 않는다. 라우터에 서브인터페이스를 만들어 해결한다.
+
+1. (5-C-01) 라우터에 접속해 전역 설정 모드로 진입한다: `enable`, `conf t`
+2. (5-C-02) 스위치와 연결된 물리 인터페이스로 이동한다: `int <인터페이스>`
+3. (5-C-03) 인터페이스를 활성화한다: `no shutdown`
+4. (5-C-04) VLAN 서브인터페이스로 이동한다: `int <인터페이스>.<VLAN 번호>`
+5. (5-C-05) 트렁크 캡슐화를 설정한다: `encapsulation <프로토콜> <VLAN 번호>` (예: `encapsulation dot1Q 10`)
+6. (5-C-06) 게이트웨이 IP를 할당한다: `ip address <IP 주소> <서브넷 마스크>` → 결과: 해당 VLAN의 게이트웨이가 된다.
+7. (5-C-07) VLAN마다 5-C-04~06을 반복한다.
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 스위치에서 `show vlan brief` | VLAN과 할당 포트가 보인다 | 계획표와 일치한다 |
+| 2 | 스위치에서 `show interfaces trunk` | 트렁크 포트가 나온다 | 연결 포트가 목록에 있다 |
+| 3 | 같은 VLAN의 두 단말 간 `ping` | 응답이 온다 | 손실률 0% |
+| 4 | 다른 VLAN의 단말로 `ping` | 응답이 온다 | 손실률 0%. 라우터 설정 전에는 실패한다 |
+
+## 7. 복구
+
+1. (7-01) 콘솔로 접속해 전역 설정 모드로 진입한다.
+2. (7-02) 포트를 기본값으로 되돌린다: `int <포트 이름>` 후 `default interface <포트 이름>`은 장비에 따라 다르다. 확인되지 않았으므로 백업한 `running-config`를 기준으로 되돌린다.
+3. (7-03) VLAN을 삭제한다: `no vlan <번호>`
+4. (7-04) 라우터 서브인터페이스를 삭제한다: `no int <인터페이스>.<VLAN 번호>`
+5. (7-05) 저장한다: `do write memory`
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 단계형 설명을 AMM 형식으로 재작성. 접속 단절 WARNING, 기능 확인, 복구 절차를 추가했다. 대상 파일이 없던 Native VLAN, Trunk protocol 링크와 obsidian 링크를 삭제했다 |
