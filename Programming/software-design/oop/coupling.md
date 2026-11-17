@@ -35,7 +35,7 @@
 | <p>공통 결합<br>Common Coupling</p>   | 여러 모듈이 동일한 전역 변수를 공유                               | 높은 결합도    |
 | <p>외부 결합<br>External Coupling</p> | <p>모듈이 외부 환경에 의존<br>(DB, 파일, 하드웨어 등)</p>           | 높은 결합도    |
 | <p>제어 결합<br>Control Coupling</p>  | <p>한 모듈이 다른 모듈의 실행 흐름을 직접 제어<br>(flag, switch)</p> | 중간 결합도    |
-| <p>스탬프 결합<br>Stamp Coupling</p>   | 전체 데이터 구조가 아닌, 일부만 전달하는 방식                         | 낮은 결합도    |
+| <p>스탬프 결합<br>Stamp Coupling</p>   | 레코드/구조체 전체를 전달하되 그중 일부 필드만 사용하는 방식(일부 값만 넘기는 것은 자료 결합)                         | 낮은 결합도    |
 | <p>자료 결합<br>Data Coupling</p>     | <p>모듈 간 단순한 데이터 값만 주고 받는 구조<br>(최소한이 정보 교환)</p>    | 가장 낮은 결합  |
 
 {% hint style="success" %}
