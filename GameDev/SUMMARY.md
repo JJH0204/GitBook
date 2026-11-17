@@ -80,6 +80,8 @@
   * [Day 21. 배경 셰이더 — 건물, 나무, 지형, 하늘](toon-shader-study/day21-background-shaders.md)
   * [Day 22. 졸업 — 한 픽셀의 일생](toon-shader-study/day22-graduation.md)
   * [소스 지도 — 파일마다 한눈에](toon-shader-study/source-map.md)
+  * [툰 셰이더 패키지 설치와 버전 관리 (README)](toon-shader-study/source/README.md)
+  * [툰 셰이더 패키지 변경 이력 (CHANGELOG)](toon-shader-study/source/CHANGELOG.md)
 * [게임 기획 내실 훈련장 (Game Design Drills)](game-design/README.md)
   * [01. 시스템 기획 훈련: 구조와 수치](game-design/01-system-design/README.md)
     * [역기획 템플릿](game-design/01-system-design/reverse-design-template.md)

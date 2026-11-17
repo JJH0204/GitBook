@@ -1,4 +1,21 @@
-# Changelog
+# 툰 셰이더 패키지 변경 이력 (CHANGELOG)
+
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSR-002-REF |
+| 유형 | REF (버전별 변경 이력) |
+| 목적 | `com.blueigloo.shader`의 버전별 수정, 변경, 추가, 삭제 내역을 찾아본다 |
+| 대상 | v0.2.0 (2026-11-16) 까지 |
+| 확인 상태 | 미검증 (원본 변경 이력을 그대로 옮겼으며 이 문서로 재검증하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 아래 본문은 패키지의 `CHANGELOG.md` 원문이다. 본문의 카드 번호(A1~C8, PLAN-19)는 학습 노트의 "실제로 있었던 일"이 가리키는 작업 단위다. 패키지 안내는 [README](README.md)(GMD-TSR-001-MP), 파일 목록은 [소스 지도](../source-map.md)(GMD-TSS-025-REF)에 있다.
+{% endhint %}
+
+## 원문
 
 All notable changes to this project will be documented in this file.
 
