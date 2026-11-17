@@ -1,123 +1,122 @@
 # CMake 빌드 도구 (CMake)
 
-{% hint style="warning" %}
-* 이 글은 CMake에 대해 깊은 탐구를 위해 작성한 글이 아닙니다.
-* VSCode로 C언어의 모듈화 프로그래밍에 대하여 학습 중 컴파일에 문제가 생겨 급히 CMake 로 프로젝트를 관리하게 되면서 필요했던 정보를 정리하였습니다.
-* 겉핥기로 CMake의 정보가 필요할 경우 참고 할 가치가 있을 수 있지만 프로젝트의 크기가 큰 경우 참고할 가치가 없음을 알립니다.
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRG-BLD-005-MP |
+| 목적 | 여러 소스 파일로 나뉜 C 프로젝트를 CMake로 설정하고 빌드한다 |
+| 적용 대상 | Windows(MinGW), macOS, CMake 3.11 이상 |
+| 소요 시간 | 약 20분 |
+| 확인 상태 | 미검증 (원본 명령을 정리한 것이며 이 환경에서 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 이 문서는 CMake 전반이 아니라 VS Code에서 C 모듈화 빌드 문제를 겪으며 필요했던 최소 설정만 담는다. 프로젝트 규모가 크면 DevTool 스페이스의 [CMake 개요 및 활용](../../../../DevTool/build-system/cmake.md)(DEV-BLD-001-DO)을 따른다.
 {% endhint %}
 
-{% stepper %}
-{% step %}
-### CMake?
+## 1. 참조
 
-* VSCode에는 프로젝트 내 소스 파일간의 연결(링크)를 관리하는 기능이 없다. -> 모듈화 할때에러
-* windows 나 Mac 을 옮겨가며 프로젝트를 진행하다 보면 하나의 세팅으로 두 운영체제에 적용이 가능해야 한다.
-* 프로젝트 빌드를 위해 빌드 프로그램을 사용해야 하는데 대표적으로 make 또는 Ninja 같은 프로그램을 사용해 빌드를 한다.
-* 대부분 make를 사용하는데 make로 빌드 할 수 있도록 프로젝트를 관리해야 하는데 이를 도와주는 프로그램이 CMake를 사용한다.
-* make와 같이 "러닝 커브"가 있고, 긴 역사 만큼 바른 사용법(Best practice)이 버전에 따라 많이 바뀐다.
-{% endstep %}
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [cmodularizationerror.md](cmodularizationerror.md) | PRG-BLD-003-TS | C 모듈화 에러 해결 |
+| [../../../../DevTool/build-system/cmake.md](../../../../DevTool/build-system/cmake.md) | DEV-BLD-001-DO | CMake 개요 및 활용 |
 
-{% step %}
-### Install
+배경은 다음과 같다.
 
-#### Windows
+| 항목 | 설명 |
+|---|---|
+| 문제 | VS Code는 편집기이며 프로젝트 안 소스 파일의 링크를 관리하지 않는다. 빌드 명령에 파일 목록을 직접 넘겨야 한다 |
+| 빌드 프로그램 | 프로젝트 빌드에는 `make`나 Ninja 같은 빌드 프로그램을 쓴다 |
+| CMake의 역할 | `CMakeLists.txt`를 읽어 `make` 등이 쓰는 빌드 파일(Makefile)을 생성한다. Windows와 macOS에서 한 설정을 공유할 수 있다 |
+| 빌드 순서 | `CMakeLists.txt` → CMake → Makefile → make → 실행 파일 |
+| 주의 | CMake는 학습 곡선이 있고 권장 사용법(best practice)이 버전에 따라 많이 바뀐다 |
 
-* 설치 경로: https://cmake.org/download/
-* 윈도우 버전 선택 후 다운로드
-* "Add CMake to the system PATH for all users" 선택하고 다운로드(CMake를 어디서든 이용할 수 있도록 하기 위해서 시스템 경로(System Path)에 추가)
-* Cmd에서 cmake 명령어 실행하여 Usage 내용 출력되면 설치 성공
+## 2. 필요 장비와 자재
 
-#### Mac
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | CMake | 3.11 이상 | 아래 준비 절에서 설치 |
+| 2 | C 컴파일러 | Windows: MinGW gcc, macOS: Apple clang | |
+| 3 | 빌드 프로그램 | `make` (Windows MinGW: `mingw32-make`) | 확인 필요: MinGW 설치 구성에 따라 이름이 다르다 |
 
-* 터미널에 `brew install cmake`를 실행하면 CMake를 설치할 수 있다.
-* 설치가 끝나면 `cmake --version`를 실행해서 설치 여부 확인할 수 있다.
-{% endstep %}
+## 3. 안전 사항
 
-{% step %}
-### CMakeLists.txt 생성
+{% hint style="warning" %}
+CAUTION: 빌드 결과물이 소스 폴더에 섞이지 않도록 `build` 폴더를 따로 만들어 그 안에서 실행한다. 소스 폴더에서 `cmake .`를 실행하면 생성 파일이 소스와 섞인다.
+{% endhint %}
 
-* CMake를 사용하는 모든 프로젝트에는 반드시 프로젝트 최상위 디렉토리에 CMakeLists.txt 파일이 있어야 한다.
-* CMakeLists.txt > CMake > Makefile > make > 실행파일 순으로 컴파일된다.
-* 최상위 CMakeLists.txt 에는 반드시 아래 두 내용이 들어가야 된다.
+## 4. 준비
 
-```
-# CMake 프로그램 최소 버전
-cmake_minimum_required(VERSION 3.11)
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | CMake를 설치한다 (아래 A 구역) | `cmake --version`에 버전이 출력된다 |
+| 2 | 프로젝트 최상위 폴더에 `CMakeLists.txt`를 둘 위치를 정한다 | 폴더를 확인한다 |
+| 3 | 링크할 모든 `.c` 파일 경로를 정리한다 | 목록을 작성한다 |
 
-# 프로젝트 정보
-project(
-	ProjectName
-	VERSION 0.1
-	DESCRIPTION "예제 프로젝트"
-	LANGUAGES CXX
-)
-```
+## 5. 절차
 
-* 주석은 (#)을 사용하면 된다.
-* CMake 버전별 지원 기능의 차이가 커 최소 버전을 3.0 이상으로 설정해 놓는다.
-* project()에 프로젝트 정보를 간단히 명시 (프로젝트 이름은 필수)
-* 소스코드 파일이 CMakeLists.txt와 같은 폴더에 있을 필요는 없다. 경로를 `add_executable`에 적어 주면 된다(아래 `${SOURCE_DIR}` 예 참고).
-* CMake에서 권장하는 빌드 파일 생성 방법으로 빌드 파일과 작업하는 디렉토리는 서로 분리한다. build 라는 별도의 폴더를 만들어 사용
+### A. CMake 설치
 
-사용 예시:
+**Windows**
 
-```
+1. (5-A-01) `https://cmake.org/download/`를 연다.
+2. (5-A-02) Windows 버전을 선택해 내려받아 설치한다.
+3. (5-A-03) 설치 중 `Add CMake to the system PATH for all users`를 선택한다. → 결과: 어느 폴더에서든 `cmake`를 실행할 수 있다.
+4. (5-A-04) `cmd`에서 `cmake`를 실행한다. → 결과: Usage 안내가 출력되면 설치에 성공한 것이다.
+
+**macOS**
+
+1. (5-A-05) 터미널에서 `brew install cmake`를 실행한다.
+2. (5-A-06) `cmake --version`을 실행한다. → 결과: 버전 번호가 출력된다.
+
+### B. CMakeLists.txt 작성
+
+1. (5-B-01) 프로젝트 최상위 폴더에 `CMakeLists.txt` 파일을 만든다. 소스 파일이 같은 폴더에 있을 필요는 없다.
+2. (5-B-02) 최소 CMake 버전과 프로젝트 정보를 쓴다. 이 두 항목은 최상위 `CMakeLists.txt`에 반드시 있어야 한다. CMake 버전별 기능 차이가 커서 최소 버전을 3.0 이상으로 둔다.
+
+```cmake
 # CMake 최소 버전 설정
 cmake_minimum_required(VERSION 3.11)
 
-# 프로젝트 설정
+# 프로젝트 설정 (주석은 # 로 쓴다)
 project(DEVBASICS VERSION 0.1 LANGUAGES C)
 ```
-{% endstep %}
 
-{% step %}
-### C/C++ 표준 설정
+{% hint style="info" %}
+NOTE: `project()`의 이름은 필수이고 `VERSION`, `DESCRIPTION`, `LANGUAGES`는 선택이다. C 프로젝트는 `LANGUAGES C`로 지정한다. 원본의 `LANGUAGES CXX` 예시는 C++ 프로젝트용이다.
+{% endhint %}
 
-* 프로젝트 빌드에 사용할 C/C++ 버전을 설정할 수 있다.
+3. (5-B-03) C 표준을 지정한다.
 
-```
-#c/c++ 표준 설정
+```cmake
+# C 표준 설정
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 ```
-{% endstep %}
 
-{% step %}
-### 소스파일 관계 설정
+4. (5-B-04) 반복해서 쓰는 값은 변수로 만든다.
 
-* 생성할 실행 파일의 이름과 소스코드 파일의 연결 지을 수 있다.
-
+```cmake
+set(SOURCE_DIR source/DSNA/non-Linear)
 ```
+
+5. (5-B-05) 실행 파일 이름과 소스 파일을 연결한다. 링크할 `.c` 파일을 모두 나열한다.
+
+```cmake
 add_executable(linkedGraph ${SOURCE_DIR}/mainGraph.c ${SOURCE_DIR}/includeLinkedGraph.c ${SOURCE_DIR}/includeGenericStructure.c)
 ```
-{% endstep %}
 
-{% step %}
-### 변수 생성
+6. (5-B-06) 헤더 파일 폴더를 검색 경로에 추가한다.
 
-* 반복해서 사용하는 특정 값을 변수로 만들어 사용할 수 있다.
-
-```
-set(SOURCE_DIR source/DSNA/non-Linear)
-add_executable(linkedGraph ${SOURCE_DIR}/mainGraph.c) #<- 변수 사용 예시
-```
-{% endstep %}
-
-{% step %}
-### 추가 라이브러리 설정
-
-* .h파일 같이 라이브러리를 한 폴더에서 관리할 경우 아래와 같이 해당 폴더를 프로젝트에 추가할 수 있다.
-
-```
+```cmake
 # 헤더 파일 검색 경로 추가 (라이브러리 링크는 target_link_libraries로 한다)
 include_directories(include)
 ```
-{% endstep %}
 
-{% step %}
-### 빌드 환경에 따라 프로젝트 설정 바꾸는 방법
+7. (5-B-07) 운영체제별 설정이 필요하면 조건문을 쓴다.
 
-```
+```cmake
 if(WIN32)
     # windows 설정
 
@@ -126,43 +125,34 @@ elseif(APPLE)
 
 endif()
 ```
-{% endstep %}
 
-{% step %}
-### CMake를 활용한 빌드 방법
+→ 결과: `CMakeLists.txt`가 저장된다.
 
-#### windows
+### C. 빌드 (Windows)
 
-```
-cd build/build_win
-cmake -G "MinGW Makefiles" ../../
-cmake --build .
-```
+1. (5-C-01) 빌드 폴더를 만들고 이동한다: `cd build/build_win`
+2. (5-C-02) 빌드 파일을 생성한다: `cmake -G "MinGW Makefiles" ../../` → 결과: 빌드 폴더에 `Makefile`이 생긴다.
+3. (5-C-03) 빌드한다: `cmake --build .` → 결과: 실행 파일이 생성된다.
 
-* 빌드를 위한 make 파일 생성이 우선
-* make 파일을 생성할 폴더로 이동 후 make 명령어 실행
-* 이후 빌드 진행
+### D. 빌드 (macOS)
 
-#### mac
+1. (5-D-01) 빌드 폴더로 이동한다: `cd build/build_mac`
+2. (5-D-02) 빌드 파일을 생성한다: `cmake ../../` → 결과: `Makefile`이 생긴다.
+3. (5-D-03) 빌드한다: `make` → 결과: 실행 파일이 생성된다.
 
-```
-cd build/build_mac
-cmake ../../
-make
-```
+## 6. 기능 확인
 
-* windows 명령어 사용과 같은 방식이지만 명령어가 조금 다르다.
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `cmake --version` | 버전이 출력된다 | 3.11 이상 |
+| 2 | 빌드 명령 실행 | 오류 없이 끝난다 | 종료 코드 0 |
+| 3 | 빌드 폴더의 실행 파일 실행 | 프로그램이 동작한다 | `Undefined symbols` 오류 없음 |
 
-#### 약간의 꼼수
+## 7. 복구
 
-* 빌드나 테스트를 위해 터미널에 명령어를 하나 하나 정성껏 입력하는 것은 매우 번거로운 일이다.
-* 실행 파일로 만들어 빌드가 필요할 때 실행시키는 것이 좋을 것 같아 실행파일을 만들었다.
-* windows 빌드 실행 파일 , mac 빌드 실행 파일
-* make 파일 생성(또는 빌드 후 실행 파일 생성)위치를 바꾸려면 위 예제를 보면서 직접 수정해야 한다.
-{% endstep %}
-{% endstepper %}
+1. (7-01) 생성 파일을 지우려면 `build` 폴더의 내용을 삭제한다. 소스와 `CMakeLists.txt`는 영향받지 않는다.
 
-## 참조
+## 8. 참조 링크
 
 * [What\_CMake](https://growing-dev101.tistory.com/entry/%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-CMake)
 * [sup\_CMake\_GIT](https://gist.github.com/luncliff/6e2d4eb7ca29a0afd5b592f72b80cb5c?permalink_comment_id=2831356)
@@ -170,6 +160,11 @@ make
 * [CMake 설치 for windows](https://ndb796.tistory.com/365)
 * [모두의 코드](https://modoocode.com/332)
 * [Mac os에서 CMake 사용하기](https://popcorn16.tistory.com/31)
-* https://answer-me.tistory.com/87
-* https://gist.github.com/luncliff/6e2d4eb7ca29a0afd5b592f72b80cb5c
-* https://chat.openai.com/share/a9766652-c2f0-4db1-9c2e-a2dd1c61d38b
+* [answer-me.tistory.com/87](https://answer-me.tistory.com/87)
+* [luncliff gist](https://gist.github.com/luncliff/6e2d4eb7ca29a0afd5b592f72b80cb5c)
+
+## 9. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지를 AMM 형식으로 재작성. ChatGPT 공유 링크 삭제, 빌드 자동화 실행 파일 언급(원본에 파일 없음) 삭제 |
