@@ -1,165 +1,76 @@
 # A2 취약한 인증 (Broken Auth)
 
-## CAPTCHA Bypassing
+## 작업 식별
 
-\
-\
-&#x20;
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-BWA-002-DO |
+| 유형 | D&O (개념) |
+| 목적 | bWAPP A2 항목에서 관찰하는 인증·세션 관리 결함의 원인과 방어를 설명한다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱인 bWAPP) |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-* 아이디 패스워드에 대한 페이로드가 필요하다
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템에 이 문서의 내용을 시도하는 것은 불법이다. 격리된 실습망에서만 수행한다.
+{% endhint %}
 
-\
-&#x20;   \
-총 30개 조합으로 대입 공격 시행
+## 1. 목적
 
-&#x20; \
-꼭 활성화 확인
+인증(authentication)과 세션 관리의 결함으로 신원을 속이거나 다른 사용자의 세션을 쓸 수 있게 되는 원리를 정리한다. 각 항목에서 관찰한 현상과 방어를 함께 적는다.
 
-* 캡챠는 프록시 설정으로 유지하고 아이디/패스워드 대입이 가능하다
-* CAPTCHA BROKEN
+{% hint style="info" %}
+NOTE: 원본에 있던 비밀 문자열 조립용 자바스크립트와 실습 서버의 실제 세션 값은 문서에 옮기지 않았다.
+{% endhint %}
 
-## Forgotten Function
+## 2. 구성 요소
 
-* 이메일을 입력하면 패스워드를 알려줄 것 같다.
-* 이메일을 안다면 시크릿 메시지를 알 수 있다. > 비밀번호를 알 수 있다.
+| 번호 | 항목 | 관찰한 현상 | 원인 |
+|---|---|---|---|
+| 1 | CAPTCHA Bypassing | 프록시로 요청을 가로채면 CAPTCHA 확인이 요청마다 다시 요구되지 않고 같은 값으로 통과한다 | CAPTCHA 검증값을 서버가 1회용으로 폐기하지 않는다 |
+| 2 | Forgotten Function | 이메일 입력만으로 비밀 메시지(시크릿)가 노출된다 | 계정 복구 시 본인 확인이 없다 |
+| 3 | Insecure Login Forms | 로그인 정보가 클라이언트 쪽 스크립트에 들어 있다 | 인증 판단을 클라이언트에서 한다 |
+| 4 | Logout Management | 로그아웃 후 뒤로가기를 누르면 다시 로그인된 상태가 된다 | 로그아웃 시 서버 세션을 무효화하지 않고 캐시된 페이지를 다시 보여준다 |
+| 5 | Password Attacks | 시도 횟수 제한이 없어 반복 입력이 가능하다 | 계정 잠금과 요청 제한이 없다 |
+| 6 | Weak Passwords | 짧거나 단순한 비밀번호가 허용된다 | 비밀번호 정책이 없다 |
+| 7 | Administrative Portals | 관리자 페이지가 URL 매개변수 하나로 열린다 | 서버 측 권한 확인이 없다 |
+| 8 | Cookies | 쿠키 값을 바꾸면 다른 권한으로 인식된다 | 권한 정보를 사용자가 바꿀 수 있는 쿠키에 둔다 |
+| 9 | Session ID in URL | (원본에 내용 없음) | 세션 ID가 URL에 노출되면 로그·Referer로 유출된다 |
+| 10 | Strong Sessions | (원본에 내용 없음) | |
 
-medium
+## 3. 동작 원리
 
-## Insecure Login Forms
+* 비밀번호 조합 수는 자릿수와 문자 종류가 늘수록 기하급수적으로 커진다. 길이 8자, 문자 종류 62가지이면 62의 8제곱 가지다.
+* 클라이언트가 보내는 값(쿠키, 숨은 필드, URL 매개변수)은 사용자가 바꿀 수 있다. 서버는 이 값을 근거로 권한을 정하면 안 된다.
+* 세션 ID가 노출되거나 예측되면 로그인 없이 그 세션을 쓸 수 있다(세션 하이재킹).
+* `http`는 쿠키가 평문으로 오간다. `https`도 쿠키에 `Secure` 속성이 없으면 일부 경로로 새어 나갈 수 있다.
 
-&#x20;\
-\
-\
-\
-<br>
+## 4. 탐지·방어
 
-medium
+| 항목 | 방어 | 로그에서 보이는 흔적 |
+|---|---|---|
+| 반복 입력 | 로그인 실패 5회 안팎에서 계정 잠금 또는 지연, IP별 요청 제한, 다중 인증(MFA) | 같은 IP에서 짧은 시간에 `POST /login`이 수십 회 이상, 실패 응답 비율이 높다 |
+| CAPTCHA | 서버에서 검증값을 1회용으로 폐기한다 | 같은 CAPTCHA 토큰이 여러 요청에서 재사용된다 |
+| 비밀번호 | 최소 길이 12자와 흔한 비밀번호 차단, 해시 저장(bcrypt, Argon2) | |
+| 계정 복구 | 이메일로 1회용 링크를 보내고 유효 시간(예: 15분)을 둔다 | |
+| 관리자 기능 | 서버에서 세션의 역할을 확인한다. URL 매개변수로 권한을 정하지 않는다 | 일반 계정 세션이 관리자 경로를 요청한다 |
+| 세션 | 로그인 때 세션 ID 재발급, 로그아웃 때 서버에서 폐기, 쿠키에 `HttpOnly`, `Secure`, `SameSite` 설정, 세션 ID를 URL에 넣지 않는다 | 한 세션 ID가 서로 다른 IP·User-Agent에서 쓰인다 |
+| 뒤로가기 | 인증 페이지에 `Cache-Control: no-store`를 보낸다 | |
 
-<br>
+## 5. 약어와 용어
 
-* 나중에 선언된 변수가 적용됨
+| 용어 | 뜻 |
+|---|---|
+| CAPTCHA | 사람과 자동화를 구별하는 검증 |
+| 세션 하이재킹 | 타인의 세션 ID를 가로채 그 사용자로 행세하는 공격 |
+| MFA | 두 가지 이상의 요소로 하는 인증 |
+| `HttpOnly` | 스크립트가 쿠키를 읽지 못하게 하는 쿠키 속성 |
 
-{% code title="client-side reconstruction.js" %}
-```
-```
-{% endcode %}
+## 내 말로 채우기
 
-```javascript
-var a = bWAPP.charAt(0); var d = bWAPP.charAt(3); var r = bWAPP.charAt(16);
-var b = bWAPP.charAt(1); var e = bWAPP.charAt(4); var j = bWAPP.charAt(9);
-var c = bWAPP.charAt(2); var f = bWAPP.charAt(5); var g = bWAPP.charAt(4);
-var j = bWAPP.charAt(9); var h = bWAPP.charAt(6); var l = bWAPP.charAt(11);
-var g = bWAPP.charAt(4); var i = bWAPP.charAt(7); var x = bWAPP.charAt(4);
-var l = bWAPP.charAt(11); var p = bWAPP.charAt(23); var m = bWAPP.charAt(4);
-var s = bWAPP.charAt(17); var k = bWAPP.charAt(10); var d = bWAPP.charAt(23);
-var t = bWAPP.charAt(2); var n = bWAPP.charAt(12); var e = bWAPP.charAt(4);
-var a = bWAPP.charAt(1); var o = bWAPP.charAt(13); var f = bWAPP.charAt(5);
-var b = bWAPP.charAt(1); var q = bWAPP.charAt(15); var h = bWAPP.charAt(9);
-var c = bWAPP.charAt(2); var h = bWAPP.charAt(2); var i = bWAPP.charAt(7);
-var j = bWAPP.charAt(5); var i = bWAPP.charAt(7); var y = bWAPP.charAt(22);
-var g = bWAPP.charAt(1); var p = bWAPP.charAt(4); var p = bWAPP.charAt(28);
-var l = bWAPP.charAt(11); var k = bWAPP.charAt(14);
-var q = bWAPP.charAt(12); var n = bWAPP.charAt(12);
-var m = bWAPP.charAt(4); var o = bWAPP.charAt(19);
-```
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-```javascript
-var secret = (d + "" + j + "" + k + "" + q + "" + x + "" + t + "" +o + "" + g + "" + h + "" + d + "" + p);
-```
-
-## Logout Management
-
-<br>
-
-* 웹 페이지에서는 아무 정보도 얻을 수 없다.
-* 프록시를 설정해서 확인한다.
-* 별다른 내용이 없다.
-* 로그인을 하고 다시 뒤로가기를 하니 다시 로그인이 되었다.
-* 세션 관리가 재대로 이뤄지지 않는 것 같다.
-
-{% code title="example request" %}
-```
-Referer: http://192.168.56.122/bWAPP/ba_logout.php
-...
-PHPSESSID=0c8f5635616d89c3400772ee194fbf44
-```
-{% endcode %}
-
-위 페이지를 이동할 떄 세션 처리가 정상적으로 이뤄지지 않아 잘못된 인증을 허용하여 로그아웃 후 뒤로가기를 통해 다시 로그인이 되는 상황이다.
-
-medium 이상에서는 함수로 세션을 처리하는 것 같다.
-
-## Password Attacks
-
-{% stepper %}
-{% step %}
-### 브루트 포스 패스워드 공격
-
-* 브루트 포스 패스워드 공격으로 확인 가능
-{% endstep %}
-
-{% step %}
-### 또 다른 방법
-
-\
-\
-<br>
-
-* 비밀번호를 어렵게 만들어야 하는 이유
-* 조합이 다양해 질수록 경우의 수가 기하급수적으로 상승한다.
-* 테스트를 위해 값을 수정
-
-\
-\
-&#x20;
-
-* "Successfull login!" 과 같은 결과가 나올때까지 진행
-
-<br>
-
-* "Successfull login!"에 1이 표시되어야 하는데 철자를 잘못 입력해서 뜨지 않았다.
-* 하지만 찾긴했다.
-
-값을 넣고 포워드 하면 로그인에 성공한다.
-{% endstep %}
-{% endstepper %}
-
-## Weak Passwords
-
-## Administrative Portals
-
-```
-http://192.168.56.122/bWAPP/smgmt_admin_portal.php?admin=1
-```
-
-medium
-
-\
-<br>
-
-## Cookies (session 하이제킹)
-
-[cookie](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/cookie)
-
-\
-\
-<br>
-
-(좌)일반 계정 (우)관리자 계정 접속
-
-&#x20;<br>
-
-관리자 세션의 쿠키로 변경
-
-* 일반 계정이 없어서 발생한 에러&#x20;
-* 일반 계정이 있다면 관리자로 로그인이 가능할 것이다.
-
-### https
-
-http와 같다
-
-## Session ID in URL
-
-(내용 없음)
-
-## Strong Sessions
+- [ ] 로그아웃 후 뒤로가기로 다시 로그인된 현상이 생기는 이유를 내 말로 설명한다.
+- [ ] 내가 만든 서비스라면 어떤 세션 쿠키 속성을 쓸지 이유와 함께 적는다.

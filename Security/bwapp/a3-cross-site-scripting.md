@@ -1,86 +1,74 @@
 # A3 반사형 XSS 실습
 
-## Reflected (GET)
+## 작업 식별
 
-* 반사형
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-BWA-003-DO |
+| 유형 | D&O (개념) |
+| 목적 | 반사형 XSS(Cross-Site Scripting)의 원인, bWAPP에서 관찰하는 현상, 방어를 설명한다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱인 bWAPP) |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-medium
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템에 이 문서의 내용을 시도하는 것은 불법이다. 격리된 실습망에서만 수행한다.
+{% endhint %}
 
-high
+## 1. 목적
 
-## Reflected (POST)
+반사형 XSS는 요청에 담긴 값이 응답 HTML에 그대로 출력되어 브라우저가 그 값을 스크립트로 실행하는 취약점이다. bWAPP의 항목별 입력 위치와 방어를 정리한다.
 
-***
+{% hint style="info" %}
+NOTE: 원본의 쿠키를 출력하는 스크립트 예시는 옮기지 않았다. 관찰은 `<h1>` 같은 무해한 태그가 서식으로 해석되는지로 확인한다.
+{% endhint %}
 
-## Reflected (JSON)
+## 2. 구성 요소
 
-반응은 하지만 값을 출력하지는 않다.
+| 번호 | 항목 | 입력이 반영되는 위치 | 관찰한 현상 |
+|---|---|---|---|
+| 1 | Reflected (GET) | URL 쿼리 | medium, high 수준에서 필터 방식이 달라진다 |
+| 2 | Reflected (POST) | 요청 본문 | URL에 값이 보이지 않는다 |
+| 3 | Reflected (JSON) | 응답 안의 스크립트 블록 | 값이 화면에 출력되지 않아도 응답 소스의 `<script>` 안에 들어간다. 기존 스크립트를 닫는 문자열이 처리되지 않으면 새 스크립트가 만들어진다 |
+| 4 | Reflected (Back Button) | `Referer` 헤더 | 뒤로가기 버튼의 이동 주소로 헤더 값이 쓰인다 |
+| 5 | Reflected (Custom Header) | 사용자 지정 헤더 | 헤더 값이 응답에 출력된다 |
+| 6 | Reflected (Eval) | `eval()`에 전달되는 값 | 입력이 자바스크립트 코드로 평가된다 |
+| 7 | Reflected (HREF) | 링크의 `href` 속성 | 속성 문맥에서는 태그를 닫는 입력이 필요하다 |
+| 8 | Reflected (Login Form) | 로그인 폼 | (원본에 내용 없음) |
+| 9 | phpMyAdmin BBCode Tag XSS | BBCode 태그 | (원본에 내용 없음) |
+| 10 | Reflected (PHP_SELF) | 폼의 `action` | [PHP SELF 환경변수 취약점](php_self.md) 참조 |
 
-이전의 스크립트는 종료하고 새로운 스크립트를 추가
+## 3. 동작 원리
 
-```
-</script><script>alert(document.cookie)</script>
-```
+1. 사용자가 값이 담긴 링크를 열거나 폼을 보낸다.
+2. 서버가 값을 인코딩 없이 HTML에 끼워 응답한다.
+3. 브라우저가 값 중의 `<`, `>`, `"` 를 HTML 문법으로 해석한다.
+4. 입력이 놓인 문맥(본문, 속성, 스크립트)에 따라 필요한 특수 문자가 다르다.
 
-적용된다.
+## 4. 탐지·방어
 
-{% stepper %}
-{% step %}
-### medium
+| 방어 | 내용 |
+|---|---|
+| 문맥별 출력 인코딩 | 본문과 속성은 HTML 이스케이프(`htmlspecialchars`에 `ENT_QUOTES`), 스크립트 안은 JSON 인코딩, URL은 URL 인코딩 |
+| 입력 검증 | 형식과 길이를 허용 목록으로 서버에서 검증한다 |
+| `eval` 금지 | 사용자 입력을 `eval`에 넘기지 않는다 |
+| CSP | `Content-Security-Policy`로 인라인 스크립트를 막는다 |
+| 쿠키 속성 | `HttpOnly`로 스크립트가 세션 쿠키를 읽지 못하게 한다 |
+| 로그 흔적 | 쿼리나 `Referer`에 `<script`, `onerror=`, `%3cscript` 같은 문자열이 있는 요청 |
 
-예제 입력:
+## 5. 약어와 용어
 
-```html
-<img src=x onerror=alret('hello')>
-```
-{% endstep %}
-{% endstepper %}
+| 용어 | 뜻 |
+|---|---|
+| XSS | Cross-Site Scripting. 다른 사이트의 페이지에서 스크립트가 실행되는 취약점 |
+| 반사형 | 요청 값이 바로 응답에 반영되는 방식 |
+| CSP | 브라우저가 실행할 스크립트의 출처를 제한하는 응답 헤더 |
 
-## Reflected (Back Button)
+## 내 말로 채우기
 
-<br>
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-예제 헤더:
-
-```
-Referer: http://192.168.56.122/bWAPP/xss_back_button.php
-```
-
-* 뒤로가기로 넘어가는 사이트
-
-## Reflected (Custom Header)
-
-\
-<br>
-
-## Reflected (Eval)
-
-\
-\
-&#x20;
-
-## Reflected (HREF)
-
-\
-\
-<br>
-
-* 원하는 동작은 아니지만 비정상적으로 움직임다.
-
-입력을 다음과 같이 수정하면 원하는 결과가 나올 것 같다:
-
-```
-</a><script>alert(document.cookie)</script><a>
-```
-
-정답
-
-## Reflected (Login Form)
-
-***
-
-## phpMyAdmin BBCode Tag XSS
-
-***
-
-## Reflected ([PHP\_SELF](php_self.md))
+- [ ] 입력이 놓인 문맥(본문, 속성, 스크립트)에 따라 방어가 달라지는 이유를 설명한다.
+- [ ] 실습에서 값이 출력되지 않았는데도 취약했던 항목이 있었는지 적는다.
