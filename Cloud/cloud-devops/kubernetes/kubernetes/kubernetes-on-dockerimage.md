@@ -1,66 +1,79 @@
 # Kind 클러스터 도커 이미지 배포
 
-여기서는 Kind 클러스터의 특정 노드에서 Docker Hub 이미지 krjaeh0/aurora:latest 를 실행하는 방법을 단계별로 정리했어.
+## 작업 식별
 
-{% stepper %}
-{% step %}
-### 1. Kind 클러스터에서 Docker 실행 지원 확인
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-K8T-004-MP |
+| 목적 | Docker Hub의 이미지를 Kind 클러스터 노드에 로드하고, 특정 Worker Node에 Deployment로 배포한 뒤 Service와 포트 포워딩으로 접속한다 |
+| 적용 대상 | CLD-K8S-001-MP로 만든 Kind 클러스터(이름 `kind`, 노드 `kind-control-plane`, `kind-worker`, `kind-worker2`), Docker, `kubectl`, `kind` |
+| 소요 시간 | 약 15분 (이미지 내려받기 시간 제외) |
+| 확인 상태 | 미검증 (원본의 명령과 매니페스트를 정리하고 오류를 정정한 것이며 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-Kind 노드들은 기본적으로 컨테이너 환경에서 실행되므로, 클러스터 내부에서 추가 Docker 컨테이너를 실행하려면 다음을 확인해야 해.
+{% hint style="info" %}
+NOTE: 이 문서는 이미지를 `<도커 허브 사용자명>/aurora:latest`로 표기한다. 원본의 이미지 이름은 Docker Hub의 특정 사용자 저장소였다. 본인의 이미지 이름으로 바꿔 쓴다. 컨테이너가 80번 포트에서 HTTP 서비스를 제공한다고 가정한다(원본의 `containerPort: 80`).
+{% endhint %}
 
-#### 컨트롤 플레인에서 노드 확인
+## 1. 참조
 
-Kind 클러스터에서 노드 목록 확인:
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [kubernetes_in_windows.md](../kubernetes_in_windows.md) | CLD-K8S-001-MP | Windows 환경 Kind 쿠버네티스 설치 |
+| [kubernetestheory.md](kubernetestheory.md) | CLD-K8T-001-DO | 쿠버네티스 핵심 이론 (Kubernetes) |
 
-```bash
-kubectl get nodes
+외부 참조:
+
+* Kind 이미지 로드 공식 문서: https://kind.sigs.k8s.io/docs/user/quick-start/#loading-an-image-into-your-cluster
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | Kind 클러스터 | Worker Node 1개 이상 | CLD-K8S-001-MP로 생성 |
+| 2 | Docker | 동작 중 | `docker version`으로 확인 |
+| 3 | `kubectl`, `kind` | 설치됨 | |
+| 4 | Docker Hub 이미지 | `<도커 허브 사용자명>/aurora:latest` | 공개 이미지 또는 로그인된 계정 |
+
+## 3. 안전 사항
+
+{% hint style="warning" %}
+CAUTION: 태그가 `latest`인 이미지는 쿠버네티스의 기본 `imagePullPolicy`가 `Always`다. 로드한 이미지를 쓰지 않고 Docker Hub에서 다시 받으려 한다. 5-C의 매니페스트에 `imagePullPolicy: IfNotPresent`를 지정한다. 이 정정은 원본에 없던 내용이다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Kind 클러스터가 있다 | `kind get clusters`가 `kind`를 출력한다 |
+| 2 | 컨텍스트가 Kind 클러스터다 | `kubectl config current-context`가 `kind-kind`다 |
+
+## 5. 절차
+
+### A. 클러스터 노드 확인
+
+1. (5-A-01) 노드 목록을 확인한다: `kubectl get nodes` → 결과: 노드가 모두 `Ready`다.
+
+```
+NAME                 STATUS   ROLES           AGE   VERSION
+kind-control-plane   Ready    control-plane   10m   v1.27.3
+kind-worker          Ready    <none>          10m   v1.27.3
+kind-worker2         Ready    <none>          10m   v1.27.3
 ```
 
-출력 예시:
+### B. 이미지 준비와 노드로 로드
 
-```
-NAME                     STATUS   ROLES           AGE   VERSION
-kind-control-plane       Ready    control-plane   10m   v1.27.3
-kind-worker              Ready    <none>          10m   v1.27.3
-kind-worker2             Ready    <none>          10m   v1.27.3
-```
-{% endstep %}
+Kind 노드는 도커 컨테이너다. 호스트 Docker에 있는 이미지는 노드 안에서 바로 보이지 않는다. `kind load`로 노드에 복사한다.
 
-{% step %}
-### 2. krjaeh0/aurora:latest 이미지 실행 준비
+1. (5-B-01) 이미지를 호스트로 내려받는다: `docker pull <도커 허브 사용자명>/aurora:latest` → 결과: `Status: Downloaded newer image` 또는 `Image is up to date`가 출력된다. 원본은 이 단계를 적지 않았다. `kind load`는 호스트에 이미 있는 이미지만 복사한다.
+2. (5-B-02) 이미지를 모든 노드에 로드한다: `kind load docker-image <도커 허브 사용자명>/aurora:latest --name kind` → 결과: 노드별로 `Image: ... loading` 형식의 로그가 출력된다. 클러스터 이름이 `kind`가 아니면 `--name <클러스터 이름>`으로 바꾼다.
+3. (5-B-03) 노드 안의 이미지를 확인한다: `docker exec kind-worker crictl images` → 결과: 목록에 `<도커 허브 사용자명>/aurora`가 있다.
 
-#### 이미지를 노드에 가져오기
+### C. Deployment 배포
 
-Kind 노드 내에서 Docker 이미지를 사용할 수 있도록 이미지를 노드로 가져와야 해.
+1. (5-C-01) `aurora-deployment.yaml` 파일을 만들고 아래 내용을 저장한다. → 결과: 파일이 저장된다. `nodeSelector`는 파드를 `kind-worker`에 배치한다.
 
-* 이미지 로드 (kind는 클러스터 내부 노드에 직접 이미지를 로드할 수 있는 명령을 제공함):
-
-```bash
-kind load docker-image krjaeh0/aurora:latest --name <클러스터이름>
-```
-
-위 명령에서 `<클러스터이름>`은 클러스터 생성 시 사용한 이름이야. 기본적으로 `kind`라는 이름일 가능성이 높아:
-
-```bash
-kind load docker-image krjaeh0/aurora:latest --name kind
-```
-
-* 이미지 확인: 이미지가 정상적으로 로드되었는지 확인하려면:
-
-```bash
-kubectl describe nodes
-```
-{% endstep %}
-
-{% step %}
-### 3. Deployment 생성 및 특정 노드에 할당
-
-이제 krjaeh0/aurora:latest 이미지를 실행하기 위해 Deployment를 생성하고, 특정 노드에 할당할 수 있어.
-
-#### Deployment YAML 파일 작성
-
-`aurora-deployment.yaml`처럼 Deployment 파일을 작성해:
-
+{% code title="aurora-deployment.yaml" %}
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -78,59 +91,42 @@ spec:
     spec:
       containers:
       - name: aurora-container
-        image: krjaeh0/aurora:latest
+        image: <도커 허브 사용자명>/aurora:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
       nodeSelector:
-        kubernetes.io/hostname: kind-worker  # 특정 노드에 배포
+        kubernetes.io/hostname: kind-worker
 ```
+{% endcode %}
 
-여기서 `nodeSelector`는 Pod가 특정 노드(예: `kind-worker`)에 배포되도록 지정하는 설정이야.
+2. (5-C-02) 매니페스트를 적용한다: `kubectl apply -f aurora-deployment.yaml` → 결과: `deployment.apps/aurora-deployment created`가 출력된다.
 
-#### Deployment 적용
+### D. 파드 배치 확인
 
-작성한 YAML 파일을 클러스터에 적용해:
-
-```bash
-kubectl apply -f aurora-deployment.yaml
-```
-{% endstep %}
-
-{% step %}
-### 4. Pod 배포 확인
-
-배포된 Pod가 올바르게 동작하는지 확인하려면:
-
-```bash
-kubectl get pods -o wide
-```
-
-출력 예시:
+1. (5-D-01) 파드를 확인한다: `kubectl get pods -o wide` → 결과: `STATUS`가 `Running`이고 `NODE`가 `kind-worker`다.
 
 ```
-NAME                                READY   STATUS    RESTARTS   AGE   NODE
-aurora-deployment-xxxxxx-yyyy       1/1     Running   0          2m    kind-worker
+NAME                            READY   STATUS    RESTARTS   AGE   NODE
+aurora-deployment-xxxxxx-yyyy   1/1     Running   0          2m    kind-worker
 ```
 
-여기서 `NODE` 열에서 Pod가 `kind-worker` 노드에 실행 중인 것을 확인할 수 있어.
-{% endstep %}
+### E. Service 노출
 
-{% step %}
-### 5. 서비스 노출
+{% hint style="info" %}
+NOTE: 원본은 Service 타입을 `LoadBalancer`로 적고 출력 예시는 `NodePort`로 적어 서로 달랐다. Kind에는 기본 로드 밸런서가 없어 `LoadBalancer`의 EXTERNAL-IP가 `<pending>`으로 남는다. 이 문서는 `NodePort`로 통일했다.
+{% endhint %}
 
-외부에서 Pod에 접근하려면 Service를 설정해야 해.
+1. (5-E-01) `aurora-service.yaml` 파일을 만들고 아래 내용을 저장한다. → 결과: 파일이 저장된다.
 
-#### Service YAML 작성
-
-`aurora-service.yaml` 파일 작성:
-
+{% code title="aurora-service.yaml" %}
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: aurora-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: aurora
   ports:
@@ -138,46 +134,45 @@ spec:
     port: 80
     targetPort: 80
 ```
+{% endcode %}
 
-#### Service 적용
-
-```bash
-kubectl apply -f aurora-service.yaml
-```
-
-#### Service 확인
-
-```bash
-kubectl get svc aurora-service
-```
-
-출력 예시:
+2. (5-E-02) 서비스를 적용한다: `kubectl apply -f aurora-service.yaml` → 결과: `service/aurora-service created`가 출력된다.
+3. (5-E-03) 서비스를 확인한다: `kubectl get svc aurora-service` → 결과: TYPE이 `NodePort`이고 PORT(S) 열이 `80:<노드포트>/TCP` 형식이다.
 
 ```
-NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-aurora-service   NodePort    10.96.123.456    <none>        80:30000/TCP   2m
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+aurora-service   NodePort   <CLUSTER-IP>   <none>        80:<노드포트>/TCP   2m
 ```
 
-위 출력에서 `30000`은 클러스터 외부에서 접속할 수 있는 노드 포트야. 브라우저에서 `http://<노드 IP>:30000`으로 접근하면 krjaeh0/aurora:latest가 실행 중인 애플리케이션에 접속할 수 있어.
+{% hint style="info" %}
+NOTE: Kind 노드 IP는 도커 내부 네트워크 주소다. Docker Desktop(Windows, macOS) 환경에서는 호스트 브라우저에서 `<노드 IP 주소>:<노드포트>`로 접속되지 않을 수 있다. 이때는 구역 F의 포트 포워딩을 쓴다.
+{% endhint %}
 
-#### Port Forwarding(선택)
+### F. 포트 포워딩으로 접속
 
-Kind 클러스터와 로컬 머신 간 연결 문제를 우회하기 위해 `kubectl port-forward`를 사용해볼 수 있어.
+1. (5-F-01) 파드 이름을 확인한다: `kubectl get pods` → 결과: `aurora-deployment-<해시>-<접미사>` 형식의 이름이 보인다.
+2. (5-F-02) 로컬 포트를 파드의 80번 포트로 연결한다: `kubectl port-forward pod/<파드 이름> 30291:80` → 결과: `Forwarding from 127.0.0.1:30291 -> 80`이 출력된다. 이 터미널은 접속하는 동안 열어 둔다.
+3. (5-F-03) 같은 PC의 브라우저에서 `http://localhost:30291`을 연다. → 결과: 애플리케이션 화면이 나타난다.
 
-* Pod 이름 확인:
+서비스로 연결하려면 `kubectl port-forward svc/aurora-service 30291:80`을 쓴다.
 
-```bash
-kubectl get pods
-```
+## 6. 기능 확인
 
-예: `aurora-deployment-5c54fc85d7-29zms`
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `kubectl get pods -o wide` | 파드 1개 | `Running`, NODE가 `kind-worker` |
+| 2 | `kubectl get svc aurora-service` | 서비스 | TYPE이 `NodePort` |
+| 3 | `curl http://localhost:30291` (포트 포워딩 중) | HTTP 응답 | 응답 본문이 출력된다 |
 
-* 포트 포워딩 실행 (Pod의 포트를 로컬 머신의 포트로 포워딩):
+## 7. 복구
 
-```bash
-kubectl port-forward pod/aurora-deployment-5c54fc85d7-29zms 30291:80
-```
+1. (7-01) 포트 포워딩 터미널을 `Ctrl+C`로 종료한다.
+2. (7-02) Service를 삭제한다: `kubectl delete -f aurora-service.yaml` → 결과: `service "aurora-service" deleted`
+3. (7-03) Deployment를 삭제한다: `kubectl delete -f aurora-deployment.yaml` → 결과: `deployment.apps "aurora-deployment" deleted`
+4. (7-04) 노드에 로드한 이미지는 클러스터를 삭제하면 함께 사라진다. 클러스터 삭제는 CLD-K8S-001-MP의 7절을 따른다.
 
-* 로컬에서 접근: 이제 `http://localhost:30291`로 접근하면 Pod의 서비스에 연결될 거야.
-{% endstep %}
-{% endstepper %}
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지를 AMM 형식으로 재작성. 대화체를 평서체로 고쳤다. `docker pull` 단계와 `imagePullPolicy: IfNotPresent`를 추가했고, Service 타입을 `NodePort`로 통일했다. 이미지 이름과 잘못된 ClusterIP 예시를 자리 표시자로 바꿨다 |
