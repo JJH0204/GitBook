@@ -1,69 +1,106 @@
 # vi 편집기 사용법
 
-`vi`는 많은 유닉스 및 리눅스 시스템에서 기본 텍스트 편집기로 사용되며, 강력한 기능과 효율성 때문에 널리 사용되고 있어.
+## 작업 식별
 
-#### vi의 주요 모드
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-BAS-003-MP |
+| 목적 | `vi`로 파일을 열고 편집해 저장하고 종료한다 |
+| 적용 대상 | Linux 전반(RHEL 계열 실습 환경 포함), `vi` 또는 `vim` 설치, 일반 사용자 권한(대상 파일에 쓰기 권한 필요) |
+| 소요 시간 | 약 10분 |
+| 확인 상태 | 미검증 (원본 페이지의 명령을 정리한 것이며 이 문서로 다시 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-{% stepper %}
-{% step %}
-### 명령 모드 (Command mode)
+## 1. 참조
 
-`vi`를 열면 기본적으로 명령 모드로 시작해. 이 모드에서는 파일을 편집하거나 탐색하는 다양한 명령을 입력할 수 있어. 예를 들어, `h`, `j`, `k`, `l` 키를 사용해 커서를 이동할 수 있고, `dd`로 줄을 삭제하거나, `yy`로 줄을 복사할 수 있어.
-{% endstep %}
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [vimodes.md](vimodes.md) | LNX-BAS-002-DO | vi 편집 모드 |
+| [vireference.md](vireference.md) | LNX-BAS-004-REF | vi 명령 키 표 |
+| [FreeCodeCamp: Vim beginner's guide](https://www.freecodecamp.org/news/vim-beginners-guide/) | | 외부 문서 |
+| [Red Hat: Get started with the vi editor](https://www.redhat.com/sysadmin/get-started-vi-editor) | | 외부 문서 |
+| [Red Hat: Introduction to the vi editor](https://www.redhat.com/sysadmin/introduction-vi-editor) | | 외부 문서 |
+| [FOSS Linux: How to use the vi editor](https://www.fosslinux.com/27013/how-to-use-the-vi-editor-in-linux-with-examples.htm) | | 외부 문서 |
+| [TutorialsPoint: Unix vi editor](https://www.tutorialspoint.com/unix/unix-vi-editor.htm) | | 외부 문서 |
 
-{% step %}
-### 삽입 모드 (Insert mode)
+## 2. 필요 장비와 자재
 
-텍스트를 입력하려면 삽입 모드로 전환해야 해. 명령 모드에서 `i` 키를 눌러 삽입 모드로 전환하고, `Esc` 키를 눌러 다시 명령 모드로 돌아올 수 있어.\
-참고자료: [FreeCodeCamp](https://www.freecodecamp.org/news/vim-beginners-guide/) , [Red Hat](https://www.redhat.com/sysadmin/get-started-vi-editor) , [FOSS Linux](https://www.fosslinux.com/27013/how-to-use-the-vi-editor-in-linux-with-examples.htm)
-{% endstep %}
-{% endstepper %}
+| 번호 | 이름 | 사양 | 비고 |
+|---|---|---|---|
+| 1 | 터미널 | Linux 셸 | |
+| 2 | `vi` 또는 `vim` | 설치된 버전 | `vi --version` 또는 `which vi`로 확인한다 |
+| 3 | 연습 파일 | `~/vi-test.txt` | 구역 A에서 만든다 |
 
-#### 기본 명령어
+## 3. 안전 사항
 
-* 파일 열기: `vi filename`
-* 삽입 모드 진입: `i`
-* 파일 저장: `:w`
-* 저장 후 종료: `:wq` 또는 `ZZ`
-* 저장하지 않고 종료: `:q!`
-* 특정 문자열 검색: `/string`
-* 특정 라인으로 이동: `:num` (예: `:10`은 10번째 줄로 이동)\
-  참고자료: [TutorialsPoint](https://www.tutorialspoint.com/unix/unix-vi-editor.htm) , [Red Hat](https://www.redhat.com/sysadmin/introduction-vi-editor)
+{% hint style="danger" %}
+WARNING: `:q!`와 `ZQ`는 저장하지 않은 변경을 모두 버린다. 되돌릴 수 없다. 5-D-03 단계 전에 버려도 되는 내용인지 확인한다.
+{% endhint %}
 
-#### 텍스트 편집
+{% hint style="warning" %}
+CAUTION: 중요한 시스템 설정 파일(`/etc/` 아래)을 편집하기 전에 `cp <파일> <파일>.bak`으로 복사본을 만든다. 잘못 저장하면 서비스가 시작되지 않을 수 있다.
+{% endhint %}
 
-* 텍스트 추가: `a` (커서 뒤에 추가), `A` (라인 끝에 추가)
-* 텍스트 삭제: `x` (문자 삭제), `dw` (단어 삭제), `dd` (줄 삭제)
-* 텍스트 복사 및 붙여넣기: `yy` (라인 복사), `p` (붙여넣기)
+## 4. 준비
 
-#### 검색 및 치환
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | 터미널을 연다 | 프롬프트가 나타난다 |
+| 2 | `vi`가 있는지 확인한다: `which vi` | 경로가 출력된다 |
+| 3 | 모드 개념을 읽는다 | LNX-BAS-002-DO를 읽었다 |
 
-* 특정 문자열 검색: `/pattern`
-* 문자열 치환: `:[range]s/pattern/replacement/[flags]` (예: 전체 파일에서 치환 `:%s/old/new/g`)\
-  참고자료: [FreeCodeCamp](https://www.freecodecamp.org/news/vim-beginners-guide/)
+## 5. 절차
 
-`vi`는 강력한 기능과 효율성을 갖춘 텍스트 편집기이지만 처음 사용하기에는 약간 어려울 수 있어. 하지만 단축키와 명령어를 익히면 매우 빠르고 효율적으로 파일을 편집할 수 있게 돼. 더 자세한 정보는 Red Hat Enable Sysadmin과 [Tutorials Point](https://www.tutorialspoint.com/unix/unix-vi-editor.htm)에서 확인할 수 있어.
+### A. 파일 열기
 
-### vi 편집모드 명령어
+1. (5-A-01) 연습 파일을 연다: `vi ~/vi-test.txt` → 결과: 빈 화면이 나타나고 `vi`가 명령 모드로 시작한다.
 
-```
-a      : append
-        커서의 뒤에서 부터 수정
-i      : insert
-        커서에서 수정
-gg     : 맨 처음
-40g    : 해당 라인으로
-G      : 맨 마지막
-dd     : 커서 줄 삭제
-6dd    : 커서 위치 포함 아래 라인 삭제
-yy     : 커서 라인 복사
-5yy    : 커서 라인 포함 5줄 복사
-p      : 커서 다음 라인에 붙여넣기
-P      : 커서 라인에 붙여넣기
-/find  : 내용에서 find 찾기
-n      : 찾은 내용 스크롤(위에서 아래로)
-N      : 찾은 내용 스크롤(아래에서 위로)
-%s/a/b : a를 찾아서 b로 변경
-```
+### B. 글자 입력
 
-* [링크](https://www.google.com/search?q=vi+%EC%82%AC%EC%9A%A9%EB%B2%95\&oq=vi+tkdyd\&gs_lcrp=EgZjaHJvbWUqBwgBEAAYgAQyBggAEEUYOTIHCAEQABiABDIHCAIQABiABDIKCAMQABiABBiiBDIKCAQQABiABBiiBNIBCDQ3NzhqMGo3qAIAsAIA\&sourceid=chrome\&ie=UTF-8)
+1. (5-B-01) 삽입 모드로 전환한다: `i`를 누른다 → 결과: 화면 아래에 `-- INSERT --`가 나타난다(vim 기준).
+2. (5-B-02) 글자를 입력한다: `hello vi` → 결과: 글자가 화면에 나타난다.
+3. (5-B-03) 명령 모드로 돌아간다: `Esc`를 누른다 → 결과: `-- INSERT --` 표시가 사라진다.
+
+### C. 저장
+
+1. (5-C-01) 마지막 행 모드로 들어간다: `:`를 입력한다 → 결과: 화면 맨 아래에 `:`가 나타난다.
+2. (5-C-02) 저장 명령을 입력한다: `w`를 입력하고 `Enter`를 누른다 → 결과: 화면 아래에 저장된 줄 수와 글자 수가 나타난다.
+
+### D. 종료
+
+1. (5-D-01) 변경 없이 종료할 때: `:q`를 입력하고 `Enter`를 누른다. → 결과: 셸 프롬프트로 돌아간다. 저장하지 않은 변경이 있으면 종료되지 않고 경고가 나타난다.
+2. (5-D-02) 저장하고 종료할 때: `:wq`를 입력하고 `Enter`를 누른다. 명령 모드에서 `ZZ`를 눌러도 같다. → 결과: 셸 프롬프트로 돌아간다.
+
+{% hint style="danger" %}
+WARNING: 다음 단계는 저장하지 않은 변경을 버린다.
+{% endhint %}
+
+3. (5-D-03) 저장하지 않고 강제 종료할 때: `:q!`를 입력하고 `Enter`를 누른다. → 결과: 변경을 버리고 셸 프롬프트로 돌아간다.
+
+### E. 다시 열어 확인
+
+1. (5-E-01) 파일 내용을 출력한다: `cat ~/vi-test.txt` → 결과: `hello vi`가 출력된다.
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `cat ~/vi-test.txt` | 입력한 내용이 출력된다 | `hello vi` 출력 |
+| 2 | `vi ~/vi-test.txt` 후 `:q` | 변경이 없으면 바로 종료된다 | 경고 없이 프롬프트로 돌아온다 |
+
+## 7. 복구
+
+1. (7-01) 실수로 편집한 내용을 되돌린다: 명령 모드에서 `u`를 누른다. → 결과: 직전 변경이 취소된다.
+2. (7-02) 연습 파일을 지운다: `rm ~/vi-test.txt`
+
+{% hint style="danger" %}
+WARNING: `rm`은 되돌릴 수 없다. 경로가 연습 파일인지 확인한 뒤 실행한다.
+{% endhint %}
+
+3. (7-03) 시스템 파일을 잘못 저장했다면 백업에서 복원한다: `cp <파일>.bak <파일>` (권한이 필요하면 `sudo`).
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지 `vi.md`를 AMM 형식으로 재작성. 모드 설명은 LNX-BAS-002-DO로, 키 목록은 LNX-BAS-004-REF로 분리. 외부 링크는 참조 절로 이동, 검색 링크 삭제. `u` 실행 취소 추가 |

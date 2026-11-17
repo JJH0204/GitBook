@@ -1,49 +1,55 @@
 # 도움말 명령어 (man, info)
 
-| 명령어 | 설명            | 옵션             | 사용 방법 | 예제 |
-| --- | ------------- | -------------- | ----- | -- |
-| man | 명령어 사용 매뉴얼 출력 | - `-h`: 사용법 출력 |       |    |
+## 작업 식별
 
-* `-k`: apropos와 동일
-* `-w`: man 실행 시 호출되는 '메뉴얼 페이지' 파일의 위치 출력 (`--path`) | `man '옵션' '명령어'` | 아래 예제 참조 | | info | 명령어 사용법, 옵션 등 표시 (man과 유사) | — | `info '명령어'` | 아래 예제 참조 | | whatis | 명령어에 대한 기능을 간략히 출력\
-  (yum install man 으로 패키지 설치 후 사용) | — | `whatis '명령어'` | 아래 예제 참조 | | manpath| man 명령이 참조할 매뉴얼 페이지 경로 표시 | — | `manpath` | 아래 예제 참조 | | whereis| 찾는 명령어의 실행파일 절대 경로, 소스, 설정파일 및 매뉴얼 페이지를 찾아 출력 | — | `whereis '명령어'` | 아래 예제 참조 | | apropos| man 페이지 설정에서 지정한 키워드를 포함하고 있는 명령어 목록 출력 | — | `apropos '찾는 키워드'` | 아래 예제 참조 |
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-CMD-001-REF |
+| 유형 | REF (명령 표) |
+| 목적 | 명령어의 사용법, 설명, 파일 위치를 찾는 도움말 명령을 참조한다 |
+| 확인 상태 | 미검증 (원본 페이지와 man-db 문서 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-예제
+## 1. 명령 표
 
-{% code title="man 예제" %}
-```bash
-man -h ls
-man -w ls
-man -k ls
-```
-{% endcode %}
+| 명령어 | 설명 | 형식 | 주요 옵션 |
+|---|---|---|---|
+| `man` | 명령어 매뉴얼 페이지를 출력한다 | `man [옵션] <명령어>` | `-h`: 도움말 출력<br>`-k`: `apropos`와 같다<br>`-w`: 매뉴얼 페이지 파일의 위치를 출력한다 (`--path`) |
+| `info` | 명령어 사용법과 옵션을 표시한다 (`man`과 유사) | `info <명령어>` | |
+| `whatis` | 명령어 기능을 한 줄로 출력한다 | `whatis <명령어>` | |
+| `manpath` | `man`이 참조하는 매뉴얼 페이지 경로를 표시한다 | `manpath` | |
+| `whereis` | 명령어의 실행 파일, 소스, 매뉴얼 페이지 경로를 출력한다 | `whereis <명령어>` | |
+| `apropos` | 키워드를 포함한 명령어 목록을 출력한다 | `apropos <키워드>` | |
 
-{% code title="info 예제" %}
-```bash
-info cal
-```
-{% endcode %}
+{% hint style="info" %}
+NOTE: `man`, `whatis`, `apropos`는 man-db 패키지의 명령이다. 설치돼 있지 않으면 RHEL 계열은 `dnf install man-db`(구버전 `yum install man`)로 설치한다. `whatis`와 `apropos`는 매뉴얼 색인 데이터베이스가 있어야 결과가 나온다. 색인이 없으면 root 권한으로 `mandb`를 실행해 만든다. 이 설명은 미검증이다.
+{% endhint %}
 
-{% code title="whatis 예제" %}
-```bash
-whatis cal
-```
-{% endcode %}
+## 2. 사용 예
 
-{% code title="manpath 예제" %}
-```bash
-manpath
-```
-{% endcode %}
+| 목적 | 명령 | 기대 결과 |
+|---|---|---|
+| `ls` 도움말 보기 | `man -h ls` | 사용법 요약이 출력된다 |
+| `ls` 매뉴얼 파일 위치 확인 | `man -w ls` | 매뉴얼 파일 경로가 한 줄 출력된다 |
+| `ls`가 들어간 명령 찾기 | `man -k ls` | 설명에 `ls`가 들어간 항목 목록이 출력된다 |
+| info 문서 보기 | `info ls` | info 화면이 열린다. `q`로 종료한다 |
+| 한 줄 설명 보기 | `whatis cal` | `cal` 항목의 한 줄 설명이 출력된다 |
+| 매뉴얼 경로 보기 | `manpath` | 콜론(`:`)으로 구분된 경로가 출력된다 |
+| 명령 위치 찾기 | `whereis ls` | 실행 파일과 매뉴얼 페이지 경로가 출력된다 |
+| 키워드로 명령 찾기 | `apropos system` | `system`이 들어간 항목 목록이 출력된다 |
 
-{% code title="whereis 예제" %}
-```bash
-whereis ls
-```
-{% endcode %}
+{% hint style="info" %}
+NOTE: 원본은 `info cal` 예를 썼다. `cal`은 util-linux 패키지 명령이라 info 문서가 없을 수 있어 `info ls`로 바꿨다. 미검증이다.
+{% endhint %}
 
-{% code title="apropos 예제" %}
-```bash
-apropos system
-```
-{% endcode %}
+## 3. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [linux_command.md](linux_command.md) | LNX-CMD-003-REF | 리눅스 명령어 마인드맵 |
+
+## 4. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 깨진 표를 정리해 REF 형식으로 재작성. `info` 예제를 `ls`로 바꾸고 `man-db` 안내를 추가했다 |

@@ -1,128 +1,120 @@
 # 리눅스 기본 필수 명령어
 
-### 전원 끄기
+## 작업 식별
 
-* `halt`: 리눅스만 끄기
-* `halt -p`: 리눅스와 PC 모두 끄기
-* `shutdown -h now`: 지금 당장 컴퓨터를 끄도록 하는 명령어
-* `shutdown -P +n`: n분 뒤 시스템이 종료되도록 스케줄로 등록하는 명령어
-* `shutdown -c`: 방금 스케줄로 등록한 종료 명령 취소
-* `reboot`: 재부팅
-* `shutdown -r now`: 재부팅
-* `shutdown -r +n`: n분 뒤 재부팅 스케줄 등록
-* `shutdown -r h:m`: h시 m분에 재부팅 스케줄 등록
-* `shutdown -k +n`: 종료 메시지를 접속 중인 사용자들에게 전달
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-CMD-002-REF |
+| 유형 | REF (명령 표) |
+| 목적 | 전원 관리, 런레벨, 이동, 목록 출력, 이력, 와일드카드 등 기본 명령을 참조한다 |
+| 확인 상태 | 미검증 (원본 페이지와 systemd, coreutils 문서 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-***
+## 1. 전원 끄기와 재부팅
 
-### 화면 청소
+{% hint style="danger" %}
+WARNING: 이 절의 명령은 실행 즉시 또는 지정한 시각에 시스템을 종료하거나 재부팅한다. 저장하지 않은 작업과 접속 중인 사용자의 세션이 끊긴다. 원격 서버에서는 종료 후 다시 접속할 수 없다. 실행 전에 대상 호스트가 맞는지 확인한다.
+{% endhint %}
 
-* `clear`
+| 명령어 | 설명 |
+|---|---|
+| `halt` | 운영체제만 정지한다 |
+| `halt -p` | 운영체제를 정지하고 전원도 끈다 |
+| `shutdown -h now` | 지금 바로 종료한다 |
+| `shutdown -h +<n>` | n분 뒤 종료하도록 예약한다 |
+| `shutdown -P +<n>` | n분 뒤 전원까지 끄도록 예약한다 |
+| `shutdown -c` | 예약한 종료를 취소한다 |
+| `shutdown -r now` | 지금 바로 재부팅한다 |
+| `shutdown -r +<n>` | n분 뒤 재부팅하도록 예약한다 |
+| `shutdown -r <hh:mm>` | 지정한 시각에 재부팅하도록 예약한다 |
+| `shutdown -k +<n>` | 실제로 종료하지 않고 접속 중인 사용자에게 종료 경고 메시지만 보낸다 |
+| `reboot` | 재부팅한다 |
 
-### 가상 콘솔
+### 종료 명령 비교
 
-* `Ctrl + Alt + F1~F6`: 가상 콘솔을 최대 6개 만들 수 있다.
-* `chvt n`: n번째 가상 콘솔로 이동
+| 명령어 | 설명 | 옵션 | 형식 | 예 |
+|---|---|---|---|---|
+| `shutdown` | 종료 또는 재부팅 (root 권한 필요) | `-r`: 재부팅<br>`-h`: 종료 | `shutdown <옵션> <시간>` | `shutdown -h +5`: 5분 뒤 종료<br>`shutdown -r 10:00`: 10시에 재부팅 |
+| `init` | 런레벨(시스템 상태)을 바꾼다 | 없음 | `init <런레벨>` | `init 0`: 종료 상태로 전환 |
+| `reboot` | 재부팅한다 | `-f`: 강제 | `reboot [옵션]` | `reboot -f` |
+| `halt` | 종료한다 | `-f`: 강제 | `halt [옵션]` | `halt -f` |
 
-### Run-level
+{% hint style="info" %}
+NOTE: 원본은 `init`을 "`shutdown`과 동일"이라고 적었다. `init`은 런레벨을 전환하는 명령이며, `init 0`과 `init 6`이 종료와 재부팅에 해당한다. 그에 맞게 정정했다. `-f`(강제)는 서비스를 정상 종료하지 않고 바로 실행하므로 데이터 손실 위험이 크다. 미검증이다.
+{% endhint %}
 
-* `init n`: 0\~6까지 사용할 수 있지만 2, 4번은 사용하지 않는다.
-  * `init 0`: power off (종료 모드)
-  * `init 1`: Rescue (복구 모드) — 비밀번호를 잊었을 때 다시 설정할 수 있도록 중요
-  * `init 3`: TextMode (텍스트 모드)
-  * `init 5`: GUIMode (그래픽 모드) — 최소 버전에서는 동작하지 않을 수 있음
-  * `init 6`: reboot (재부팅)
+## 2. 런레벨
 
-현재 런 레벨 확인:
+`init <n>`의 n은 0~6이다. 원본은 2, 4를 쓰지 않는다고 적었으며 배포판에 따라 다르다.
+
+| 런레벨 | 모드 | 설명 |
+|---|---|---|
+| 0 | 종료 | 전원을 끈다 |
+| 1 | 복구 | 비밀번호를 잊었을 때 다시 설정하는 데 쓴다 |
+| 3 | 텍스트 모드 | `multi-user.target`에 대응한다 |
+| 5 | 그래픽 모드 | `graphical.target`에 대응한다. 최소 설치에서는 동작하지 않을 수 있다 |
+| 6 | 재부팅 | 재부팅한다 |
+
+{% hint style="danger" %}
+WARNING: `init 0`, `init 6`은 즉시 종료·재부팅한다. `init 1`은 다른 사용자의 접속을 끊고 복구 모드로 들어간다. 운영 중인 서버에서는 실행하지 않는다.
+{% endhint %}
+
+### 현재 런레벨 확인
 
 ```bash
 ls -al /etc/systemd/system/default.target
 systemctl get-default
 ```
 
-런 레벨 변경:
+### 런레벨 변경
 
 ```bash
-ln -sf /usr/lib/systemd/system/multi-user.target
 systemctl set-default multi-user.target
 systemctl isolate multi-user.target
 ```
 
-런레벨별 설명 (스텝퍼 형식):
+| 명령 | 효과 |
+|---|---|
+| `systemctl set-default <타깃>` | 다음 부팅부터 쓰는 기본 타깃을 바꾼다 |
+| `systemctl isolate <타깃>` | 지금 바로 해당 타깃으로 전환한다 |
 
 {% hint style="info" %}
-리눅스의 전통적인 런레벨(0\~6)을 사용한 개념 설명입니다. 배포판/시스템에 따라 일부 값(예: 2, 4)의 사용 여부가 다를 수 있습니다.
+NOTE: 원본에는 `ln -sf /usr/lib/systemd/system/multi-user.target` 명령이 있었다. 링크 이름이 빠져 있어 그대로는 동작하지 않는다. 완전한 형식은 `ln -sf /usr/lib/systemd/system/multi-user.target /etc/systemd/system/default.target`이며 `systemctl set-default`와 같은 결과다. 이 문서는 `systemctl set-default`만 남겼다. 런레벨 표는 [런레벨 정의표](../storage-boot/runlevel.md)를 함께 본다. 미검증이다.
 {% endhint %}
 
-{% stepper %}
-{% step %}
-### 0
+## 3. 화면, 콘솔, 이동, 출력
 
-Power off (종료)
-{% endstep %}
-
-{% step %}
-### 1
-
-Rescue (복구, 비밀번호 재설정)
-{% endstep %}
-
-{% step %}
-### 3
-
-TextMode (텍스트)
-{% endstep %}
-
-{% step %}
-### 5
-
-GUIMode (그래픽)
-{% endstep %}
-
-{% step %}
-### 6
-
-reboot (재부팅)
-{% endstep %}
-{% endstepper %}
+| 명령어 | 설명 | 예 |
+|---|---|---|
+| `clear` | 터미널 화면을 지운다 | `clear` |
+| `Ctrl + Alt + F1`~`F6` | 가상 콘솔로 전환한다 (최대 6개) | |
+| `chvt <n>` | n번째 가상 콘솔로 이동한다 | `chvt 2` |
+| `cd <디렉터리>` | 디렉터리로 이동한다 | `cd /etc` |
+| `cd` | 현재 사용자의 홈 디렉터리로 이동한다 | |
+| `ls [옵션]` | 디렉터리 내용을 출력한다. `-a`는 숨김 파일을 포함한다 | `ls -a` |
+| `cat [옵션] <파일>` | 파일 내용을 출력한다 | `cat /etc/hostname` |
+| `history [옵션]` | 명령어 사용 기록을 출력한다. `-c`는 메모리의 기록을 삭제한다 | `history` |
 
 {% hint style="info" %}
-`init 1` (Rescue 모드)은 시스템 복구나 비밀번호 재설정 등 중요한 작업에 사용되므로 주의해서 사용하세요.
+NOTE: `.bash_history` 파일에는 셸이 종료될 때 메모리의 기록이 저장된다. 원본은 로그아웃 시점으로 적었다. 자세한 설명은 [기타 유용한 명령어](misccommands.md)의 `history` 항목을 본다. 미검증이다.
 {% endhint %}
 
-### 디렉토리 이동
+## 4. 쉘 와일드카드
 
-* `cd '디렉토리'`
-* `cd` : 사용자 계정의 홈 디렉토리로 이동
+| 기호 | 설명 | 예 |
+|---|---|---|
+| `*` | 0개 이상의 모든 문자 | `ls *.txt` |
+| `?` | 정확히 1개 문자 | `ls file?.txt` |
 
-### 디렉토리 정보 출력
+## 5. 참조
 
-* `ls '옵션'`
-  * `-a`: 숨김 파일 포함 출력
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [misccommands.md](misccommands.md) | LNX-CMD-004-REF | 기타 유용한 명령어 |
+| [runlevel.md](../storage-boot/runlevel.md) | | 런레벨 정의표 (Runlevel) |
 
-### 파일 정보 출력
+## 6. 개정 이력
 
-* `cat '옵션' '파일이름'`
-
-### 명령어 사용 기록 확인
-
-* `history '옵션'`
-  * `-c`: 사용 기록 삭제(메모리)
-
-참고: `.bash_history`는 로그아웃할 때 메모리에 저장된 히스토리 정보를 자동으로 저장합니다.
-
-### 시스템 종료 및 재부팅 명령어 정리
-
-| 명령어        | 설명                          | 옵션                                                     | 사용 방법                 | 예제                                                                                                                                |
-| ---------- | --------------------------- | ------------------------------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `shutdown` | 시스템 종료 또는 재부팅 (root 권한만 가능) | <p><code>-r</code>: 재부팅<br><code>-h</code>: 시스템 종료</p> | `shutdown '옵션' '시간값'` | <p><code>shutdown -h now</code> : 즉시 종료<br><code>shutdown -h +5</code> : 5분 뒤 종료<br><code>shutdown -r 10:00</code> : 10시에 재부팅</p> |
-| `init`     | `shutdown`과 동일              | (없음)                                                   | `init [[런레벨]]`        | `init 0` : 즉시 종료                                                                                                                  |
-| `reboot`   | 시스템 재부팅                     | `-f`: 강제                                               | `reboot '옵션'`         | `reboot -f`                                                                                                                       |
-| `halt`     | 시스템 종료                      | `-f`: 강제                                               | `halt '옵션'`           | `halt -f`                                                                                                                         |
-
-### 쉘 와일드카드 (Wildcards)
-
-| 기호  | 설명  |
-| --- | --- |
-| \*  | 모든 것 |
-| ?   | 1글자 |
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | REF 형식으로 재작성. 종료 명령에 WARNING 추가, `init` 설명과 불완전한 `ln -sf` 명령을 정정하고 런레벨 단계 목록을 표로 합쳤다 |
