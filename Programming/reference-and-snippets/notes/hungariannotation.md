@@ -28,8 +28,8 @@ string strName;// 문자열을 나타내는 변수
 
 {% code title="예시 (접두어 의미)" %}
 ```c
-rwWidth: 읽기/쓰기 가능의 너비(Read/Write Width)
-usUserCount: 사용자 수(User Count)
+rwWidth: rw = 행(row) 접두어를 붙인 너비 (Simonyi 원안의 애플리케이션 헝가리안에서 rw는 row)
+usUserCount: us = unsafe string (원안. 시스템 헝가리안에서는 us가 unsigned short)
 bIsVisible: 논리값 변수로서 보이는지 여부(Boolean Is Visible)
 ```
 {% endcode %}
