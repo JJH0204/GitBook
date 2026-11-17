@@ -1,26 +1,108 @@
 # Metasploitable3 Windows 2008
 
-nmap 192.168.56.0/24
+## 작업 식별
 
-nmap 192.168.56.144 -sV -p- -v -Pn
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-ENV-004-MP |
+| 목적 | 의도적 취약 VM(Metasploitable3 Windows 2008)의 열린 포트와 웹 서비스를 열거하고 서비스별 위험을 파악한다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱). 호스트 전용 네트워크의 Metasploitable3 VM |
+| 소요 시간 | 약 30분 |
+| 확인 상태 | 미검증 (원본 메모를 정리한 것이며 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-22/tcp - ssh: 브루트 포스 공격, OpenSSH 취약점 활용 가능\
-135, 139, 445/tcp - RPC, SMB: SMB 취약점 활용 가능\
-3000/tcp - WEBrick httpd 1.3.1 (Ruby 2.3.3) - Ruby 웹 서버: 취약한 플러그인 사용 시 침해 발생 가능\
-3306/tcp - MySQL 5.5.20-log: 브루트 포스 공격\
-3389/tcp - Windows RDP: BlueKeep(CVE-2019-0708)와 같은 RDP 취약점을 통한 공격 가능.\
-4848/tcp, 8080/tcp, 8181/tcp - Oracle GlassFish 웹 애플리케이션 서버로, 다양한 웹 애플리케이션을 배포하는 데 사용됨. : 관리자 인터페이스를 통해 원격 코드 실행 가능성.\
-8009/tcp - Apache Jserv (AJP): Ghostcat(AJP) 취약점을 악용해 파일 읽기 또는 코드 실행 가능.\
-8443/tcp - SSL/HTTPS (추정): SSL/TLS 설정이 잘못된 경우 취약할 수 있음.\
-8484/tcp - Jetty winstone-2.8: Jetty 버전 및 설정에 따라 원격 코드 실행 취약점이 있을 수 있음.\
-49237/tcp - Jenkins TcpSlaveAgentListener: 인증되지 않은 Jenkins 설정의 경우 악의적인 에이전트가 등록될 수 있음.
+{% hint style="info" %}
+NOTE: 원본은 스캔 명령과 포트별 메모의 나열이었다. 원본에 없던 공격 절차는 추가하지 않았다. 대상 IP는 `<대상 IP>`로 바꿨다(원본은 `192.168.56.x` 사설 주소).
+{% endhint %}
 
-취약점 공략 시 피해자 머신이 블루스크린이 현상이 발생하며 리부팅 됨
+## 1. 참조
 
-dirb http://192.168.56.144:8484/
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [kali-linux.md](kali-linux.md) | SEC-ENV-001-MP | Kali Linux 환경 구축 |
+| [kalilinuxsetupforvirtualbox.md](kalilinuxsetupforvirtualbox.md) | SEC-ENV-003-MP | Kali Linux 버추얼박스 설정 |
+| Metasploitable3 공식 저장소 | - | VM 구축 방법 (공식 사이트에서 확인) |
 
-검색 된 내용이 너무 많다.
+## 2. 필요 장비와 자재
 
-gobuster dir -f -t 50 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://192.168.56.144:8484/
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | Kali Linux VM | `nmap`, `dirb`, `gobuster`, `nikto` 포함 | 공격 측 |
+| 2 | Metasploitable3 Windows 2008 VM | 호스트 전용 네트워크 | 대상 측 |
+| 3 | 워드리스트 | `/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt` | Kali 기본 경로. 확인 필요 |
 
-nikto -h http://192.168.56.144:8484/
+## 3. 안전 사항
+
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템에 이 절차를 수행하는 것은 불법이다. 격리된 실습망에서만 수행한다. 대상 VM은 인터넷에 직접 노출하지 않고 호스트 전용 또는 격리된 NAT 네트워크에서만 실행한다.
+{% endhint %}
+
+{% hint style="danger" %}
+WARNING: 스캔과 디렉터리 열거는 허가받은 대상에서만 한다. 이 문서의 대상은 자신이 소유한 실습 VM뿐이다.
+{% endhint %}
+
+{% hint style="warning" %}
+CAUTION: 취약점 공략 시 대상 VM이 블루스크린 후 재부팅되는 경우가 있다(원본 기록). 실습 전 스냅샷을 만든다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | 대상 VM의 스냅샷을 만든다 | 스냅샷 목록에 항목이 있다 |
+| 2 | Kali와 대상 VM이 같은 호스트 전용 네트워크에 있다 | `ping <대상 IP>`에 응답이 온다 |
+| 3 | 대상 IP를 확인한다 | `<대상 IP>`를 안다 |
+
+## 5. 절차
+
+**A. 대상 찾기**
+
+1. (SUBTASK 5-A-01) 실습망의 호스트를 찾는다: `nmap 192.168.56.0/24` → 결과: 대상 VM의 IP가 목록에 나타난다.
+
+**B. 서비스 열거**
+
+1. (SUBTASK 5-B-01) 전체 포트와 서비스 버전을 스캔한다: `nmap <대상 IP> -sV -p- -v -Pn` → 결과: 열린 포트와 서비스 버전 목록이 출력된다. 원본 결과는 아래 표와 같다.
+
+| 포트 | 서비스 | 원본 메모 |
+|---|---|---|
+| 22/tcp | SSH | 약한 비밀번호 대입, OpenSSH 취약점 |
+| 135, 139, 445/tcp | RPC, SMB | SMB 취약점 |
+| 3000/tcp | WEBrick httpd 1.3.1 (Ruby 2.3.3) | 취약한 플러그인 사용 시 침해 가능 |
+| 3306/tcp | MySQL 5.5.20-log | 약한 비밀번호 대입 |
+| 3389/tcp | Windows RDP | BlueKeep(CVE-2019-0708) 같은 RDP 취약점 |
+| 4848, 8080, 8181/tcp | Oracle GlassFish | 관리자 인터페이스를 통한 원격 코드 실행 가능성 |
+| 8009/tcp | Apache JServ (AJP) | Ghostcat(AJP) 취약점으로 파일 읽기 또는 코드 실행 가능 |
+| 8443/tcp | SSL/HTTPS (추정) | SSL/TLS 설정이 잘못된 경우 취약 |
+| 8484/tcp | Jetty winstone-2.8 | 버전과 설정에 따라 원격 코드 실행 취약점 |
+| 49237/tcp | Jenkins TcpSlaveAgentListener | 인증 없는 Jenkins 설정이면 악의적 에이전트 등록 가능 |
+
+**C. 웹 서비스 열거 (8484/tcp)**
+
+1. (SUBTASK 5-C-01) 디렉터리를 열거한다: `dirb http://<대상 IP>:8484/` → 결과: 검색된 경로가 출력된다. 원본에는 "검색된 내용이 너무 많다"고 기록돼 있다.
+2. (SUBTASK 5-C-02) 더 빠른 도구로 다시 열거한다: `gobuster dir -f -t 50 -w <워드리스트 경로> -u http://<대상 IP>:8484/` → 결과: 상태 코드와 함께 경로가 출력된다.
+3. (SUBTASK 5-C-03) 웹 서버 취약 설정을 점검한다: `nikto -h http://<대상 IP>:8484/` → 결과: 점검 결과 목록이 출력된다.
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 5-B-01 출력을 위 표와 비교한다 | 표의 포트가 열려 있다 | 표의 포트 대부분이 보인다. 버전 차이는 확인 필요 |
+| 2 | 5-C-03 출력을 확인한다 | 점검 결과가 출력된다 | 오류 없이 종료 |
+
+## 7. 복구
+
+1. (SUBTASK 7-01) 대상 VM을 종료하고 4-1에서 만든 스냅샷으로 복원한다. → 결과: 블루스크린·설정 변경 이전 상태로 돌아온다.
+
+## 탐지·방어
+
+| 항목 | 내용 (미검증, 일반 지식) |
+|---|---|
+| 원인 | 불필요한 포트 개방, 오래된 서비스 버전, 기본 설정과 약한 계정 |
+| 완화 | 불필요한 서비스 중지, 방화벽으로 포트 제한, 패치 적용(RDP, SMB, AJP, Jenkins), 관리자 인터페이스 외부 차단 |
+| 로그 흔적 | 짧은 시간에 여러 포트로 들어오는 연결 시도(방화벽·IDS 로그), 웹 서버 로그의 대량 404 요청과 스캐너 User-Agent 문자열 |
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | AMM 형식으로 재작성. 대상 IP를 `<대상 IP>`로 일반화. 포트 메모를 표로 정리. 탐지·방어 절 추가 |
