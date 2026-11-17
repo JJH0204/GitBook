@@ -1,313 +1,112 @@
 # Dockerfile 작성법 및 실습
 
-* 도커 이미지를 빌드하는 데 단계적으로 필요한 명령어와 모든 설정이 정의된 파일
-* 도커 이미지를 빌드하기 위해서 꼭 필요하다.
-* 운영체제와 버전, 환경 변수, 파일 시스템, 사용자 등 정의한다.
+## 작업 식별
 
-## Dockerfile 구성
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-DKR-010-REF |
+| 유형 | REF (지시어 표) |
+| 목적 | Dockerfile의 구성과 지시어 형식, 사용 예를 찾는다 |
+| 확인 상태 | 미검증 (원본 페이지와 Dockerfile 공식 문서 지식을 정리한 것이며 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-* 도커 파일의 파일명은 확장자 없이 Dockerfile이다.
-* [Docker\_Build](docker_build.md) 명령어를 사용하면 자동으로 이름이 Dockerfile인 파일을 찾아 이미지를 빌드한다.
-* -f 옵션으로 원하는 이름의 도커 파일을 사용할 수도 있다.
-* dockerfile 구성
+{% hint style="info" %}
+NOTE: 원본의 실습 3건과 쿠버네티스 배포 명령은 파일을 나눴다. 실습은 CLD-DKR-011-MP ~ 013-MP, 배포 명령은 CLD-DKR-014-REF를 따른다. 원본의 DevOps 순환 설명은 [도커 핵심 이론](dockertheory.md)(CLD-DKR-002-DO)으로 옮겼다.
+{% endhint %}
+
+## 1. Dockerfile 구성
+
+| 번호 | 항목 | 내용 |
+|---|---|---|
+| 1 | 정의 | 이미지를 빌드할 때 단계별로 필요한 명령과 설정을 적은 파일이다. 운영체제, 버전, 환경 변수, 파일 시스템, 사용자 등을 정의한다 |
+| 2 | 파일명 | 확장자 없이 `Dockerfile`이다. `docker build`는 이 이름의 파일을 자동으로 찾는다 |
+| 3 | 다른 이름 사용 | `docker build -f <파일명> .`으로 원하는 이름의 파일을 쓴다 |
+| 4 | 시작 | `FROM` 지시어로 시작한다. 이후 지시어를 위에서 아래로 순서대로 실행한다 |
+| 5 | 형식 | `지시어 인자`. `#`으로 시작하는 줄은 주석이다 |
 
 ```dockerfile
 # 주석
-명령어 인자
+지시어 인자
 
 # --- 예시 ---
 FROM ubuntu:22.04
 ```
 
-## Dockerfile 명령어
+## 2. 지시어 표
 
-* Docker file은 FROM 명령어로 시작한다.
-* 이후 순서대로 명령어를 실행한다.
-* [도커 공식 문서](https://docs.docker.com/engine/reference/builder/)
+| 지시어 | 형식 | 설명 | 예 |
+|---|---|---|---|
+| `FROM` | `FROM <이미지>:<태그>` | 기반(base) 이미지를 지정한다. 보통 운영체제나 런타임의 공식 이미지를 Docker Hub에서 가져온다 | `FROM ubuntu:18.04` |
+| `ENV` | `ENV <변수명> <값>` 또는 `ENV <변수명>=<값>` | 환경 변수를 지정한다. 파일 안에서 `$변수명` 또는 `${변수명}`으로 쓴다 | `ENV PYTHON_VERSION=3.11.2` |
+| `RUN` | `RUN <명령어>` 또는 `RUN ["명령어", "인자1", "인자2"]` | 이미지를 빌드할 때 실행한다. 패키지 설치, 권한 설정 등에 쓴다. 결과가 이미지에 반영된다 | `RUN apt-get update`<br>`RUN ["/bin/bash", "-c", "echo hello"]` |
+| `COPY` | `COPY <src> <dest>` | 빌드 컨텍스트의 파일이나 디렉터리를 이미지의 `dest`로 복사한다 | `COPY . /app` |
+| `ADD` | `ADD <src> <dest>` | `COPY`와 같이 복사하며, `src`에 URL을 쓸 수 있고 압축 파일(tar)은 자동으로 풀어 넣는다 | `ADD index.html /var/www/html` |
+| `WORKDIR` | `WORKDIR <디렉터리>` | 이후 지시어를 실행할 작업 디렉터리를 지정한다. 리눅스의 `cd`와 비슷하다 | `WORKDIR /home/user` |
+| `USER` | `USER <사용자명\|UID>[:<그룹명\|GID>]` | 이후 명령을 실행할 사용자나 그룹을 지정한다. 사용자는 미리 만들어져 있어야 한다 | `USER <사용자명>` |
+| `EXPOSE` | `EXPOSE <포트>[/<프로토콜>]` | 컨테이너가 사용하는 포트와 프로토콜(TCP, UDP)을 문서화한다. 프로토콜을 생략하면 TCP다 | `EXPOSE 80/tcp` |
+| `ENTRYPOINT` | `ENTRYPOINT ["명령어", "인자1"]` | 컨테이너 시작 시 실행할 명령을 지정한다 | `ENTRYPOINT ["echo", "hello"]` |
+| `CMD` | `CMD ["명령어", "인자1"]` 또는 `CMD ["인자1", "인자2"]` | 컨테이너 시작 시 실행할 기본 명령을 지정하거나, `ENTRYPOINT`에 넘길 기본 인자를 지정한다 | `CMD ["echo", "hello"]` |
+| `LABEL` | `LABEL <키>=<값>` | 이미지에 메타데이터(레이블)를 지정한다 | `LABEL maintainer="<이름>"` |
 
-### FROM
+원본의 지시어 요약에는 `RUN`, `CMD`, `LABEL`, `EXPOSE`, `ENV`, `ADD`/`COPY`, `WORKDIR`이 있었다. 위 표에 모두 포함했다. 원본에서 `WORLDIR`로 적힌 철자는 `WORKDIR`로 정정했다.
 
-`FROM 이미지:태그`\
-생성할 이미지의 기반이 되는 base 이미지를 지정합니다. 보통 사용할 운영체제의 공식 이미지를 Dockerhub에서 가져옵니다.
+## 3. 구분이 필요한 지시어
 
-➡️ `FROM ubuntu:18.04`
+### 3.1 `COPY`와 `ADD`
 
-### ENV
+| 비교 항목 | `COPY` | `ADD` |
+|---|---|---|
+| 로컬 파일·디렉터리 복사 | 가능 | 가능 |
+| URL에서 받기 | 불가 | 가능 |
+| tar 압축 자동 해제 | 안 함 | 함 |
+| 권장 | 단순 복사에는 `COPY`를 쓴다 | URL 내려받기나 자동 해제가 필요할 때만 쓴다 |
 
-`ENV 변수명 값` or `ENV 변수명=값`\
-Dockerfile 내에서 사용하는 환경 변수를 지정합니다. 파일 내에서 변수는 `$변수명` 혹은 `${변수명}` 형태로 표현합니다.
+### 3.2 `CMD`와 `ENTRYPOINT`
 
-➡️ `ENV PYTHON_VERSION 3.11.2` → `.../python/$PYTHON_VERSION/...`
+| 비교 항목 | `CMD` | `ENTRYPOINT` |
+|---|---|---|
+| 역할 | 기본 실행 명령 또는 기본 인자 | 고정 실행 명령 |
+| 여러 개 작성 | 마지막 `CMD`만 쓴다 | 마지막 `ENTRYPOINT`만 쓴다 |
+| `docker run <이미지> <인자>` | `CMD`가 무시되고 `<인자>`가 명령이 된다 | `<인자>`가 `ENTRYPOINT`의 인자로 붙는다 |
 
-### RUN
+`ENTRYPOINT`와 `CMD`를 함께 쓴 예다.
 
-`RUN 명령어` or `RUN ["명령어", "인자1", "인자2"]`\
-이미지를 빌드할 때 실행할 명령어를 작성합니다. 필요한 패키지를 설치하거나, 파일 권한 설정 등의 작업을 수행합니다.
-
-➡️ `RUN apt-get update`\
-➡️ `RUN ["/bin/bash", "-c", "echo hello"]`
-
-### COPY
-
-`COPY <src> <dest>`\
-src 파일이나 디렉토리를 이미지 파일 시스템의 dest로 복사합니다.
-
-➡️ `COPY . /app`
-
-### ADD
-
-`ADD <src> <dest>`\
-src 파일이나 디렉토리, URL을 이미지 파일 시스템의 dest로 복사합니다.
-
-➡️ `ADD . /app`
-
-### WORKDIR
-
-`WORKDIR 디렉토리`\
-Dockerfile 내의 명령을 수행할 작업 디렉토리를 지정합니다. 리눅스의 `cd` 명령어와 유사합니다.
-
-➡️ `WORKDIR /home/user`
-
-### USER
-
-`USER 사용자명|UID` or `USER 사용자명|UID[:그룹명|GID]`\
-명령을 수행할 사용자 혹은 그룹을 지정합니다.
-
-➡️ `USER $username`
-
-### EXPOSE
-
-`EXPOSE 포트` or `EXPOSE 포트/프로토콜`\
-컨테이너가 실행 중일 때 들어오는 네트워크 트래픽을 리슨할 포트와 프로토콜을 지정합니다. 사용할 수 있는 프로토콜은 TCP와 UDP이며, 기본적으로 TCP가 지정됩니다.
-
-➡️ `EXPOSE 80/tcp`
-
-### ENTRYPOINT
-
-`ENTRYPOINT 명령어 인자1 인자2` or `ENTRYPOINT ["명령어", "인자1", "인자2"]`\
-컨테이너가 실행될 때 수행할 명령어를 지정합니다.
-
-➡️ `ENTRYPOINT ["echo", "hello"]`
-
-### CMD
-
-`CMD 명령어 인자1 인자2` or `CMD ["명령어", "인자1", "인자2"]` or `CMD ["인자1", "인자2"]`\
-컨테이너가 실행될 때 수행할 명령어를 지정하거나, `ENTRYPOINT` 명령어에 인자를 전달합니다.
-
-➡️ `CMD ["echo", "hello"]`
-
-* Dockerfile 내에 `CMD` 명령이 여러 개 존재하면 마지막 `CMD`를 사용합니다.
-* `docker run`의 인자를 작성하면 `CMD` 명령어는 무시됩니다. `ENTRYPOINT`가 있는 경우, `docker run`의 인자가 `ENTRYPOINT`의 인자로 들어갑니다.
-
-예: Dockerfile이 아래과 같을 때,
-
-* `docker run [이미지]`로 컨테이너를 실행하면 `python app.py`를 실행합니다.
-* `docker run [이미지] test.py`로 컨테이너를 실행하면 `python test.py`를 실행합니다.
-
-```shell
+```dockerfile
 ENTRYPOINT ["python"]
 CMD ["app.py"]
 ```
 
-## DevOps
+| 실행 | 실제 실행 명령 |
+|---|---|
+| `docker run <이미지>` | `python app.py` |
+| `docker run <이미지> test.py` | `python test.py` |
 
-{% stepper %}
-{% step %}
-### 기획, 개발
+{% hint style="warning" %}
+CAUTION: `EXPOSE`는 포트를 문서화할 뿐 호스트 포트를 열지 않는다. 호스트에서 접속하려면 `docker run -p <호스트 포트>:<컨테이너 포트>`를 쓴다.
+{% endhint %}
 
-요구사항 정의 및 애플리케이션 개발 수행.
-{% endstep %}
+{% hint style="warning" %}
+CAUTION: `ENV`와 `COPY`로 비밀번호, 토큰, `.env` 내용을 이미지에 넣지 않는다. 이미지를 공유하면 그 값도 함께 공유된다.
+{% endhint %}
 
-{% step %}
-### CI(빌드, 테스트), CD(배포)
+## 4. 실습 문서
 
-코드 변경 시 자동 빌드, 테스트, 배포 파이프라인 실행.
-{% endstep %}
+| Task ID | 문서 | 내용 |
+|---|---|---|
+| CLD-DKR-011-MP | [Dockerfile 실습: Nginx 웹 페이지 이미지](dockerfile-practice-nginx.md) | `nginx:alpine` 기반 이미지를 v1, v2로 빌드한다 |
+| CLD-DKR-012-MP | [Dockerfile 실습: Ubuntu Apache 이미지](dockerfile-practice-apache.md) | Ubuntu 기반 Apache 이미지를 빌드한다 |
+| CLD-DKR-013-MP | [Dockerfile 실습: Fedora Nginx 이미지](dockerfile-practice-fedora.md) | Fedora 기반 Nginx 이미지를 빌드한다 |
+| CLD-DKR-014-REF | [Dockerfile 이미지 쿠버네티스 배포 명령](dockerfile-k8s-deploy.md) | 빌드한 이미지를 `kubectl`로 배포한다 |
 
-{% step %}
-### 운영, 모니터링
+## 5. 참조
 
-배포된 서비스 운영 및 성능/장애 모니터링.
-{% endstep %}
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [도커 이미지 빌드](docker_build.md) | CLD-DKR-009-MP | `docker build` 절차 |
+| [Dockerfile 공식 문서](https://docs.docker.com/engine/reference/builder/) | - | 외부 문서 |
 
-{% step %}
-### 수정 -> 반복
+## 6. 개정 이력
 
-발생한 피드백 또는 버그를 수정하고 다시 1단계로 돌아가 반복.
-{% endstep %}
-{% endstepper %}
-
-## Dockerfile 문법
-
-```
-# dockerfile command
-FROM [image name]      # 베이스 이미지 pulling
-RUN                    # 결과를 이미지 반영
-CMD                    # 컨테이너 시작시 실행되는 명령어
-LABEL                  # 이미지에 레이블을 지정
-EXPOSE                 # 컨테이너 에서 노출하는 포트를 지정
-ENV                    # 환경변수 설정
-ADD / COPY             # 이미지에 파일 복사
-WORLDIR                # 명령어를 실행할 때 작업 디렉토리 설정
-```
-
-## Dockerfile Practice in Rockey Docker
-
-my-web-app v1
-
-{% code title="Dockerfile (my-web-app-v1)" %}
-```my-web-app-v1
-# mkdir ./myweb && cd ./myweb
-# vi index.html
-	<!DOCTYPE html>
-	<html>
-	<head>
-	    <title>Welcome my web!</title>
-	</head>
-	<body>
-	    <h1>Hello World!</h1>
-	</body>
-	</html>
-
-# vi Dockerfile
-	# Use an official Nginx runtime as a parent image
-	FROM nginx:alpine
-
-	# Copy the updated web page to the container
-	COPY index.hmtl /usr/share/nginx/html
-
-# docker build -t my-web-app .
-# docker images
-> REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
-> my-web-app   latest    438c3152c8d1   33 minutes ago   52.5MB
-
-# docker run -d -p 80:80 --name my-web-app my-web-app
-
-# docker container inspect [container-id]
-```
-{% endcode %}
-
-my-web-app v2
-
-{% code title="Dockerfile (my-web-app-v2)" %}
-```my-web-app-v2
-# vi index.html
-	<!DOCTYPE html>
-	<html>
-	<head>
-	    <title>Welcome my web app!</title>
-	</head>
-	<body>
-	    <h1>Hello World! Hello World!</h1>
-	</body>
-	</html>
-
-# vi Dockerfile
-	# Use an official Nginx runtime as a parent image
-	FROM nginx:alpine
-
-	# Copy the updated web page to the container
-	COPY index.hmtl /usr/share/nginx/html
-
-# docker build -t my-web-app:second .
-# docker images
-REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
-my-web-app   second    ddd4afede45f   23 seconds ago   52.5MB
-my-web-app   latest    438c3152c8d1   33 minutes ago   52.5MB
-
-# docker run -d -p 80:80 --name my-web-app-v2 my-web-app:second
-```
-{% endcode %}
-
-업데이트 된 이미지를 k8s를 통해 배포\
-k8s cluster, kubectl cli 명령어 사용 필요
-
-* `kubectl create deployment my-web-app --image=my-web-app:latest`: create image
-* `kubectl expose --type=LoadBalancer --port:80 --target:80`
-* `kubectl get services`
-* `kubectl set image deployment/my-web-app my-web-app=my-web-app:v2`: version upgrade
-* `kubectl rollout status deployment/my-web-app`
-* `kubectl delete deployment/my-web-app`: delete image
-* `kubectl service my-web-app`: service start
-
-## Ubuntu Apache in Rockey Docker
-
-```
-# mkdir ./ubuntu && cd ./ubuntu
-# touch index.html
-# vi Dockerfile
-```
-
-{% code title="Dockerfile (Ubuntu Apache)" %}
-```dockerfile
-# Ubuntu 기반 apache2 Dockerfile
-FROM ubuntu:18.04
-
-# 유지보수자 정보
-MAINTAINER jinyeong <jinyeong@kit.com>
-
-# 시스템 업데이트 및 apache2 설치
-RUN apt -y update && install -y apache2
-
-# 웹 파일 추가
-ADD index.html /var/www/html
-
-# 작업 디렉토리 설정
-WORKDIR /var/www/html
-
-# 기본 페이지 확인용 파일 생성
-RUN ["/bin/sh", "-c", "echo hello >> index.html"]
-
-# apache2를 외부에서 접근 가능하도록 포트 노출
-EXPOSE 80
-
-# apache2 실행 명령 설정
-CMD ["apache2ctl", "-D", "FOREGROUND"]
-```
-{% endcode %}
-
-```
-# docker build -t apacheweb .
-# docker run -d -p 80:80 --name ubuntu-apache-web apacheweb
-```
-
-## Fedora in Rockey Docker
-
-```
-# mkdir ./fedora && cd ./fedora
-# touch index.html
-# vi Dockerfile
-```
-
-{% code title="Dockerfile (Fedora Nginx)" %}
-```dockerfile
-# Fedora 기반 Nginx Dockerfile
-FROM fedora
-
-# 유지보수자 정보
-MAINTAINER jinyeong <jinyeong@kit.com>
-
-# 시스템 업데이트 및 nginx 설치
-RUN dnf -y update && dnf -y install nginx
-
-# 웹 파일 추가
-ADD index.html /usr/share/nginx/html
-
-# 작업 디렉토리 설정
-WORKDIR /usr/share/nginx/html
-
-# 기본 페이지 확인용 파일 생성
-RUN ["/bin/sh", "-c", "echo hello >> index.html"]
-
-# Nginx를 외부에서 접근 가능하도록 포트 노출
-EXPOSE 80
-
-# Nginx 실행 명령 설정
-CMD ["nginx", "-g", "daemon off;"]
-```
-{% endcode %}
-
-```
-# docker build -t nginxweb .
-# docker run -d -p 80:80 --name fedora-nginx-web nginxweb
-```
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 지시어 설명을 표로 재구성. `COPY`/`ADD`, `CMD`/`ENTRYPOINT` 비교와 `EXPOSE`, 비밀값 CAUTION을 추가. 실습 3건과 `kubectl` 명령은 별도 파일로 분리했고 DevOps 순환은 CLD-DKR-002-DO로 옮겼다 |
