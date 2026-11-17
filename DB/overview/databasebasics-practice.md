@@ -115,7 +115,7 @@ INSERT INTO `student` VALUES (8, '학생G', '남자', 5, '1990-10-01 00:00:00');
 1. (5-E-01) 셸에서 데이터베이스 이름을 지정해 파일을 적용한다: `mysql -u root -p school < <student.sql 경로>` → 결과: 비밀번호를 입력하면 오류 없이 끝난다.
 
 {% hint style="info" %}
-NOTE: 원본은 `mysql -u root -p toor --host=localhost < student.sql`을 적었다. 공백을 두고 쓴 `toor`는 비밀번호가 아니라 데이터베이스 이름으로 해석된다. 또 `student.sql`에는 `use` 문이 없어 데이터베이스 이름이 없으면 `No database selected` 오류가 난다. 두 문제를 정정했다.
+NOTE: 원본의 `mysql -u root -p <값> --host=localhost < student.sql` 형태는 `-p` 뒤에 공백을 두고 값을 적어 그 값이 비밀번호가 아니라 데이터베이스 이름으로 해석된다. 또 `student.sql`에는 `use` 문이 없어 데이터베이스 이름이 없으면 `No database selected` 오류가 난다. 두 문제를 정정했고, 비밀번호는 프롬프트로 입력한다.
 {% endhint %}
 
 ## 6. 기능 확인
