@@ -1,5 +1,29 @@
 # AI 검증 프롬프트
 
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-DOC-003-REF |
+| 유형 | REF (템플릿) |
+| 목적 | 초안을 다 쓴 뒤 AI에게 목록만 받는 검증 프롬프트 6종을 제공한다 |
+| 확인 상태 | 미검증 (사용자가 쓰는 템플릿의 구조를 보존하고 형식만 정돈했다) |
+| 개정 | R1 (2026-11-18) |
+
+## 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [README.md](README.md) | GMD-DOC-001-DO | '질문받는 기획자'가 되기 위한 문서화 습관 |
+| [problem-framing-template.md](problem-framing-template.md) | GMD-DOC-002-REF | 문제 정의서 템플릿 |
+| [playtest-log-template.md](playtest-log-template.md) | GMD-DOC-004-REF | 플레이테스트 로그 템플릿 |
+
+{% hint style="info" %}
+NOTE: 아래 구분선 이후가 템플릿 본문이다. 새 페이지에 복사해서 쓴다.
+{% endhint %}
+
+---
+
 > **초안을 다 쓴 뒤에만** 쓴다. 모든 프롬프트는 "다시 쓰지 말고 목록만 달라"는 조건을 포함한다. AI가 내 문서를 고쳐 쓰기 시작하면 그 순간부터 그건 내 문서가 아니다.
 
 ## 쓰는 법
