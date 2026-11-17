@@ -1,4 +1,4 @@
-# docker hub image share
+# 도커 허브 이미지 공유 실습
 
 WordPress가 구동 중인 Ubuntu 컨테이너를 Docker Hub에 공유하려면, 컨테이너의 상태를 Docker 이미지로 저장하고 이를 Docker Hub에 푸시하면 됩니다. 아래는 단계별 방법입니다.
 

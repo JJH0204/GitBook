@@ -1,4 +1,4 @@
-# ClassVsStructDifference
+# 클래스 대 구조체 비교
 
 #### 차이점 정리 표
 

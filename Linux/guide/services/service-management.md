@@ -1,4 +1,4 @@
-# Service Management
+# 불필요한 서비스 관리 및 비활성화
 
 ### Remote Access Management
 

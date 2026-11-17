@@ -1,4 +1,4 @@
-# bubble sort
+# 버블 정렬 (Bubble Sort)
 
 ## 버블 정렬이란?
 

@@ -1,4 +1,4 @@
-# Python
+# Python 개발 환경 및 문법
 
 \#python #개발 #개발환경
 
@@ -6,7 +6,7 @@
 {% step %}
 ### Python IDE 설정 (for mac)
 
-* [Python IDE 설정 (for mac)](/broken/pages/7dfe231d65d69df79bb3108b4df542538a33441a)
+* Python IDE 설정 (for mac)
 * 참고 자료
   * [**파이썬 설치부터 가상환경 설정까지**](https://dailyheumsi.tistory.com/214)
   * [맥에서 pyenv 사용하기](https://leesh90.github.io/environment/2021/04/03/python-install/)
@@ -16,7 +16,7 @@
 {% step %}
 ### Python IDE 설정 (for windows)
 
-* [Python IDE 설정 (for windows)](file:///4766478/dev_tools/PythonSettingWin.md)
+* [Python IDE 설정 (for windows)](https://krjaeh0.gitbook.io/j-log/devtool/env-setup/pythonsettingwin)
 * 참고 자료
   * https://kodorricoding.tistory.com/16 환경변수 설정
 {% endstep %}
@@ -24,13 +24,13 @@
 
 ### 프로젝트
 
-1. [가상화폐 트레이딩](file:///4766478/projects/CryptoTrading.md)
-2. [셀레니움](/broken/pages/5eba32048004fc94700ca9d1b6dfe86c8c5563be)을 활용한 [인터파크 티켓팅 자동화](/broken/pages/20b74f2cec5a7f04b963d6be7bcd37c2af2231f9)
+1. [가상화폐 트레이딩](https://krjaeh0.gitbook.io/j-log/projects/wait/trading/cryptotrading)
+2. 셀레니움을 활용한 인터파크 티켓팅 자동화
 3. 우주비행(게임)-플레피버드 응용
 
 #### 가상환경 및 커널이란
 
-* [가상환경 및 커널이란](file:///4766478/linux_admin/AboutVirtualEnvAndKernel.md)
+* [가상환경 및 커널이란](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/linux_admin/commands/aboutvirtualenvandkernel)
 
 #### 클래스 (class) 문법
 
@@ -49,6 +49,6 @@ class 클래스이름:
 
 ### 암호화 및 복호화
 
-* [암호화 및 복호화](file:///4766478/security/EncryptionNDeencryption.md)
-* [poetry](file:///4766478/dev_tools/poetry.md)
-* [Django\_VS\_Flask](file:///4766478/cloud_devops/Django_VS_Flask.md)
+* [암호화 및 복호화](https://krjaeh0.gitbook.io/j-log/security/security/fundamentals/theory/encryptionndeencryption)
+* [poetry](https://krjaeh0.gitbook.io/j-log/devtool/env-setup/poetry)
+* [Django\_VS\_Flask](django_vs_flask.md)

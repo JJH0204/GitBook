@@ -1,4 +1,4 @@
-# functional model
+# 기능 모델 (Functional Model)
 
 ## 기능 모델(Functional Model)이란?
 

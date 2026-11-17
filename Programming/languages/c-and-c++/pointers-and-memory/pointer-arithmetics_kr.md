@@ -1,4 +1,4 @@
-# Pointer Arithmetics\_kr
+# 포인터 연산 상세 (Arithmetics)
 
 포인터가 무엇인지, 포인터를 활용하는 방법을 이전에 배웠습니다. 이 튜토리얼에서는 포인터에 대한 산술 연산을 배우게 됩니다. C 포인터에 적용할 수 있는 산술 연산은 여러 가지가 있습니다: ++, --, -, +
 
@@ -121,3 +121,12 @@ int main()
 ## 기타 연산자
 
 비교 연산자(>, <, == 등)도 포인터에 사용할 수 있습니다. 아이디어는 변수를 비교하는 것과 매우 유사하지만, 이 경우 비교 대상은 값이 아니라 메모리 주소입니다.
+
+{% hint style="info" %}
+포인터에 정수를 더하거나 빼면 실제 바이트 단위가 아니라 해당 타입의 크기만큼 이동합니다. 예: int 포인터에 1을 더하면 주소는 sizeof(int)만큼 증가합니다.
+{% endhint %}
+
+## 소스 코드 링크
+
+* [PointerArithmetics](https://github.com/JJH0204/DevBasics/blob/main/source/C_language/PointerArithmetics.c)
+* [ExPointerArithmetics](https://github.com/JJH0204/DevBasics/blob/main/source/C_language/ExPointerArithmetics.c)

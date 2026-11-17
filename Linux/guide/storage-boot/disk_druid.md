@@ -1,4 +1,4 @@
-# Disk\_Druid
+# 디스크 드루이드 파티셔닝 도구
 
 Disk Druid는 리눅스 시스템(특히 Red Hat과 Fedora)의 설치 과정에서 사용되는 GUI 기반 디스크 파티셔닝 도구입니다. 사용자가 하드 드라이브를 쉽게 파티셔닝하도록 도와주며, 파티션 추가·수정·삭제 등 주요 작업을 수행할 수 있습니다. 출처: [Everything Linux 101 blog](https://everything-linux-101.com/linux-fdisk-parted-and-disk-druid-hard-disk-partitioning-in-red-hat-linux-linux-commands-training/), [Fedora People](https://jsmith.fedorapeople.org/drafts/install-guide-en_US/sn-disk-druid.html).
 

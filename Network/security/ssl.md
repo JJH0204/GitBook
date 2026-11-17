@@ -1,4 +1,4 @@
-# SSL
+# SSL 및 TLS 프로토콜
 
 SSL(Secure Sockets Layer)은 인터넷 통신의 보안을 위해 개발된 암호화 기반의 프로토콜입니다. 원래 1995년 넷스케이프(Netscape)에 의해 개발되었고, 인터넷 통신에서 프라이버시, 인증, 데이터 무결성을 보장하기 위한 목적으로 만들어졌습니다. SSL은 현대의 TLS(Transport Layer Security) 암호화의 전신입니다 ([Connect, Protect and Build Everywhere](https://www.cloudflare.com/learning/ssl/what-is-ssl/)).
 
@@ -42,3 +42,11 @@ HTTPS는 HTTP에 SSL/TLS 암호화를 추가한 프로토콜입니다. 이를 �
 * SSL.com(FAQ): https://www.ssl.com/faqs/faq-what-is-ssl/
 
 </details>
+
+#### TLS의 기반 암호 기술과 표준 문서
+
+TLS는 서버와 클라이언트 사이에 오가는 모든 HTTP 메시지를 암호화하며, 공격자가 중간에서 메시지를 탈취하더라도 해석하기 어려워 HTTP 통신이 도청과 변조로부터 보호됩니다.
+
+TLS의 기반이 되는 공개 키 암호 시스템(Public Key Crypto Standard, PKCS) 및 대칭 키 암호(Symmetric Key Cryptography)를 알아야 합니다.
+
+* [TLS 1.2 표준 RFC 5246 문서](https://www.rfc-editor.org/rfc/rfc5246.html)

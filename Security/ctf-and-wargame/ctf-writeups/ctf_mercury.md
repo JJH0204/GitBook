@@ -1,4 +1,4 @@
-# CTF\_Mercury
+# CTF: Mercury
 
 {% stepper %}
 {% step %}
@@ -187,7 +187,7 @@ sudo -l 결과:&#x20;
 
 참고: Zap 관련 자료는 별도 페이지를 참조(링크 보존).
 
-* [Zap 문서 링크](file:///5659318/security/Zap.md)
+* [Zap 문서 링크](../../security/tools/toolbox/zap.md)
 
 이미지:&#x20;
 {% endstep %}

@@ -1,4 +1,4 @@
-# ProxyTool
+# 프록시 도구와 Burp Suite
 
 ## BurpSuite
 

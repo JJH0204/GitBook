@@ -1,4 +1,4 @@
-# A3 Cross Site Scripting
+# A3 반사형 XSS 실습
 
 ## Reflected (GET)
 
@@ -83,4 +83,4 @@ Referer: http://192.168.56.122/bWAPP/xss_back_button.php
 
 ***
 
-## Reflected ([PHP\_SELF](/broken/pages/bde6faa1a9b94eb56d34975ca8ddc448fa938793))
+## Reflected ([PHP\_SELF](php_self.md))

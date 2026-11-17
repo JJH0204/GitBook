@@ -1,4 +1,4 @@
-# MemoryCheck
+# Volatility 메모리 분석 도구
 
 [volatility](https://www.google.com/search?q=volatility\&oq=volatility\&gs_lcrp=EgZjaHJvbWUyDAgAEEUYORixAxiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDIHCAgQABiABDIHCAkQABiABNIBCTEwMTA0ajBqN6gCCLACAQ\&sourceid=chrome\&ie=UTF-8)
 
@@ -44,7 +44,7 @@ python vol.py windows.info.Info
 ```
 {% endcode %}
 
-[윈도우 시스템 파일](/broken/pages/c9e2efa1dfb18dc91a56fc6cfb98315704579015)
+윈도우 시스템 파일
 
 메모리 파일을 지정하여 시스템 정보를 출력하는 예:
 

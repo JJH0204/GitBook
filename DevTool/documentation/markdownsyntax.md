@@ -1,4 +1,4 @@
-# MarkdownSyntax
+# 마크다운 문법 (Markdown Syntax)
 
 * [마크다운(Markdown) 사용법 (github.com)](https://gist.github.com/ihoneymon/652be052a0727ad59601)
 * [옵시디언\_마크다운\_문법](https://statisticsplaybook.com/obsidian-markdown-cheatsheet/#6-links)

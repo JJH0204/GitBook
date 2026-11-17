@@ -1,4 +1,4 @@
-# Scaning tool
+# Nmap 포트 스캐닝 도구
 
 https://nmap.org/
 

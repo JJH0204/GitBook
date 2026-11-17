@@ -1,4 +1,4 @@
-# TCPIP4Layer
+# TCP/IP 4계층 모델
 
 ## TCP/IP 4계층이란?
 

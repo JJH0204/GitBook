@@ -1,4 +1,4 @@
-# OCPOpenClosedPrinciple
+# 개방 폐쇄 원칙 (OCP)
 
 {% hint style="info" %}
 소프트웨어 구성 요소는 확장에는 열려 있어야 하고, 변경에는 닫혀 있어야 합니다.

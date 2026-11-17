@@ -1,4 +1,4 @@
-# Firewall
+# 방화벽 장치 유형 (Firewall)
 
 ## 관련자료
 
@@ -6,9 +6,9 @@
 
 ## 대표적인 방화벽 장치
 
-* [pfsense](file:///2435498/security/pfsense.md)
-* [ASAv](/broken/pages/9c953c74928eb5426149867cc231d234c8cfae9b)
+* [pfsense](https://krjaeh0.gitbook.io/j-log/security/security/tools/toolbox/pfsense)
+* [ASAv](asav.md)
 
 ## 가상 방화벽
 
-* [ZFW](file:///2435498/security/ZFW.md)
+* [ZFW](https://krjaeh0.gitbook.io/j-log/security/security/defensive-security/defense/zfw)

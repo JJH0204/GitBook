@@ -1,4 +1,4 @@
-# GoraniTVShaderTimeline
+# 고라니TV 셰이더 강의 타임라인
 
 ## ◈ 꼭 알아야 할 것
 

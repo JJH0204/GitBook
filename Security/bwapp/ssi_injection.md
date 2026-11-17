@@ -1,4 +1,4 @@
-# SSI\_Injection
+# SSI 인젝션 (SSI Injection)
 
 응답을 위해서 서버에서 추가 실행되는 @ = ssi
 

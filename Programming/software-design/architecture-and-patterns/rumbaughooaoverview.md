@@ -1,4 +1,4 @@
-# RumbaughOOAOverview
+# 럼바우 OOA 개요 (Rumbaugh)
 
 ## 럼바우의 객체지향 분석 기법이란?
 
@@ -21,9 +21,9 @@
 
 | 모델                                                                                                      | 설명                   | 주요 요소                                                      | 요약               |
 | ------------------------------------------------------------------------------------------------------- | -------------------- | ---------------------------------------------------------- | ---------------- |
-| <p><a href="/broken/pages/5b6305b2382234c9d94039795ed95884df1d48dd">객체 모델<br>(Object Model)</a></p>     | 시스템을 구성하는 객체와 관계를 정의 | 클래스(Class), 속성(Attribute), 관계(Relationship) - 클래스 다이어그램 사용 | 데이터 구조 중심        |
-| <p><a href="/broken/pages/0b9c132d1ecfff348466a0b32dda2a4548f1afe4">동적 모델<br>(Dynamic Model)</a></p>    | 객체 간의 상태 변화와 이벤트를 표현 | 상태(State), 이벤트(Event) - 상태 다이어그램(State Diagram) 사용         | 시간에 따른 변화 중심     |
-| <p><a href="/broken/pages/53374259b768febaca5f6ad7fceb88d4ff1290ac">기능 모델<br>(Functional Model)</a></p> | 시스템의 데이터 흐름과 연산을 정의  | 데이터 흐름도(DFD), 프로세스(Process), 데이터 저장소                       | 데이터 흐름 및 프로세스 중심 |
+| <p><a href="object-model.md">객체 모델<br>(Object Model)</a></p>     | 시스템을 구성하는 객체와 관계를 정의 | 클래스(Class), 속성(Attribute), 관계(Relationship) - 클래스 다이어그램 사용 | 데이터 구조 중심        |
+| <p><a href="rumbaughooa/dynamic-model.md">동적 모델<br>(Dynamic Model)</a></p>    | 객체 간의 상태 변화와 이벤트를 표현 | 상태(State), 이벤트(Event) - 상태 다이어그램(State Diagram) 사용         | 시간에 따른 변화 중심     |
+| <p><a href="rumbaughooa/functional-model.md">기능 모델<br>(Functional Model)</a></p> | 시스템의 데이터 흐름과 연산을 정의  | 데이터 흐름도(DFD), 프로세스(Process), 데이터 저장소                       | 데이터 흐름 및 프로세스 중심 |
 
 ***
 

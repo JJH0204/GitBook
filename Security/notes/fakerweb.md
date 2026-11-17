@@ -1,43 +1,39 @@
-# fakerWEB
-
-## Excalidraw Data
-
-### Text Elements
+# fakerWEB 워게임 풀이
 
 {% stepper %}
 {% step %}
 ### 초기 탐색
 
-* ./faker/home/ 접속 ^Ki6XGaMN
-* ./faker/home/... (접근 가능한 다른 디렉터리 유무 확인) ^rwunRtrT
-* robots.txt 발견 ^KC1x7sZx
+* ./faker/home/ 접속
+* ./faker/home/... (접근 가능한 다른 디렉터리 유무 확인)
+* robots.txt 발견
 {% endstep %}
 
 {% step %}
 ### robots.txt 및 파일 확인
 
-* robots.txt 접근 ^Adj8n6Dz
-* ./home/wordList.txt 존재 확인 ^WprJWnnF
+* robots.txt 접근
+* ./home/wordList.txt 존재 확인
 {% endstep %}
 
 {% step %}
 ### 단서 파일 열람
 
-* ./wordList.txt 접근 ^2nz2CSJV
-  * 계정 리스트 혹은 패스워드 리스트로 유추되는 텍스트 리스트를 확인 ^0jfqaORm
+* ./wordList.txt 접근
+  * 계정 리스트 혹은 패스워드 리스트로 유추되는 텍스트 리스트를 확인
 {% endstep %}
 
 {% step %}
 ### 브루트포스 공격 준비 및 실행 (Burp Suite)
 
-* Burp Suite Proxy 사용 ^F8kOzghG
+* Burp Suite Proxy 사용
 * 브라우저의 요청 패킷 내용을 Intruder로 보낸다.
   * payload set 추가 (username, password)
-  * attack type 선택 (cluster bomb 추천) ^GIEUN2b7
-  * payload set 1, 2 각각 simple list 추가 (wordList.txt copy/paste) ^E5EeZB5g
+  * attack type 선택 (cluster bomb 추천)
+  * payload set 1, 2 각각 simple list 추가 (wordList.txt copy/paste)
 * start attack
-* fakergoat:F4k3r1996! 발견 ^jjdk0n51
-* 관리자 페이지 접속 성공 ^wa3aZLW6
+* fakergoat:F4k3r1996! 발견
+* 관리자 페이지 접속 성공
 {% endstep %}
 
 {% step %}
@@ -47,9 +43,9 @@
   * 한번만 서비스 할 수 있다. (다수의 사용자에게 서비스 하기에 적합하지 않다.)
   * 서비스 중인 다른 워게임 문제에 영향을 줄 수 있다. (의도와 다르게 서비스 자체를 공격받을 수 있다.)
 * CTF 형식의 워게임을 서비스하기 위해서는 웹 서비스와 워게임 문제를 분리할 필요가 있다.
-  * Docker!!! ^geFXWTC7
+  * Docker!!!
 
-링크: https://chatgpt.com/share/6744a431-54f4-8004-8957-d98f5bc4fce5 ^lCgjYzYi
+링크: https://chatgpt.com/share/6744a431-54f4-8004-8957-d98f5bc4fce5
 {% endstep %}
 {% endstepper %}
 
@@ -57,7 +53,7 @@
 
 ## 시나리오: 웹 관리자 페이지 취약점을 공략해 플래그 획득하기
 
-이 시나리오는 학습 목적에 맞게 서버 취약점 및 탐색 과정을 체계적으로 익히게 해줍니다. ^kJcMUQwH
+이 시나리오는 학습 목적에 맞게 서버 취약점 및 탐색 과정을 체계적으로 익히게 해줍니다.
 
 {% stepper %}
 {% step %}
@@ -152,19 +148,6 @@
 
 ***
 
-### Element Links
+### 참고 링크
 
-* ZJ9pqcWj: [Docker\_Hub](file:///5659318/cloud_devops/Docker_Hub.md)
-
-### Embedded Files
-
-* 89dbca4d2df7707ba78dc1a72193ef4ff4ac9003: \[\[topics/assets/images/Pasted Image 20241125115439\_582.png]]
-* 75c50b86143a8be1dee29b999d866fcd74759781: \[\[topics/assets/images/Pasted Image 20241125115555\_605.png]]
-* e927c452bcce03a66c9af2216caa257f01ba093f: \[\[topics/assets/images/Pasted Image 20241125115727\_624.png]]
-* c26f3a53de31b09837985dad469b400c6267d22d: \[\[topics/assets/images/Pasted Image 20241125115857\_685.png]]
-* 41ac88a729276b7cae61605c1445dc3ca26f2310: \[\[topics/assets/images/Pasted Image 20241125120112\_769.png]]
-* 41211857ef5b5101012fe816d53c84197ffdaeaf: \[\[topics/assets/images/Pasted Image 20241125120227\_785.png]]
-* 3a2b185c053f4ac8bcc3d8db01638dc791748cb1: \[\[topics/assets/images/Pasted Image 20241125120500\_824.png]]
-* 6cbcb2ad55f14df50b8c02472e3eab125a110e4c: \[\[topics/assets/images/Pasted Image 20241125120648\_860.png]]
-* 132f0d87200a62174c8926ad37f75546b8c48003: \[\[topics/assets/images/Pasted Image 20241125121033\_897.png]]
-* 13b8cf86d0a39081f69a6134d703e70d7d7c0c71: \[\[topics/assets/images/Pasted Image 20241126120108\_527.png]]
+* [Docker\_Hub](https://krjaeh0.gitbook.io/j-log/cloud/cloud-devops/docker/docker_hub)

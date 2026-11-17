@@ -1,2 +1,1 @@
-# CI/CD · DevSecOps
-
+# CI/CD 및 DevSecOps

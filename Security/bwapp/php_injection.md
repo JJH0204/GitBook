@@ -1,4 +1,4 @@
-# PHP\_Injection
+# PHP 코드 인젝션 (PHP Injection)
 
 {% code title="Exploit URL" %}
 ```

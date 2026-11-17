@@ -1,4 +1,4 @@
-# How2UseGit
+# Git 사용법 (GitHub Desktop)
 
 {% tabs %}
 {% tab title="GIT Desktop" %}

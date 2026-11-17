@@ -1,4 +1,4 @@
-# CTF
+# CTF 개요 (CTF)
 
 {% hint style="info" %}
 * Capture The Flag의 약자
@@ -34,36 +34,36 @@
 * [https://github.com/pwning/docs/blob/master/suggestions-for-running-a-ctf.markdown](https://github.com/pwning/docs/blob/master/suggestions-for-running-a-ctf.markdown) CTF 관련 자세한 설명이 기술된 문서입니다.
 * CTFTIME(https://ctftime.org/)
 * 데프콘()
-* [해킹과정](file:///5659318/security/HackingProcess.md)
+* [해킹과정](../../security/offensive-security/pentest/hackingprocess.md)
 * https://www.vulnhub.com/
 
 ***
 
 ## CTF 리스트
 
-* [CTF\_Earth](/broken/pages/d47d781b9a17da61508cda510272160b19360afa)
-* [CTF\_cybersploit](/broken/pages/636b84b2aa7eb375370b2e98eb9be7d1310c5a93)
-* [CTF\_cybersploit2](/broken/pages/15b933972c9a142f522b8bf2098ac159b20a6f32)
-* [CTF\_TechSupport](/broken/pages/d7bd94d6a0715792f63d519802649bd1af99441e)
-* [CTF\_Mercury](/broken/pages/490eae3fb9a071d82c39bb01530c9ef1cc96606f)
-* [CTF\_Wordpress](/broken/pages/52f3dc83b1c68577899063e9cf6e123d3154a8c0)
-* [CTF\_Venus](/broken/pages/32ceba4ffa221d744ce02e4c2c2055a915d48df4)
-* [CTF\_Pwned](/broken/pages/cfd0fcc017d6c2e5bdb692011e0e26420d9ab2d5)
-* [CTF\_HF2019](/broken/pages/57e388f0d2c67a13a976b16ebaa777c65bf8a525)
-* [CTF\_Quaoar](/broken/pages/dbfcf895957ae672463e3f673af88545e8ba2215)
-* [CTF\_KIOPTRIX\_Level\_1.2](/broken/pages/4eadf0cf5272a5799e6920b6604b0def93a5d1a2)
-* [CTF\_Momentum\_1](/broken/pages/12cb41fcc3c93f84e8266e6c59865cd39e92e06a)
-* [CTF\_Account\_1](/broken/pages/a3a6994d08346664063e34b16d93884aad3b3a86)
-* [CTF\_Account\_2](/broken/pages/b2c4f8bb5425901bb4abe7b76af4457279b31493)
-* [comminjection](file:///5659318/security/comminjection.md)
-* [CTF\_Cookie01](/broken/pages/b0bae19c0966f7cfaca29124a42d5dbba789a389)
-* [CTF\_Funbox\_Scriptkiddie](/broken/pages/47af3feb1d492b25b9b30216777fa194cd417fe9)
-* [CTF\_Funbox\_10](/broken/pages/0f9ef30ceb0d77dd39bf0d530d27c787d1d84be0)
-* [OSCP](file:///5659318/career/OSCP.md)
-* [devt-improved](/broken/pages/2f46f88b9afc55f51bf167d84fbcacca887fc3e3)
+* [CTF\_Earth](ctf_earth.md)
+* [CTF\_cybersploit](ctf_cybersploit.md)
+* [CTF\_cybersploit2](ctf_cybersploit2.md)
+* [CTF\_TechSupport](ctf_techsupport.md)
+* [CTF\_Mercury](ctf_mercury.md)
+* [CTF\_Wordpress](ctf_wordpress.md)
+* [CTF\_Venus](ctf_venus.md)
+* [CTF\_Pwned](ctf_pwned.md)
+* [CTF\_HF2019](ctf_hf2019.md)
+* [CTF\_Quaoar](ctf_quaoar.md)
+* [CTF\_KIOPTRIX\_Level\_1.2](ctf_kioptrix_level_1.2.md)
+* CTF\_Momentum\_1
+* [CTF\_Account\_1](ctf_account_1.md)
+* [CTF\_Account\_2](ctf_account_2.md)
+* [comminjection](../../bwapp/comminjection.md)
+* [CTF\_Cookie01](ctf_cookie01.md)
+* CTF\_Funbox\_Scriptkiddie
+* [CTF\_Funbox\_10](ctf_funbox_10.md)
+* OSCP
+* devt-improved
 
 ***
 
 ## 자체 제작 CTF
 
-* [CTF-Custom](/broken/pages/e0f580c0a63d871a2fbd3a4bfc240a08087969d5)
+* [CTF-Custom](ctf-custom.md)

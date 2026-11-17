@@ -1,10 +1,10 @@
-# Architecture
+# 컴퓨터 구조 개요 (Architecture)
 
-## [컴퓨터 구조 / Computer Architecture](/broken/pages/9f1f43a8050f57a1bea847e60a491abae9214e05)
+## 컴퓨터 구조 / Computer Architecture
 
 ***
 
-## [명령어 집합 구조 / Instruction Set Architecture, ISA](/broken/pages/2a6f45cc00bfb7ba805c94f87b4a0a1a15835a1b)
+## 명령어 집합 구조 / Instruction Set Architecture, ISA
 
 * CPU가 사용하는 명령어와 관련된 구조 설계를 의미한다.
 * 대표적으로 **x86-64 아키텍처**가 있다.

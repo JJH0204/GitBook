@@ -1,4 +1,4 @@
-# Docker\_Hub
+# 도커 허브 활용 가이드 (Docker Hub)
 
 ## Docker Hub
 

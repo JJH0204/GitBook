@@ -1,4 +1,4 @@
-# IntrusionEventAnalysis
+# 침해사고 이벤트 분석 절차
 
 ## 1) 침해사고 아티팩트 수집 (Acquisition)
 
@@ -240,6 +240,6 @@ python analyzeMFT.py -f C:\forecopy_handy\mft\$MFT -l -o MFT.csv
 
 관련 문서
 
-* [윈도우 취약점 분석](/broken/pages/ec37a3b0f30c7cbb885a10ef1401a8c5d54f96dd)
-* [리눅스 침해사항 분석](/broken/pages/c1a53e504c0d0277d45c7cdaded4d2ae81e9cf1a)
-* [메모리 점검](file:///2237607/cs_basics/MemoryCheck.md)
+* 윈도우 취약점 분석
+* 리눅스 침해사항 분석
+* [메모리 점검](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/os_memory/memory-management/memorycheck)

@@ -1,8 +1,8 @@
-# ZFW
+# 존 기반 정책 방화벽 (ZFW)
 
 * [관련자료](https://byeong9935.tistory.com/3)
 
-일반 장비를 [Firewall](file:///2237607/network/Firewall.md)처럼 사용하는 기능입니다.\
+일반 장비를 [Firewall](https://krjaeh0.gitbook.io/j-log/network/security/firewall)처럼 사용하는 기능입니다.\
 존이 다를 경우 통신을 차단하는 방식으로 구현합니다.
 
 {% stepper %}

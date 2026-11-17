@@ -1,4 +1,4 @@
-# index\_sequential\_file
+# 색인 순차 파일 (ISAM)
 
 ## 색인 순차 파일 이란?
 

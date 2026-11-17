@@ -1,4 +1,4 @@
-# LinuxPackageManagementTool
+# 패키지 관리 도구 (RPM, DNF)
 
 ## RPM (Redhat package manager)
 
@@ -33,3 +33,16 @@ dnf groupinstall [그룹이름]    # 그룹 단위로 설치
 {% endcode %}
 
 ## 바이너리
+
+## 패치 관리 (Patch Management)
+
+### Patch Version Management
+
+{% code title="Update httpd RPM" %}
+```bash
+rpm -Uvh httpd
+```
+{% endcode %}
+
+* [악성코드 공유 플랫폼](https://www.exploit-db.com/)
+* [CVE](https://krjaeh0.gitbook.io/j-log/security/security/offensive-security/pentest/cve)

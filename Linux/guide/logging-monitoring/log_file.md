@@ -1,4 +1,4 @@
-# Log\_File
+# 시스템 로그 파일 분석 (/var/log)
 
 ```
 cd /var/log && ls
@@ -72,4 +72,4 @@ lastlog -b 19
 ### cron
 
 * 시스템 자동화(스케쥴러)
-* 관련 문서: [cron](/broken/pages/2b8b6644c3589ea2571ba2ac264ca9caaa486cce)
+* 관련 문서: [cron](../scripting/cron.md)

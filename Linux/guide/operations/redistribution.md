@@ -1,4 +1,4 @@
-# Redistribution
+# 라우팅 프로토콜 재분배
 
 [관련자료](https://simpleisit.tistory.com/20)
 

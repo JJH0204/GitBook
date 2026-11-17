@@ -1,4 +1,4 @@
-# HTML Injection   Reflected\_GET
+# 반사형 HTML 인젝션 GET
 
 ## Low
 
@@ -19,7 +19,7 @@ html 코드의 삽입 취약점이 있는 것을 알 수 있음
 <: gt\
 \>: lt
 
-[아스크코드](https://www.ascii-code.com/)로 인코딩해 입력하면 될 것 같다. = [URL 인코딩](file:///2237607/security/DoubleEncoding.md)
+[아스크코드](https://www.ascii-code.com/)로 인코딩해 입력하면 될 것 같다. = [URL 인코딩](doubleencoding.md)
 
 <details>
 

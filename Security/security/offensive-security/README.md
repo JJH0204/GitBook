@@ -1,4 +1,4 @@
-# Offensive Security
+# 공격 보안 (Offensive Security)
 
 공격 관점 학습 자료입니다.
 

@@ -1,4 +1,4 @@
-# AboutVirtualEnvAndKernel
+# 파이썬 가상환경과 커널
 
 ## 파이썬 가상환경
 

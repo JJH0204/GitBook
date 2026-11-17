@@ -1,3 +1,3 @@
-# Scan results
+# 스캔 결과 모음 (Scan Results)
 
 실습 중 생성된 스캔 출력 로그를 모아둡니다.

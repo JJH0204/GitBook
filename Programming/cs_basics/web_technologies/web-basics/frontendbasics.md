@@ -1,3 +1,3 @@
-# FrontEndBasics
+# 프론트엔드 기초 (Front-end)
 
-이용자에게 직접 보여지는 부분 [웹 리소스(Web Resource)](file:///0903665/security/WebResource.md)로 구성된다.
+이용자에게 직접 보여지는 부분 [웹 리소스(Web Resource)](https://krjaeh0.gitbook.io/j-log/security/notes/webresource)로 구성된다.

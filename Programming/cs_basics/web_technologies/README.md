@@ -1,2 +1,1 @@
-# web\_technologies
-
+# 웹 기술 (Web Technologies)

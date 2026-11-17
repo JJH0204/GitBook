@@ -1,4 +1,4 @@
-# CTF writeups
+# CTF 풀이 모음 (CTF Writeups)
 
 CTF 풀이/메모를 모아둡니다.
 

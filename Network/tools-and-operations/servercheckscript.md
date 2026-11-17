@@ -1,11 +1,11 @@
-# ServerCheckScript
+# 서버 상태 점검 스크립트
 
 ### 출력 사항
 
 * 시스템 정보: 서버 운영체제, DB 버전, 현재 시간
 * 시스템 리소스: CPU, RAM, ROM 사용량
 * 파일 시스템 사용량
-* 디스크 컨디션: [smart tool](file:///2435498/dev_tools/smart%20tool.md)을 통한 디스크 상태 확인
+* 디스크 컨디션: [smart tool](https://krjaeh0.gitbook.io/j-log/linux/guide/storage-boot/smarttool)을 통한 디스크 상태 확인
 * 부팅 정보: 시스템 부팅 시간, 운영 시간
 * 현재 로그인한 사용자 목록
 * 현재 실행 중인 프로세스: 웹, DB, 애플리케이션 등 실행 여부
@@ -24,8 +24,8 @@
 
 * free : 메모리 사용량
 * free -h : 메모리 사용량 단위 포함
-* [sysstat](file:///2435498/linux_admin/sysstat.md)
-* [cron](file:///2435498/linux_admin/cron.md): `crontab -e * 5 * * 0 root /usr/lib/sa/sal`
+* [sysstat](https://krjaeh0.gitbook.io/j-log/linux/guide/logging-monitoring/sysstat)
+* [cron](https://krjaeh0.gitbook.io/j-log/linux/guide/scripting/cron): `crontab -e * 5 * * 0 root /usr/lib/sa/sal`
 
 ***
 
@@ -40,7 +40,7 @@
 
 ### 디스크 컨디션
 
-* [smart tool](file:///2435498/dev_tools/smart%20tool.md)
+* [smart tool](https://krjaeh0.gitbook.io/j-log/linux/guide/storage-boot/smarttool)
 
 ***
 
@@ -62,7 +62,7 @@
 
 * ps -ef
 * pgrep
-* [netstat](/broken/pages/64ec2824dea3af55128da0d6f6a95deca09d48e6)
+* [netstat](netstat.md)
 
 ***
 
@@ -87,7 +87,6 @@ get_swap_stat() {
         free -h | grep Swap | awk '{for(i=2;i<=NF;i++) printf $i" "}'
 }
 
-
 # system
 os_ver=`grep . /etc/*rocky-release | perl -ane print` # os check
 # DB check
@@ -95,7 +94,6 @@ cur_time=`date` # date check
 cpu_stat=$(get_cpu_stat)
 ram_stat=$(get_ram_stat)
 swap_stat=$(get_swap_stat)
-
 
 echo
 echo "[Server Monitor]"

@@ -1,4 +1,4 @@
-# sysstat
+# 시스템 성능 모니터링 (sysstat)
 
 {% stepper %}
 {% step %}

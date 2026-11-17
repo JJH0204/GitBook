@@ -1,4 +1,4 @@
-# UMLRelationshipsOverview
+# UML 관계 개요 (Relationships)
 
 ## UML 관계 란?
 

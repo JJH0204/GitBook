@@ -1,4 +1,4 @@
-# suninatas
+# SuNiNaTaS 워게임 풀이
 
 a = aad\
 i = in

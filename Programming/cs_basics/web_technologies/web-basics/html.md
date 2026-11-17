@@ -1,4 +1,4 @@
-# HTML
+# HTML 기초 (HTML)
 
 {% code title="index.html" %}
 ```html

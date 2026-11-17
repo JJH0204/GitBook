@@ -1,4 +1,4 @@
-# Subnetting
+# 서브넷팅 계산 (Subnetting)
 
 > IPv4: 192.168.100.100\
 > sub: 255.255.255.0
@@ -45,4 +45,4 @@ $$
 \text{서브 네트워크에 할당 가능한 IP 개수} = 2^{n} - 2 \quad (n = 0\ \text{bit의 개수})
 $$
 
-## [CIDR](/broken/pages/1a1a68401ab3277248893ae0684be6777dfa170e)
+## [CIDR](cidr.md)

@@ -1,4 +1,4 @@
-# HTML Injection   Reflected\_URL
+# 반사형 HTML 인젝션 URL
 
 ```http
 GET /bWAPP/htmli_current_url.php HTTP/1.1

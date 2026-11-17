@@ -1,4 +1,4 @@
-# Remote Access Management
+# 원격 접속 보안 관리 (sshd)
 
 ## /etc/ssh/sshd\_config
 

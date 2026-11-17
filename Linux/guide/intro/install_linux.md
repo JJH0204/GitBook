@@ -1,4 +1,4 @@
-# install\_Linux
+# 리눅스 설치 및 가상화
 
 ## Platforms
 
@@ -134,3 +134,8 @@ TIP
 * \[\[Pasted Image 20240723130603\_392.png"]]
 
 (상단의 각 항목은 문서에 임베드된 이미지 파일을 가리킵니다.)
+
+## SliTaz 리눅스 네트워크 설정
+
+* `/etc/network.conf` : 네트워크 설정 파일
+* `/etc/init.d/network.sh` : 네트워크 설정 스크립트

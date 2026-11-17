@@ -1,4 +1,4 @@
-# DHCP
+# 동적 호스트 설정 프로토콜 (DHCP)
 
 DHCP (Dynamic Host Configuration Protocol)는 네트워크 장치들에게 IP 주소를 동적으로 할당하고 기타 네트워크 구성 정보를 관리하는 프로토콜입니다. DHCP를 사용하면 네트워크에 연결하는 장치들에게 수동으로 IP 주소를 할당할 필요가 없어 네트워크 관리가 훨씬 간편해집니다 ([TechTerms](https://techterms.com/definition/dhcp)) ([Lifewire](https://www.lifewire.com/what-is-dhcp-2625848)).
 

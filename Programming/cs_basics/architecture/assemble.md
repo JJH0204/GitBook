@@ -1,7 +1,7 @@
-# Assemble
+# 어셈블 과정 (Assemble)
 
 {% hint style="info" %}
-컴파일로 생성된 어셈블리어 코드를 [ELF](/broken/pages/82046e35a651060e212e805c2819c1faee87eb86) 형식의 목적 파일(Object file)로 변환하는 과정\
+컴파일로 생성된 어셈블리어 코드를 [ELF](../os_memory/executables-and-linking/elf.md) 형식의 목적 파일(Object file)로 변환하는 과정\
 윈도우에서 어셈블한다면 목적 파일은 PE 형식을 갖게 된다.\
 목적 파일로 변환되면 기계어로 번역됨으로 더 이상 사람이 해석하기 어려워 진다.
 {% endhint %}

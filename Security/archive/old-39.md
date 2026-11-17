@@ -1,4 +1,4 @@
-# old 39
+# Webhacking.kr: old 39
 
 {% code title="index.php" %}
 ```php

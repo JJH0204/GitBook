@@ -1,2 +1,1 @@
-# basics
-
+# 네트워크 기초 (Basics)

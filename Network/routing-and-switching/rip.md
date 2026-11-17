@@ -1,10 +1,10 @@
-# RIP
+# RIP 라우팅 프로토콜
 
-Distance Vector 라우팅 방식으로 오로지 거리([Hop](/broken/pages/09c50c809a0fdb36d13ac93d50a7a7c74bab7c73))와 방향을 기준으로 최적 경로를 설정
+Distance Vector 라우팅 방식으로 오로지 거리([Hop](../fundamentals/networkterminology.md))와 방향을 기준으로 최적 경로를 설정
 
 * AS(Autonomous System) 내부를 구성하는 내부용 라우팅 프로토콜(IGP)
 * 경로를 설정하는 기준은 거리(Hop)카운트로 최대 15개 까지만 허용
-* [라우팅 광고](/broken/pages/1311afe6176e10ecf4ab9f1b968edc045e8925f0)를 참고하여 주기적으로 라우팅 테이블을 업데이트
+* 라우팅 광고를 참고하여 주기적으로 라우팅 테이블을 업데이트
 
 #### 장점
 
@@ -23,7 +23,7 @@ Distance Vector 라우팅 방식으로 오로지 거리([Hop](/broken/pages/09c5
 {% step %}
 ### 시작 상태
 
-아래와 같이 서브넷팅한 네트워크를 장치에 할당한 상태에서 시작합니다. (topology를 라우터의 [Loopback](/broken/pages/bfcf977eb17b47ff785a9206bb3566d9ab5f75ef) 을 이용해 간소화한 상태)
+아래와 같이 서브넷팅한 네트워크를 장치에 할당한 상태에서 시작합니다. (topology를 라우터의 [Loopback](../ip-addressing-and-nat/ipv4.md) 을 이용해 간소화한 상태)
 
 아직 라우팅이 되어 있지 않아 서로 간 통신이 불가능한 상태입니다.
 {% endstep %}
@@ -80,7 +80,6 @@ sh ip protocols
 
 ````
 
-![](../../assets/images/Pasted%20image%2020240821221545.png)
 {% endstep %}
 {% endstepper %}
 
@@ -129,4 +128,4 @@ RIP v2 특징
 
 관련 링크
 
-* [Redistribution](file:///2435498/linux_admin/Redistribution.md)
+* [Redistribution](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/redistribution)

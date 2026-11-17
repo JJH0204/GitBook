@@ -1,4 +1,4 @@
-# KaliLinuxSetupForVirtualBox
+# Kali Linux 버추얼박스 설정
 
 ## USB 컨트롤러 설정
 
@@ -12,4 +12,4 @@
 
 * 설정 > 네트워크 > 어댑터 1 > 다음에 연결됨을 '어댑터 브릿지'로 변경
 * 이 설정은 가상화 시스템이 동일한 레벨의 대역의 네트워크를 이용하도록 하는 설정
-* [인터넷 연결 방식에 따른 정보](file:///2237607/network/InternetConnectionTypeInfo.md)
+* [인터넷 연결 방식에 따른 정보](https://krjaeh0.gitbook.io/j-log/network/fundamentals/basics/internetconnectiontypeinfo)

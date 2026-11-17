@@ -1,4 +1,4 @@
-# RemoteTerminalAccess
+# 스위치 및 라우터 원격 접속 설정
 
 Switch / Router 에 원격 접속을 하기 위해서는 적절한 설정이 필요하다.
 

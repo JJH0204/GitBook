@@ -1,9 +1,9 @@
-# File\_Inclusion
+# 파일 인클루전 (LFI/RFI)
 
 "파일 실행 공격"
 
-* [LFI](/broken/pages/b9577e57827eb9a9c6c16e03cd2efef57c0a93dd) (Local FI)
-* [RFI](/broken/pages/5000a694e9b2e2fb54ed55a20e505c8920398c1b) (Remote FI)
+* [LFI](../bwapp/rfi.md) (Local FI)
+* [RFI](../bwapp/rfi.md) (Remote FI)
 * 값의 확인 없이 바로 실행
 * /에 대한 공백 처리가 없어 LFI 공격이 가능하다
 * http://, https:// 덕분에 RFI 공격이 불가능해졌다.

@@ -1,4 +1,4 @@
-# ProtocolOrientedProgramming
+# 프로토콜 지향 프로그래밍 (POP)
 
 * Swift는 프로토콜을 통해 강력한 프로토콜 지향 프로그래밍 패러다임을 지원합니다.
 * 이를 통해 구조체, 클래스, 열거형 등이 프로토콜을 기반으로 유연하게 설계될 수 있습니다.
@@ -46,4 +46,4 @@ startJourney(drivable: bicycle)
 
 ### 관련 문서
 
-[객체지향과 프로토콜 지향의 비교](/broken/pages/d2f2c2bc2357f0e77ac109105cea42b94be8de7a)
+객체지향과 프로토콜 지향의 비교

@@ -1,4 +1,4 @@
-# Network\_Address\_Translation
+# NAT 동작 원리 (NAT)
 
 {% hint style="info" %}
 **정의:**\

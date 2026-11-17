@@ -1,4 +1,4 @@
-# MBR
+# 마스터 부트 레코드 (MBR)
 
 Master Boot Record (MBR)는 하드 드라이브나 다른 저장 장치에 위치한 특별한 부트 섹터로, 컴퓨터 부팅 과정을 시작하는 데 필요한 코드를 포함하고 있습니다. MBR은 특히 IBM PC 호환 시스템에서 사용되며, 1983년 PC DOS 2.0과 함께 처음 소개되었습니다 ([Wikipedia](https://en.wikipedia.org/wiki/Master_boot_record)).
 

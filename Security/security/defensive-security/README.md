@@ -1,4 +1,4 @@
-# Defensive Security
+# 방어 보안 (Defensive Security)
 
 방어/탐지/대응 관점 자료입니다.
 

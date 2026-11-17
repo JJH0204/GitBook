@@ -1,7 +1,7 @@
-# Wargame
+# 워게임 개요 (Wargame)
 
 * 의도적으로 취약점이 존재하도록 설계된 모의 해킹 환경
-* 제작자가 설계한 취약점을 찾고, 그것을 이해, 해결책을 찾아내는 과정을 거쳐 '[플래그](/broken/pages/1638325886f6f7a85090999ccbac2c61bd1caa0f)'를 찾는 문제
+* 제작자가 설계한 취약점을 찾고, 그것을 이해, 해결책을 찾아내는 과정을 거쳐 '플래그'를 찾는 문제
 
 ## 워게임의 카테고리
 
@@ -15,7 +15,7 @@
 * Kernel
 * Browser
 * Blockchain 등
-* [badit](/broken/pages/1015a69eb89402f74af7118e0eea966fc79e74b2)
+* [badit](badit.md)
 
 {% hint style="info" %}
 TIP
@@ -28,7 +28,7 @@ TIP
 
 * Ubuntu Linux
 * nc(netcat)
-* [suninatas](/broken/pages/56bdf75f8a0f8a1e80a5d492c196aa97482c8118)
+* [suninatas](suninatas.md)
 * [hackthebox](https://www.hackthebox.com/)
 * [tryhackme](https://tryhackme.com/)
 * [root-me](https://www.root-me.org/?lang=en)

@@ -1,4 +1,4 @@
-# CTF\_HF2019
+# CTF: HF2019
 
 {% stepper %}
 {% step %}

@@ -1,4 +1,4 @@
-# conditions
+# 조건문 (Conditions)
 
 {% code title="conditions.c" %}
 ```c

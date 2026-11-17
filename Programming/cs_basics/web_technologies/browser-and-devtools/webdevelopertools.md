@@ -1,4 +1,4 @@
-# WebDeveloperTools
+# 개발자 도구 디버깅 (DevTools)
 
 ## Web Developer Tools
 

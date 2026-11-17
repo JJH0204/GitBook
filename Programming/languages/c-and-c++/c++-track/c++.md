@@ -1,4 +1,4 @@
-# C++
+# C++ 문법 및 기본 개념 (C++)
 
 {% code title="hello.cpp" %}
 ```cpp
@@ -42,9 +42,9 @@ void ex_HelloWorld(void)
 | `void`               | 자료형이 없음을 나타내며 함수의 반환형으로 주로 사용           | 0 bytes            |
 | `nullptr_t`          | C++11에서 도입된 자료형으로, null 포인터를 나타내기 위해 사용 | 구현에 따라 다름          |
 
-## [헝가리안 표기법](/broken/pages/41529d2c4c778ac1d323e9af18f3e5457d11b544)
+## 헝가리안 표기법
 
-## [Type Cast](/broken/pages/886c6ccdfd5ec88fd87f2c20b9330cd2ca2496f1)
+## [Type Cast](type-cast.md)
 
 ## 레퍼런스
 
@@ -59,3 +59,7 @@ void ex_HelloWorld(void)
 ## 네임스페이스
 
 ## 템플릿
+
+## 외부 링크
+
+<a href="https://github.com/JJH0204/CPPBasics" class="button primary">About Cpp</a>

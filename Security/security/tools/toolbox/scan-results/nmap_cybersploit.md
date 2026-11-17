@@ -1,4 +1,4 @@
-# nmap\_cybersploit
+# Nmap 스캔: Cybersploit 1
 
 {% code title="nmap-output.txt" %}
 ```

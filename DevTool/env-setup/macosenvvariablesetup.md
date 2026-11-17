@@ -1,4 +1,4 @@
-# MacOSEnvVariableSetup
+# macOS 환경 변수 설정
 
 {% stepper %}
 {% step %}

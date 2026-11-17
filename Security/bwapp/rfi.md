@@ -1,4 +1,4 @@
-# RFI
+# 원격 파일 인클루전 (RFI)
 
 {% stepper %}
 {% step %}

@@ -1,4 +1,4 @@
-# object model
+# 객체 모델 (Object Model)
 
 ## 객체 모델이란?
 

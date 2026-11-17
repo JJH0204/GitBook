@@ -1,4 +1,4 @@
-# Kube\_webDashboard
+# 쿠버네티스 대시보드 배포
 
 {% stepper %}
 {% step %}

@@ -1,4 +1,4 @@
-# CTF\_Earth
+# CTF: Earth (2)
 
 {% hint style="info" %}
 Attacker

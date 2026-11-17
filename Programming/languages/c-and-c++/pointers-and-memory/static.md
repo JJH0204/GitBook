@@ -1,4 +1,4 @@
-# static
+# 정적 변수 및 함수 (Static)
 
 {% code title="static.c" %}
 ```c

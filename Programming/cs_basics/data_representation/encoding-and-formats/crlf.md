@@ -1,4 +1,4 @@
-# CRLF
+# 개행 문자 (CRLF)
 
 {% hint style="info" %}
 Carriage Return (CR)과 Line Feed (LF)의 조합을 나타낸다.

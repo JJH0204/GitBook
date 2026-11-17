@@ -1,4 +1,4 @@
-# zabbix
+# Zabbix 모니터링 시스템 구축
 
 * [공식사이트](https://www.zabbix.com/)
 

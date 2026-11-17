@@ -1,4 +1,4 @@
-# Operating\_System
+# 운영체제 개요 (OS)
 
 ## 운영체제
 

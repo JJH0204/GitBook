@@ -1,4 +1,4 @@
-# DBSecurityAssignment
+# 데이터베이스 보안 실습 과제
 
 ### \[취약한 Wordpress 서버 구축]
 
