@@ -1,64 +1,96 @@
 # Day 08. 그림자 받기 — 빛이 찍어 둔 거리 사진
 
-> ⏱ **약 1시간** — 개념 20분 · 코드 20분 · 실험 20분
-> 🧸 **오늘의 비유**: 섀도맵은 **빛이 자기 자리에서 찍어 둔 거리 사진**이에요. 내가 그 사진보다 멀리 있으면 누가 빛을 가린 거예요.
+## 작업 식별
 
-![Day 08 결과](../.gitbook/assets/day08-receive-shadow.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-008-MP |
+| 목적 | URP 섀도맵에서 메인 라이트의 그림자 결과를 받아 `lightVal`에 곱하고, 드리운 그림자를 툰 계단 색으로 표현한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x, Forward 렌더링. Day 07 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (개념 20분, 코드 20분, 실험 20분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: `TransformWorldToShadowCoord`, `GetMainLight(shadowCoord)`, 키워드 `_MAIN_LIGHT_SHADOWS`, `_MAIN_LIGHT_SHADOWS_CASCADE`, `_SHADOWS_SOFT`는 URP 버전에 따라 이름과 조합이 다르다. Unity 6의 URP에는 `_MAIN_LIGHT_SHADOWS_SCREEN` 등 키워드가 추가됐다. URP 버전 확인 필요.
+{% endhint %}
 
-화면 밖 막대(Shadow Beam)가 드리운 그림자가 우리 물체 위에 **같은 툰 계단 색으로** 떨어져요(오른쪽).
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day07-toon-steps.md](day07-toon-steps.md) | GMD-TSL-007-MP | 이전: 툰 계단 |
+| [day09-cast-shadows.md](day09-cast-shadows.md) | GMD-TSL-009-MP | 다음: 그림자 드리우기 |
+| [day18-keywords.md](day18-keywords.md) | GMD-TSL-018-MP | 키워드 상세 |
+| [toon-shader-study Day 08](../toon-shader-study/day08-shadows.md) | - | 그림자 (짝꿍 과정) |
+| [LearnOpenGL Shadow Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping), [Wikipedia Shadow mapping](https://en.wikipedia.org/wiki/Shadow_mapping), [Catlike Coding Rendering 7](https://catlikecoding.com/unity/tutorials/rendering/part-7/) | - | 섀도맵 참고 |
 
-- [ ] "모양 그림자"(N·L)와 "드리운 그림자"(섀도맵)의 차이를 안다
-- [ ] `multi_compile`로 URP의 그림자 키워드를 받는다
-- [ ] 월드 위치를 프래그먼트까지 넘긴다
-- [ ] 그림자 결과를 `lightVal`에 곱해 계단에 합친다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 07 완료 상태 | |
+| 2 | Lab 씬의 `Shadow Beam` | 기본 비활성 | 그림자를 드리울 막대 |
 
-## 1. 섀도맵 (개념 20분)
+## 3. 안전 사항
 
-`dot(N, L)`은 내 표면 방향만 봐요. 내 앞에 **누가 서 있는지는 몰라요.** 다른 물체가 가린 그림자는 다른 방법이 필요해요.
+{% hint style="info" %}
+NOTE: 이 Day의 셰이더는 그림자를 받기만 한다. 물체가 그림자를 드리우려면 `ShadowCaster` 패스가 필요하다(Day 09). 바닥에 물체 그림자가 없는 것은 오류가 아니다.
+{% endhint %}
 
-![섀도맵](../.gitbook/assets/concept-shadow-map.png)
+## 4. 준비
 
-1. URP가 **빛의 자리에서** 장면을 찍어요. 색 대신 "가장 가까운 물체까지 거리"만 적어요 = **섀도맵**.
-2. 우리 픽셀의 "빛까지 거리"를 섀도맵 값과 비교해요. 더 멀면 → 누가 가렸다 → **그림자**.
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 07 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | URP Asset에서 `Main Light`의 그림자가 켜져 있다 | URP Asset의 `Shadows` 항목 확인 |
 
-URP가 비교까지 해서 `mainLight.shadowAttenuation`에 넣어 줘요. **1이면 빛, 0이면 그림자**예요. 우리는 그 값을 받기만 하면 돼요.
+## 5. 절차
 
-## 2. 코드 고치기 (20분)
+### A. 개념 확인
 
-### ① 키워드 받기 (`#pragma fragment frag` 아래)
+`dot(N, L)`은 표면 방향만 보므로 다른 물체가 가린 그림자는 알 수 없다. 섀도맵(shadow map)은 광원 위치에서 장면을 렌더링해 "광원에서 가장 가까운 표면까지의 거리"를 저장한 텍스처다.
+
+1. URP가 광원 위치에서 장면을 그려 섀도맵을 만든다.
+2. 각 픽셀의 광원까지 거리를 섀도맵 값과 비교한다. 더 멀면 다른 물체가 가린 것이다.
+3. 결과가 `mainLight.shadowAttenuation`에 들어간다. 1이면 빛, 0이면 그림자다.
+
+### B. 키워드 선언
+
+`multi_compile`은 키워드가 켜진 버전과 꺼진 버전의 셰이더 변형(variant)을 모두 미리 만든다.
+
+1. (5-B-01) `#pragma fragment frag` 아래에 두 줄을 추가한다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
 #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
 #pragma multi_compile_fragment _ _SHADOWS_SOFT
 ```
 
-URP는 그림자를 켰는지·부드럽게 할지 같은 설정을 **키워드**로 알려 줘요. `multi_compile`은 "이 키워드가 켜진 버전과 꺼진 버전을 **모두 미리 만들어 둬**"라는 뜻이에요. (키워드는 Day 18에서 자세히 배워요.)
-
-| 키워드 | 뜻 |
+| 키워드 | 의미 |
 |---|---|
-| `_MAIN_LIGHT_SHADOWS` | 해의 그림자 켜짐 |
-| `_MAIN_LIGHT_SHADOWS_CASCADE` | 가까운 곳은 촘촘한 지도, 먼 곳은 듬성한 지도를 따로 씀 (캐스케이드) |
-| `_SHADOWS_SOFT` | 그림자 가장자리를 여러 번 비교해 부드럽게 |
+| `_MAIN_LIGHT_SHADOWS` | 메인 라이트 그림자 켜짐 |
+| `_MAIN_LIGHT_SHADOWS_CASCADE` | 거리별로 해상도가 다른 섀도맵을 쓴다(캐스케이드) |
+| `_SHADOWS_SOFT` | 가장자리를 여러 번 샘플링해 부드럽게 한다 |
 
-### ② Properties + CBUFFER
+### C. Properties와 CBUFFER
+
+1. (5-C-01) `Toon Shading` 묶음 맨 아래에 추가한다.
 
 ```shaderlab
         _ReceiveShadow ("Receive Shadow", Range(0, 1)) = 1      // Toon Shading 묶음 맨 아래
 ```
 
+2. (5-C-02) CBUFFER의 `_Shadow2ndBlur` 아래에 추가한다.
+
 ```hlsl
     half   _ReceiveShadow;                                       // CBUFFER, _Shadow2ndBlur 아래
 ```
 
-### ③ 월드 위치를 택배에 담기
+### D. 월드 위치 전달
 
-그림자 지도에서 내 자리를 찾으려면 **월드 위치**가 필요해요.
+섀도맵에서 픽셀의 좌표를 찾으려면 월드 위치가 필요하다.
+
+1. (5-D-01) `Varyings`에 `positionWS`를 추가한다.
 
 ```hlsl
 struct Varyings
@@ -66,20 +98,20 @@ struct Varyings
     float4 positionCS : SV_POSITION;
     float2 uv         : TEXCOORD0;
     float3 normalWS   : TEXCOORD1;
-    float3 positionWS : TEXCOORD2;    // ← 추가
+    float3 positionWS : TEXCOORD2;    // 추가
 };
 ```
 
-`vert`의 첫 줄(`o.positionCS = TransformObjectToHClip(...)`)을 두 줄로 바꿔요. 월드 위치를 저장하고, 그걸로 클립 위치를 만들어요.
+2. (5-D-02) `vert`의 `o.positionCS = TransformObjectToHClip(...)` 줄을 다음 두 줄로 바꾼다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
     o.positionWS = TransformObjectToWorld(input.positionOS.xyz);
     o.positionCS = TransformWorldToHClip(o.positionWS);
 ```
 
-### ④ frag: 그림자 받기
+### E. frag에서 그림자 받기
 
-`Light mainLight = GetMainLight();` 한 줄을 두 줄로 바꾸고, `lightVal` 아래에 두 줄을 추가해요.
+1. (5-E-01) `Light mainLight = GetMainLight();` 줄과 `lightVal` 줄을 다음으로 바꾼다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
     float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);   // 섀도맵 위 내 주소
@@ -89,39 +121,43 @@ struct Varyings
     lightVal *= receive;   // 드리운 그림자 속이면 계단 아래로
 ```
 
-**툰 셰이더의 비결**이 마지막 줄이에요. 그림자 결과를 색에 곱하지 않고 **`lightVal`에 곱해서** 계단에 넣어요. 그러면 드리운 그림자도 **같은 1차·2차 그림자 색**으로 칠해져요. 만화에서 모자 그림자와 얼굴 음영이 같은 색인 것처럼요.
+그림자 결과를 색에 곱하지 않고 `lightVal`에 곱한 뒤 계단에 넣는 것이 툰 셰이더의 핵심이다. 드리운 그림자도 같은 1차, 2차 그림자 색으로 칠해진다. `receive` 변수는 Day 15에서 다시 쓴다.
 
-`receive` 변수는 Day 15(반짝임)에서 또 써요.
+정답 파일: [`Assets/Solutions/Day08/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day08/MyToon.shader)
 
-정답: [`Assets/Solutions/Day08/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day08/MyToon.shader)
+### F. 화면 확인
 
-## 3. 확인하기
+1. (5-F-01) Hierarchy에서 `Shadow Beam`을 켠다. → 결과: 화면 밖 위쪽 막대가 활성화된다.
+2. (5-F-02) 물체 위를 가로지르는 그림자 띠를 확인한다. → 결과: 띠가 1차, 2차 그림자 색으로 칠해진다.
+3. (5-F-03) `Receive Shadow`를 0으로 내린다. → 결과: 물체 위 띠가 사라진다. 바닥의 띠는 남는다. 바닥은 Unity 기본 Lit 셰이더라 이 슬라이더와 무관하다.
 
-1. Hierarchy에서 **Shadow Beam**을 켜요(이름 옆 체크박스). 화면 밖 위에 떠 있는 막대예요.
-2. 물체 가운데를 가로지르는 **그림자 띠**가 1차·2차 그림자 색으로 보이면 성공(맨 위 오른쪽).
-3. **Receive Shadow를 0**으로 내리면 띠가 사라져요(맨 위 왼쪽). 바닥의 띠는 남아요. 바닥은 Unity Lit 셰이더라 우리 슬라이더와 상관없으니까요.
+![Day 08 결과: Receive Shadow 0과 1](../.gitbook/assets/day08-receive-shadow.png)
 
-{% hint style="info" %}
-바닥에 **우리 물체의 그림자가 없어요!** 우리 셰이더는 아직 섀도맵에 "찍히는" 법을 몰라요. 그림자를 **받기**만 하고 **드리우지는** 못해요. 내일(Day 09) 해결해요.
-{% endhint %}
+### G. 실험
 
-## 4. 실험해 보기 (20분)
+1. (5-G-01) Directional Light의 `Shadow Type`을 `Hard Shadows`로 바꾼다. → 결과: 띠 가장자리가 거칠어진다(`_SHADOWS_SOFT`가 꺼진 변형 사용).
+2. (5-G-02) `Receive Shadow`를 0.5로 설정한다. → 결과: `lerp(1, 0, 0.5) = 0.5`이므로 그림자 속 `lightVal`이 절반이 된다.
+3. (5-G-03) 손계산을 한다. `shadowAttenuation = 0`, `_ReceiveShadow = 0.6`이면 `receive = 0.4`다. `lightVal = 0.9`이면 `0.36`이다. → 결과: 0.36은 1차 Border(0.5)보다 작아 1차 그림자이고, 2차 Border(0.25)보다 커서 2차는 아니다.
+4. (5-G-04) `Shadow Beam`을 다시 끄고 커밋한다: `git commit -am "Day 08: 그림자 받기"`
 
-1. **Soft Shadows 끄기** — Directional Light의 Shadow Type을 Hard Shadows로. 띠 가장자리가 거칠어져요(`_SHADOWS_SOFT` 키워드가 꺼진 버전이 쓰여요).
-2. **Receive 0.5** — 그림자가 반만 들어와요. `lerp(1, 0, 0.5) = 0.5`라서 그림자 속 `lightVal`이 반으로 줄어요.
-3. **손계산** — `shadowAttenuation = 0`, `_ReceiveShadow = 0.6`이면 `receive = 0.4`. `lightVal = 0.9`였다면 `0.36` → 1차 Border 0.5보다 작으니 1차 그림자, 2차 Border 0.25보다 크니 2차는 아직.
-4. 다 봤으면 Shadow Beam을 다시 꺼요. 커밋: `git commit -am "Day 08: 그림자 받기"`
+## 6. 기능 확인
 
-## 5. 오늘의 액기스
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `Shadow Beam` 켬, `Receive Shadow = 1` | 물체 위에 그림자 띠 | 1차 또는 2차 그림자 색으로 보인다 |
+| 2 | `Receive Shadow = 0` | 물체 위 띠 없음 | 띠가 사라진다 |
+| 3 | 바닥을 본다 | 물체 그림자는 없다 | Day 09 전에는 정상 |
 
-👉 [ESSENCE.md — Day 08](essence.md#day-08)
+## 7. 복구
 
-## 더 읽을거리
+1. (7-01) `Shadow Beam`을 비활성화한다.
+2. (7-02) 변경을 되돌린다: `Ctrl+Z` 또는 `git restore Assets/MyToon/MyToon.shader`.
+3. (7-03) Directional Light의 `Shadow Type`을 `Soft Shadows`로 되돌린다.
 
-- [LearnOpenGL — Shadow Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping) · [Wikipedia — Shadow mapping](https://en.wikipedia.org/wiki/Shadow_mapping)
-- [Catlike Coding — Rendering 7: Shadows](https://catlikecoding.com/unity/tutorials/rendering/part-7/)
-- 더 깊이: [toon-shader-study Day 08 — 그림자](../toon-shader-study/day08-shadows.md)
+## 8. 개정 이력
 
----
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 08 페이지를 AMM 형식으로 재작성. 키워드 이름 버전 의존 NOTE 추가 |
 
 [← Day 07](day07-toon-steps.md) · [목차](README.md) · [다음: Day 09 →](day09-cast-shadows.md)

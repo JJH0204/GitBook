@@ -1,26 +1,55 @@
 # Day 03. 머티리얼에서 색 고르기 — Properties와 CBUFFER
 
-> ⏱ **약 1시간** — 코드 20분 · 설명 20분 · 실험 20분
-> 🧸 **오늘의 비유**: `Properties`는 **재료 목록**(인스펙터에 보이는 칸), `CBUFFER`는 그 값을 GPU에 보내는 **택배 상자**예요.
+## 작업 식별
 
-![Day 03 결과](../.gitbook/assets/day03-materials.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-003-MP |
+| 목적 | 코드에 고정된 색을 머티리얼 Inspector에서 고르는 `Properties` 값으로 바꾸고 SRP Batcher 호환 구조(CBUFFER)로 선언한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x. Day 02 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (코드 20분, 설명 20분, 실험 20분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: SRP Batcher 호환 표시 위치와 이유 문구는 Unity와 URP 버전마다 다르다. URP 버전 확인 필요.
+{% endhint %}
 
-코드에 박혀 있던 주황색을 **머티리얼 인스펙터에서 고르는 색**으로 바꿔요. 그러면 셰이더 하나로 빨강·초록·파랑 머티리얼을 따로 만들 수 있어요.
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day02-vertex-shader.md](day02-vertex-shader.md) | GMD-TSL-002-MP | 이전: 버텍스 셰이더 |
+| [day04-varyings-debug.md](day04-varyings-debug.md) | GMD-TSL-004-MP | 다음: Varyings와 디버그 보기 |
+| [Unity Properties 블록](https://docs.unity3d.com/Manual/SL-Properties.html) | - | 공식 문서 |
+| [Unity SRP Batcher](https://docs.unity3d.com/Manual/SRPBatcher.html) | - | 공식 문서 |
+| [toon-shader-study Day 03](../toon-shader-study/day03-shaderlab-skeleton.md), [Day 20](../toon-shader-study/day20-performance.md) | - | 더 깊이 (짝꿍 과정) |
 
-- [ ] `Properties` 블록으로 인스펙터 칸을 만든다
-- [ ] 같은 이름의 변수를 `CBUFFER_START(UnityPerMaterial)`에 선언한다
-- [ ] 셰이더 하나로 머티리얼 여러 개를 만드는 이유를 안다
-- [ ] SRP Batcher 호환 여부를 확인할 수 있다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 02 완료 상태 | |
+| 2 | 머티리얼 `MyToon` | Day 01에서 생성 | |
 
-## 1. 숨쉬기 되돌리기
+## 3. 안전 사항
 
-Day 02의 실험을 정리해요. `vert` 안을 원래의 한 줄로 되돌려요. (`Attributes`의 `normalOS`는 Day 04에 다시 쓰니까 **그대로 둬요.**)
+{% hint style="warning" %}
+CAUTION: `Properties`의 이름과 HLSL 변수 이름은 대소문자까지 같아야 연결된다. `_BaseColor`와 `_Basecolor`는 다른 변수다. 이름이 틀려도 컴파일 오류는 나지 않고 값이 0(검정)이 된다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 02 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | `normalOS`가 `Attributes`에 있다 | Day 04에서 다시 쓰므로 지우지 않는다 |
+
+## 5. 절차
+
+### A. 숨쉬기 되돌리기
+
+1. (5-A-01) `vert` 안을 Day 01의 한 줄 변환으로 되돌린다. `Attributes`의 `normalOS`는 그대로 둔다. → 결과: 물체가 움직이지 않는다.
 
 ```hlsl
 Varyings vert(Attributes input)
@@ -31,9 +60,24 @@ Varyings vert(Attributes input)
 }
 ```
 
-## 2. 재료 목록 만들기: Properties
+### B. Properties 블록 추가
 
-`Shader "MyToon/Toon"` 바로 아래, `SubShader` **위에** 추가해요.
+한 줄의 형식은 다음과 같다.
+
+```
+[꾸밈] 변수이름 ("Inspector에 표시할 이름", 종류) = 기본값
+```
+
+| 종류 | 의미 |
+|---|---|
+| `Color` | 색 선택 칸 |
+| `Range(0, 1)` | 슬라이더 |
+| `Float` | 숫자 |
+| `2D` | 텍스처 (Day 05부터 사용) |
+
+`[MainColor]`는 이 머티리얼의 대표 색 표시다. C#의 `material.color`가 이 칸에 연결된다. 변수 이름은 관례상 `_`로 시작한다.
+
+1. (5-B-01) `Shader "MyToon/Toon"` 바로 아래, `SubShader` 위에 다음을 추가한다. → 결과: 머티리얼 Inspector에 `Base Color` 칸이 나타난다.
 
 ```shaderlab
 Shader "MyToon/Toon"
@@ -47,19 +91,11 @@ Shader "MyToon/Toon"
     ...
 ```
 
-한 줄은 이렇게 읽어요.
+### C. CBUFFER 선언과 frag 수정
 
-```
-[꾸밈] 변수이름 ("인스펙터에 보일 이름", 종류) = 기본값
-```
+CBUFFER는 머티리얼 값을 GPU에 보내는 상수 버퍼다.
 
-- `Color` → 색 고르는 칸. `Range(0, 1)` → 슬라이더, `Float` → 숫자, `2D` → 텍스처 (내일부터 나와요)
-- `[MainColor]` → "이게 이 머티리얼의 대표 색이에요" 표시. C#에서 `material.color`로 접근할 때 이 칸을 써요.
-- 변수 이름은 관례상 `_`로 시작해요.
-
-## 3. GPU에 값 보내기: CBUFFER
-
-`#include` 줄 **아래**, `struct Attributes` **위에** 추가해요.
+1. (5-C-01) `#include` 줄 아래, `struct Attributes` 위에 추가한다.
 
 ```hlsl
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -69,7 +105,7 @@ CBUFFER_START(UnityPerMaterial)
 CBUFFER_END
 ```
 
-그리고 `frag`가 그 값을 돌려주게 바꿔요.
+2. (5-C-02) `frag`가 `_BaseColor`를 반환하게 바꾼다. → 결과: 머티리얼의 `Base Color`를 바꾸면 물체 색이 바뀐다.
 
 ```hlsl
 half4 frag(Varyings input) : SV_Target
@@ -78,38 +114,42 @@ half4 frag(Varyings input) : SV_Target
 }
 ```
 
-{% hint style="warning" %}
-`Properties`에 적은 이름과 HLSL 변수 이름이 **글자 하나까지 같아야** 연결돼요. `_BaseColor`와 `_Basecolor`는 남남이에요. 이름이 틀리면 오류는 안 나지만 값이 안 들어와서 검정(0)이 돼요. 가장 찾기 어려운 실수 1위예요.
-{% endhint %}
+머티리얼마다 다른 값을 `UnityPerMaterial` 한 상자에 모으면 SRP Batcher가 그 상자를 GPU 메모리에 미리 올려 두고 그릴 때 위치만 지정한다. 그래서 머티리얼이 많아도 드로 콜 비용이 줄어든다.
 
-### 왜 CBUFFER에 넣을까? — SRP Batcher
+3. (5-C-03) `Project` 창에서 `MyToon.shader`를 선택한다. → 결과: Inspector에 `SRP Batcher: compatible`이 표시된다.
 
-머티리얼마다 다른 숫자들을 **한 상자(UnityPerMaterial)** 에 모아 두면, URP의 **SRP Batcher**가 그 상자를 GPU 창고에 미리 올려 두고 그릴 때는 "3번 상자 써" 하고 번호만 불러요. 그래서 머티리얼이 많아도 빨라요.
+정답 파일: [`Assets/Solutions/Day03/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day03/MyToon.shader)
 
-**확인**: Project 창에서 `MyToon.shader`를 클릭하면 Inspector에 **SRP Batcher: compatible**라고 나와요. 머티리얼 값을 상자 밖에 선언하면 이 표시가 compatible이 아니게 바뀌어요.
+![Day 03 결과: 한 셰이더, 색이 다른 머티리얼](../.gitbook/assets/day03-materials.png)
 
-정답: [`Assets/Solutions/Day03/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day03/MyToon.shader)
+### D. 실험
 
-## 4. 실험해 보기 (20분)
-
-1. **머티리얼 세 개** — `MyToon` 머티리얼을 선택하고 `Ctrl+D`로 두 번 복제해 `MyToon_Red`, `MyToon_Green`, `MyToon_Blue`를 만들어요. 색을 고르고 물체마다 다른 머티리얼을 입혀 보세요(맨 위 그림). **셰이더는 하나, 머티리얼은 셋**이에요. 다 끝나면 다시 `MyToon` 하나로 통일해 두세요.
-2. **밝기 슬라이더 추가** — 직접 해 보세요.
+1. (5-D-01) 머티리얼 `MyToon`을 선택하고 `Ctrl+D`를 두 번 눌러 `MyToon_Red`, `MyToon_Green`, `MyToon_Blue`를 만든다. 색을 지정하고 물체마다 다른 머티리얼을 입힌다. → 결과: 셰이더 하나로 서로 다른 색이 나온다. 확인 후 `MyToon` 하나로 되돌린다.
+2. (5-D-02) 밝기 슬라이더를 추가한다. 확인 후 삭제한다(정답 코드에는 없다).
    - Properties: `_Brightness ("Brightness", Range(0, 2)) = 1`
    - CBUFFER: `half _Brightness;`
    - frag: `return half4(_BaseColor.rgb * _Brightness, _BaseColor.a);`
-   - 슬라이더를 움직여 보고 확인이 끝나면 지워요(정답 코드에는 없어요).
-3. **상자 밖에 두기** — `half4 _BaseColor;`를 `CBUFFER_END` 아래로 옮기면 Inspector의 SRP Batcher 표시가 compatible에서 바뀌어요(옆에 나오는 이유 문구는 Unity 버전마다 달라요). 확인 후 되돌려요.
-4. 커밋: `git commit -am "Day 03: Properties와 CBUFFER"`
+   → 결과: 슬라이더로 밝기가 바뀐다.
+3. (5-D-03) `half4 _BaseColor;`를 `CBUFFER_END` 아래로 옮긴다. → 결과: Inspector의 SRP Batcher 표시가 compatible에서 바뀐다. 확인 후 되돌린다.
+4. (5-D-04) 커밋한다: `git commit -am "Day 03: Properties와 CBUFFER"`
 
-## 5. 오늘의 액기스
+## 6. 기능 확인
 
-👉 [ESSENCE.md — Day 03](essence.md#day-03)
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 머티리얼 `Base Color`를 바꾼다 | 물체 색이 즉시 바뀐다 | 선택한 색과 일치 |
+| 2 | `MyToon.shader`를 선택한다 | `SRP Batcher: compatible` | 표시 일치 |
+| 3 | Console을 본다 | 오류 없음 | 빨간 오류 0건 |
 
-## 더 읽을거리
+## 7. 복구
 
-- [Unity — Properties 블록](https://docs.unity3d.com/Manual/SL-Properties.html) · [SRP Batcher](https://docs.unity3d.com/Manual/SRPBatcher.html)
-- 더 깊이: [toon-shader-study Day 03 — 셰이더 파일의 뼈대](../toon-shader-study/day03-shaderlab-skeleton.md) · [Day 20 — 성능 (SRP Batcher)](../toon-shader-study/day20-performance.md)
+1. (7-01) 실험 변경을 되돌린다: `Ctrl+Z` 또는 `git restore Assets/MyToon/MyToon.shader`.
+2. (7-02) 머티리얼을 정리한다: 복제한 `MyToon_Red`, `MyToon_Green`, `MyToon_Blue`를 삭제하고 물체에 `MyToon`을 다시 입힌다.
 
----
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 03 페이지를 AMM 형식으로 재작성. 비유 삭제 |
 
 [← Day 02](day02-vertex-shader.md) · [목차](README.md) · [다음: Day 04 →](day04-varyings-debug.md)
