@@ -1,8 +1,5 @@
 # VMware 기반 프라이빗 클라우드 구축
 
-{% hint style="warning" %}
-{% endhint %}
-
 * ESXI / vCenter Server / vsphere
 * vCenter Server와 연결 가능
 * ESXI

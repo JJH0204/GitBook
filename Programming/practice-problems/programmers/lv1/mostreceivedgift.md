@@ -1,8 +1,5 @@
 # 프로그래머스: 가장 많이 받은 선물
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 ```cpp
@@ -285,8 +282,6 @@ int solution(vector friends, vector gifts) { int answer = 0; return answer; }
 이 행렬은 선물을 주고받은 정보를 관리하는 2차원 배열로 사용한다.
 
 3. 2.1번 행렬(이하 선물지표)를 gifts를 이용해 갱신(Update)한다.
-
-^pkuQ16GE
 
 \["muzi frodo", "muzi frodo", "ryan muzi", "ryan muzi", "ryan muzi", "frodo muzi", "frodo ryan", "neo muzi"]
 

@@ -54,11 +54,11 @@ done
 
 #### 컨테이너와 볼륨
 
-* 컨테이너란? ^61iAqWe3\
+* 컨테이너란?\
   격리된 환경 (다른 컨테이너 끼리 서로 영향을 줄 수 없다.)
 * python 3.9
 * python 2.1
-* 볼륨이란? ^YE8fCHH3\
+* 볼륨이란?\
   이미지가 가진 내용(패키징된)
 * 파일(디렉터리)열거 뿐 아니라 공유가 필요할 때 사용
 * 컨테이너-컨테이너
@@ -108,18 +108,18 @@ systemctl enable --now docker
 
 예시:
 
-* 우분투를 실행할 때 함께 실행할 명령어를 지정할 수 있다. ^OTARizSv\
+* 우분투를 실행할 때 함께 실행할 명령어를 지정할 수 있다.\
   docker container run ubuntu:latest /bin/echo "hello Ubuntu"
-* 컨테이너를 삭제할 수 있다.(실행 중이면 불가능) ^zDGC1Kzk\
+* 컨테이너를 삭제할 수 있다.(실행 중이면 불가능)\
   단, 이미지가 삭제된 것은 아니다.
-* nignx툴을 활용해 웹 서버를 구축할 때 ^fxUEOi1V\
+* nignx툴을 활용해 웹 서버를 구축할 때\
   docker image pull nginx:latest
-* 도커 이미지 삭제 명령어 ^gDEm25Hq\
+* 도커 이미지 삭제 명령어\
   docker image rm hello-world
-* 도커 관리 명령어 ^B01KtXrh\
+* 도커 관리 명령어\
   또는 docker image ls
 * 컨테이너 실행 예시:\
-  docker container run --name linux-web -d -p 80:80 nginx ^ag41Nlq1\
+  docker container run --name linux-web -d -p 80:80 nginx\
   설명: 실행할 컨테이너 이름 ^Lrc5aP21, 포트 설정 ^T6FgksuG, 실행 이미지 ^2UsE4ZAG, 백그라운드 실행 여부
 * 백그라운드 실행을 하지 않으면 해당 머신 안으로 들어가게 된다.
 * 모니터링 / 제어
@@ -129,12 +129,12 @@ systemctl enable --now docker
   * 실행중인 컨테이너 정보: docker container ls
   * 설치한 이미지 확인: docker image ls
 * 컨테이너를 생성한 후에는 중지/실행 해도 ID는 바뀌지 않음
-* 권한 관련: 일반 사용자는 docker 명령어를 사용할 수 없다. docker도 docker를 설치하면 docker 사용자를 만든다. (http,apache 처럼) ^clMR1vBl\
+* 권한 관련: 일반 사용자는 docker 명령어를 사용할 수 없다. docker도 docker를 설치하면 docker 사용자를 만든다. (http,apache 처럼)\
   그룹에 추가하여 docker를 사용할 수 있도록 한다.
 * 이미지 조회/검색 팁: 즐겨찾기 필터 적용 ^P04XgUTJ (주로 공식 계정) 이미지 5종 필터
 * 이미지 내려받기 예시:\
-  docker pull ubuntu:bionic (이미지/태그) ^HRGwFBjL\
-  docker run -it ubuntu:bionic bash ^XIWYtbZz\
+  docker pull ubuntu:bionic (이미지/태그)\
+  docker run -it ubuntu:bionic bash\
   ubuntu 18.0.4 쉘에 접속하게 됨
 * 컨테이너에서 필요한 프로그램 설치, 작업 디렉터리 설명 등:
   * 필요한 프로그램 설치
@@ -152,7 +152,7 @@ systemctl enable --now docker
   * 컨테이너를 생성하고 실행까지 진행
 * 사용이 중지된 모든 컨테이너 삭제: docker container prune
 * 컨테이너 ID만 출력: docker container ls -a -q (원문 참조)
-* 모든 컨테이너 강제 삭제(실행중 포함): docker container rm -f $(docker container ls -a -q) ^dDxzidB1\
+* 모든 컨테이너 강제 삭제(실행중 포함): docker container rm -f $(docker container ls -a -q)\
   (: prune와 달리 실행 중인 모든 컨테이너를 삭제 ^OujsIx8a)
 * docker container \[options]
   * -a: 추가
@@ -173,7 +173,7 @@ systemctl enable --now docker
 
 * docker volume ls
 * docker volume create \[volume이름]
-* docker volume inspect \[volume이름] ^eyEFdHKQ\
+* docker volume inspect \[volume이름]\
   볼륨에 저장된 데이터를 확인\[마운트]할 수 있다.
 
 ### 추가 노트 / 예시

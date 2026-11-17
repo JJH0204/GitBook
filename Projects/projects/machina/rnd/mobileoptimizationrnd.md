@@ -1,8 +1,5 @@
 # 모바일 최적화 연구 개발 (R&D)
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 ```csharp

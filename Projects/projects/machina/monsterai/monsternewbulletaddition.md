@@ -1,9 +1,5 @@
 # 몬스터 신규 투사체 추가
 
-{% hint style="warning" %}
-You can decompress drawing data with the command palette: "Decompress current Excalidraw file". For more info, check the plugin settings under "Saving".
-{% endhint %}
-
 기존 Player가 사용 중인 Missile 불릿의 스크립트를 참고해서 디자인
 
 {% code title="GravityBullet.cs" %}
@@ -77,8 +73,6 @@ public class GravityBullet : Bullet
 }
 ```
 {% endcode %}
-
-^pu54ZEmo
 
 미사일과 다른 점
 

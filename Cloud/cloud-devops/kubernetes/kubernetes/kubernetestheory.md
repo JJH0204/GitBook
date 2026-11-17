@@ -1,8 +1,5 @@
 # 쿠버네티스 핵심 이론 (Kubernetes)
 
-{% hint style="warning" %}
-{% endhint %}
-
 Docker와 같이 컨테이너 기반(하지만 많이 다른) Tool
 
 App이 실행되는 환경을 격리하는 기술

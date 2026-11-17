@@ -1,8 +1,5 @@
 # CTF: Account 1
 
-{% hint style="warning" %}
-{% endhint %}
-
 * 80/tcp http 서비스만 동작 중임을 확인
 * index.php / join.php / phpinfo 페이지 확인
 * 가짜 회원 가입 시도

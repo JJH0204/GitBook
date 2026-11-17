@@ -1,8 +1,5 @@
 # 커맨드 인젝션 분석 다이어그램
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 `http://192.168.56.147/?id=%22%3E%3C/a%3E%3Cscript%3Ealert(%22cmd%22)%3C/script%3E%3Ca%20href=%22`와 같은 URL 인젝션은 **XSS(크로스 사이트 스크립팅)** 공격을 위해 설계된 페이로드입니다. 여기서 `<script>alert("cmd")</script>`는 브라우저에서 실행되어 **팝업 경고창**을 띄우는 자바스크립트 코드입니다. 그러나 이 방식은 클라이언트 측에서 실행되므로 서버의 커맨드 라인에 접근할 수 없습니다.
