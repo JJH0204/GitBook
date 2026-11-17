@@ -1,333 +1,170 @@
 # 데이터베이스 보안 실습 과제
 
-### \[취약한 Wordpress 서버 구축]
-
-{% stepper %}
-{% step %}
-### Docker 환경 구축
-
-설치 및 환경 준비를 진행합니다.
-{% endstep %}
+## 작업 식별
 
-{% step %}
-### Docker 환경 설정 파일
+| 항목 | 내용 |
+|---|---|
+| Task ID | DB-ASG-002-DO |
+| 유형 | D&O (개념) |
+| 목적 | 컨테이너로 구성한 웹 + DB 환경에서 DB 계정·권한 관리, 메모리 확인, 모니터링, 디렉터리 스캔 점검의 개념을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-아래는 docker-compose 설정 예시입니다.
-
-{% code title="docker-compose.yml" %}
-```
-```
-{% endcode %}
+{% hint style="info" %}
+NOTE: 이 문서는 개념 정리다. 설치와 실행 절차는 참조 절의 문서를 따른다.
+{% endhint %}
 
-```yml
-version: '3.1'
+## 1. 목적
 
-services:
+웹 애플리케이션과 DB를 컨테이너로 묶어 실행하고, DB 계정의 권한을 관리하고, 자원 사용량을 감시하는 방법을 정리한다. 다룬 주제는 다음과 같다.
+
+1. 워드프레스, MariaDB, phpMyAdmin을 `docker compose`로 한 번에 실행하는 구성.
+2. DB 계정 생성, 권한 부여·회수, 비밀번호 변경.
+3. 호스트와 DB의 메모리 확인.
+4. PMM(Percona Monitoring and Management)으로 DB를 감시하는 구성.
+5. 디렉터리 스캔을 이용한 모의 침투의 정보 수집 단계.
 
-  wordpress:
-    image: wordpress:4.7-php5.6-apache  # PHP 5.6과 워드프레스 4.7이 포함된 이미지
-    restart: always
-    ports:
-      - 8080:80  # 워드프레스 컨테이너에서 포트 80을 호스트의 포트 8080으로 연결
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: exampleuser
-      WORDPRESS_DB_PASSWORD: examplepass
-      WORDPRESS_DB_NAME: exampledb
-    volumes:
-      - ./wordpress_data:/var/www/html  # 워드프레스 파일이 저장될 경로
+## 2. 구성 요소
 
-  db:
-    image: mariadb:10.5  # MariaDB 10.5 이미지 사용
-    restart: always
-    environment:
-      MARIADB_DATABASE: exampledb
-      MARIADB_USER: exampleuser
-      MARIADB_PASSWORD: examplepass
-      MARIADB_ROOT_PASSWORD: rootpass
-    volumes:
-      - ./db_data:/var/lib/mysql  # MariaDB 데이터베이스 파일 저장 경로
+### 2.1 컨테이너 구성
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin  # phpMyAdmin 컨테이너
-    restart: always
-    ports:
-      - 8081:80  # phpMyAdmin 포트 8081에서 실행
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: rootpass
-```
-{% endstep %}
+| 번호 | 서비스 | 이미지(예) | 역할 |
+|---|---|---|---|
+| 1 | `wordpress` | `wordpress:4.7-php5.6-apache` | 웹 애플리케이션. 호스트 8080 포트를 컨테이너 80 포트에 연결한다 |
+| 2 | `db` | `mariadb:10.5` | 데이터베이스. 데이터 디렉터리 `/var/lib/mysql`을 호스트 폴더에 연결한다 |
+| 3 | `phpmyadmin` | `phpmyadmin/phpmyadmin` | 웹 기반 DB 관리 도구. 호스트 8081 포트를 컨테이너 80 포트에 연결한다 |
+| 4 | WAF 프록시(선택) | 직접 빌드 | 웹 앞단에서 요청을 검사하는 웹 방화벽(WAF)이다 |
+| 5 | PMM 서버와 PMM 에이전트 | `percona/pmm-server`, `pmm-client` | PMM 서버가 지표를 모아 보여 주고, 에이전트가 감시 대상 호스트에서 지표를 보낸다 |
 
-{% step %}
-### 실행
+{% hint style="danger" %}
+WARNING: 이 구성의 워드프레스 4.7과 PHP 5.6은 지원이 종료된 오래된 버전이다. 알려진 취약점이 있어 학습용 취약 환경으로만 쓴다. 인터넷에 노출하지 않고, 격리된 실습 네트워크에서만 실행한다.
+{% endhint %}
 
-컨테이너 실행:
+### 2.2 구성 파일의 핵심 항목
 
-```sh
-docker compose up -d
-```
-{% endstep %}
+| 항목 | 설명 |
+|---|---|
+| `ports: "<호스트>:<컨테이너>"` | 호스트 포트를 컨테이너 포트로 연결한다. 한 호스트 포트는 한 서비스에만 쓸 수 있다 |
+| `environment` | DB 이름, 사용자, 비밀번호 같은 설정을 환경 변수로 전달한다 |
+| `volumes` | 컨테이너를 지워도 데이터가 남게 호스트 폴더에 연결한다 |
+| `networks` | 서비스끼리만 통신하는 가상 네트워크다. 서비스 이름이 호스트 이름 역할을 한다 |
 
-{% step %}
-### Wordpress 설정
+* 비밀번호를 구성 파일에 직접 적지 않는다. `.env` 파일이나 시크릿으로 분리하고 저장소에는 올리지 않는다.
+* 컨테이너 환경 변수 `MARIADB_USER`에 `root`를 지정할 수 없다. 앱 전용 계정은 `root`가 아닌 이름으로 만든다.
+* 위 환경 변수는 이미지가 데이터 디렉터리를 처음 초기화할 때만 적용된다. 이미 만든 데이터 폴더가 있으면 바꿔도 반영되지 않는다.
 
-웹에서 워드프레스 초기 설정을 진행합니다.
-{% endstep %}
-{% endstepper %}
+### 2.3 DB 계정과 권한
 
-***
+| 번호 | 개념 | 설명 |
+|---|---|---|
+| 1 | 계정 식별자 | `'<사용자>'@'<접속 호스트>'` 쌍으로 구분한다. 같은 사용자 이름도 호스트가 다르면 다른 계정이다 |
+| 2 | 접속 호스트 | `localhost`는 같은 서버에서만, 특정 IP는 그 IP에서만, `%`는 모든 호스트에서 접속을 허용한다 |
+| 3 | 권한 범위 | `*.*`(서버 전체), `<DB명>.*`(한 DB), `<DB명>.<테이블>`(한 테이블)이다 |
+| 4 | 권한 회수 | `REVOKE`는 권한만 제거한다. 계정 자체를 지우려면 `DROP USER`를 쓴다 |
+| 5 | `FLUSH PRIVILEGES` | `GRANT`, `CREATE USER`, `ALTER USER`는 즉시 적용된다. 권한 테이블(`mysql.*`)을 직접 수정했을 때만 필요하다 |
 
-### \[DB 보안 설정]
+### 2.4 모니터링 계정
 
-{% stepper %}
-{% step %}
-#### 1-1. DB 접속
+PMM 같은 감시 도구는 DB에 읽기 중심의 전용 계정으로 접속한다. 일반적으로 `SELECT`, `PROCESS`, `REPLICATION CLIENT`, `RELOAD` 정도가 필요하며, 감시 계정에 `DROP`, `DELETE`, `UPDATE` 같은 쓰기 권한은 주지 않는다. 필요한 권한은 PMM 공식 문서의 해당 버전 항목으로 확인한다. 접속 수 제한(`MAX_USER_CONNECTIONS`)을 같이 걸어 감시가 DB 연결을 독점하지 못하게 한다.
 
-**1.1. DB 실행 여부 확인**
+## 3. 동작 원리
 
-* mariadb:10.5 실행 확인
+### 3.1 계정 접속 판정
 
-**1.2. DB 접속**
+1. 클라이언트가 계정과 비밀번호, 접속 호스트로 접속을 시도한다.
+2. 서버는 `'<사용자>'@'<호스트>'` 쌍과 비밀번호가 일치하는 계정을 찾는다. 일치하는 계정이 없으면 접속을 거부한다.
+3. 접속 후 각 문장마다 그 계정의 권한 범위를 확인한다. 권한이 없는 DB와 테이블은 접근이 거부된다.
 
-```sh
-# docker exec -it <컨테이터_이름> mysql -u<DB계정> -p
-docker exec -it wordpress-db-1 mysql -uroot -p
-```
+### 3.2 계정 관리 SQL의 종류
 
-* 사용자: root
-* 비밀번호: rootpass
-{% endstep %}
+| 목적 | 문장 형태 | 주의 |
+|---|---|---|
+| 계정 생성 | `CREATE USER '<사용자>'@'<호스트>' IDENTIFIED BY '<비밀번호>';` | 접속 호스트를 가능한 한 좁게 지정한다 |
+| 권한 부여 | `GRANT <권한> ON <범위> TO '<사용자>'@'<호스트>';` | 범위를 `*.*`로 넓게 주지 않는다 |
+| 비밀번호 변경 | `ALTER USER '<사용자>'@'<호스트>' IDENTIFIED BY '<새 비밀번호>';` | |
+| 권한 회수 | `REVOKE <권한> ON <범위> FROM '<사용자>'@'<호스트>';` | 계정은 남는다 |
+| 계정 삭제 | `DROP USER '<사용자>'@'<호스트>';` | 되돌릴 수 없다 |
+| 권한 확인 | `SHOW GRANTS FOR '<사용자>'@'<호스트>';` | |
 
-{% step %}
-#### 1-2. 웹 DB 접속
+{% hint style="danger" %}
+WARNING: `GRANT ALL PRIVILEGES ON *.*`는 서버 전체의 모든 DB에 모든 권한을 준다. 실습에서도 대상 DB 하나로 범위를 좁힌다(`<DB명>.*`). 모든 호스트(`%`)에서 접속 가능한 계정에 이 권한을 주면 서버 전체를 탈취당할 수 있다.
+{% endhint %}
 
-웹에서 phpMyAdmin 접속:
+{% hint style="danger" %}
+WARNING: `DROP USER`와 `REVOKE`는 해당 계정의 접속과 권한을 즉시 없앤다. 서비스가 쓰는 계정이면 서비스가 중단된다. 실행 전 `SHOW GRANTS`로 대상 계정을 확인한다.
+{% endhint %}
 
-```
-http://192.168.56.125:8081/
-```
+* `GRANT ... IDENTIFIED BY '<비밀번호>'` 형태는 MariaDB에서 계정 생성과 권한 부여를 한 번에 한다. MySQL 8.0 이상에서는 지원하지 않으므로 `CREATE USER` 후 `GRANT`로 나눈다.
+* 비밀번호는 문서와 저장소에 적지 않는다. 약한 비밀번호(`1234` 등)는 실습에서도 쓰지 않는 습관을 들인다.
 
-* 비밀번호는 이전과 동일
-{% endstep %}
+### 3.3 메모리 확인
 
-{% step %}
-#### 2. 계정 생성
-
-* 조건 1: test, 1234 - 192.168.56.125 에서 접속 가능하도록 사용자 생성 및 워드프레스 DB의 모든 권한 설정
-
-```sql
-grant all privileges on *.* to 'test'@'192.168.56.125' identified by '1234';
-```
-
-* 조건 2: local에서 접속 가능한 본인 이름의 사용자 생성
-
-```sql
-create user 'jaeho'@'localhost' identified by 'choa0306@@';
-```
-
-* 조건 3: test1, 9876 사용자에 대한 권한 설정 및 제거
-
-```sql
-grant all privileges on *.* to 'test1'@'%' identified by '9876';
-```
-
-(권한 제거)
-
-```sql
-revoke all on *.* from 'test1'@'%';
-```
-
-* 조건 4: test2, 4321 사용자의 패스워드를 5678로 변경
-
-```sql
-create user 'test2'@'localhost' identified by '4321';
-```
-
-```sql
-ALTER USER 'test2'@'localhost' IDENTIFIED BY '5678';
-```
-
-* 변경사항 적용
-
-```sql
-flush privileges;
-```
-{% endstep %}
-
-{% step %}
-#### 3. 시스템 메모리 관리
-
-호스트의 메모리와 스왑 확인:
-
-```sh
-grep MemTotal /proc/meminfo
-grep SwapTotal /proc/meminfo
-```
-{% endstep %}
-
-{% step %}
-#### 4. DB 메모리 확인
-
-**4.1. 명령어**
-
-1. 메모리 설정 변수 확인:
-
-```sql
-SHOW VARIABLES LIKE '%buffer%';
-```
-
-2. 실제 사용량 확인:
-
-```sql
-SHOW GLOBAL STATUS LIKE 'Innodb_buffer_pool_bytes%';
-```
-
-* Innodb\_buffer\_pool\_bytes\_data: 실제 데이터가 차지하는 메모리(바이트)
-* Innodb\_buffer\_pool\_bytes\_free: 사용 가능한 여유 메모리(바이트)
-{% endstep %}
-
-{% step %}
-#### 4.2. PMM 사용
-
-기본 설정:
-
-* wordpress (192.168.56.125) = PMM-Agent
-* PMM-server (192.168.56.126) = PMM-Server
-
-1. PMM-server 구성
-2. PMM-Agent 구성
-3. node 연결
-
-```sh
-pmm-admin config --server-insecure-tls --server-url=https://admin:choa0306@@@192.168.56.126:443
-```
-
-4. pmm 계정 생성 (MariaDB에서 실행)
-
-```sql
-CREATE USER 'pmm'@'127.0.0.1' IDENTIFIED BY '1234' WITH MAX_USER_CONNECTIONS 10;
-grant select, process, super, replication client, reload, show view on *.* to 'pmm'@'127.0.0.1';
-grant select, update, drop, delete on performance_schema.* to 'pmm'@'127.0.0.1';
-flush privileges;
-show grants for 'pmm'@'127.0.0.1';
-```
-
-5. Agent 설정 추가 및 실행
-{% endstep %}
-{% endstepper %}
-
-***
-
-### \[WAF]
-
-(섹션 비어 있음 — 필요 시 WAF 구성 내용을 추가하세요.)
-
-***
-
-## CTF\_Momentum2
-
-### \[정보 수집]
-
-스캐너 예시:
-
-```sh
-gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u http://192.168.56.128/ -x html,php,bak,txt,php.bak
-```
-
-Docker 설치 예시 (CentOS 기반 DNF):
-
-```sh
-sudo dnf remove docker \
-                docker-client \
-                docker-client-latest \
-                docker-common \
-                docker-latest \
-                docker-latest-logrotate \
-                docker-logrotate \
-                docker-engine
-
-# Docker의 공식 리포지터리 추가
-sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
-# Docker 설치
-sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Docker 서비스 시작
-sudo systemctl start docker
-
-# Docker 부팅 시 자동 실행 설정
-sudo systemctl enable docker
-```
-
-원터치 docker-compose 예시 (통합 구성):
-
-{% code title="docker-compose.yml (원터치 예시)" %}
-```yml
-version: '3.1'
-
-services:
-
-  wordpress:
-    image: wordpress:4.7-php5.6-apache  # PHP 5.6과 워드프레스 4.7이 포함된 이미지
-    container_name: wordpress
-    restart: always
-    ports:
-      - 8080:80  # 워드프레스 컨테이너에서 포트 80을 호스트의 포트 8080으로 연결
-    environment:
-      WORDPRESS_DB_HOST: wordpress_db
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: rootpass
-      WORDPRESS_DB_NAME: WordpressDB
-    networks:
-      - wp_network
-    volumes:
-      - ./wordpress_data:/var/www/html  # 워드프레스 파일이 저장될 경로
-
-  wordpress_db:
-    image: mariadb:10.5  # MariaDB 10.5 이미지 사용
-    container_name: wordpress_db
-    restart: always
-    environment:
-      MARIADB_DATABASE: WordpressDB
-      MARIADB_USER: root
-      MARIADB_PASSWORD: rootpass
-      MARIADB_ROOT_PASSWORD: rootpass
-    networks:
-      - wp_network
-    volumes:
-      - ./db_data:/var/lib/mysql  # MariaDB 데이터베이스 파일 저장 경로
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin  # phpMyAdmin 컨테이너
-    restart: always
-    ports:
-      - 8081:80  # phpMyAdmin 포트 8081에서 실행
-    environment:
-      PMA_HOST: wordpress_db
-      MYSQL_ROOT_PASSWORD: rootpass
-
-  waf-proxy:
-    build: ./waf-proxy 
-    container_name: waf-proxy
-    ports: 
-      - "8080:80" 
-    networks: 
-      - wp_network 
-
-  pmm-client: 
-    image: percona/pmm-client:latest 
-    container_name: pmm-client 
-    environment: 
-      PMM_SERVER: "192.168.56.126" # PMM 서버의 IP 주소 
-    command: /bin/bash -c "while true; do sleep 1000; done"
-    networks: 
-      - wp_network
-
-networks: 
-  wp_network: 
-    driver: bridge
-```
-{% endcode %}
-
-* selinux를 끄는 등의 호스트 설정이 필요할 수 있습니다.
+| 대상 | 방법 | 읽는 법 |
+|---|---|---|
+| 호스트 메모리와 스왑 | `grep MemTotal /proc/meminfo`, `grep SwapTotal /proc/meminfo` | 단위는 kB다 |
+| DB 버퍼 설정 | `SHOW VARIABLES LIKE '%buffer%';` | `innodb_buffer_pool_size`가 InnoDB가 데이터와 인덱스를 캐시하는 메모리 크기(바이트)다 |
+| InnoDB 버퍼 풀 사용량 | `SHOW GLOBAL STATUS LIKE 'Innodb_buffer_pool%';` | `Innodb_buffer_pool_bytes_data`는 데이터가 차지하는 바이트다. 여유 페이지 수는 `Innodb_buffer_pool_pages_free`이며, 여기에 페이지 크기(기본 16KB, `innodb_page_size`)를 곱해 바이트로 바꾼다 |
+
+* 버퍼 풀이 가득 차 있는 것은 정상이다. 디스크 읽기 비율(`Innodb_buffer_pool_reads` 대 `Innodb_buffer_pool_read_requests`)이 높으면 버퍼 풀이 모자란 신호다.
+* 스왑 사용이 늘면 DB 응답이 크게 느려진다. 버퍼 풀 크기는 호스트 메모리를 넘기지 않게 정한다.
+
+### 3.4 PMM 구성 흐름
+
+| 순서 | 단계 | 내용 |
+|---|---|---|
+| 1 | PMM 서버 구성 | 별도 서버에서 PMM 서버를 실행한다. 웹 화면은 보통 443 포트다 |
+| 2 | 에이전트 구성 | 감시 대상 호스트에 `pmm-admin`과 에이전트를 설치한다 |
+| 3 | 서버 연결 | `pmm-admin config --server-url=https://<사용자>:<비밀번호>@<서버 주소>:443`으로 서버를 지정한다. 자체 서명 인증서면 `--server-insecure-tls`를 쓴다 |
+| 4 | DB 감시 계정 생성 | 2.4절의 읽기 중심 권한으로 전용 계정을 만든다 |
+| 5 | DB 서비스 등록 | `pmm-admin add mysql`로 감시 계정을 지정해 DB를 등록한다 |
+
+{% hint style="warning" %}
+CAUTION: `--server-insecure-tls`는 서버 인증서 검증을 끈다. 실습 환경에서만 쓰고, 운영 환경에서는 신뢰할 수 있는 인증서를 설치한다. 비밀번호가 포함된 URL은 셸 이력에 남는다.
+{% endhint %}
+
+### 3.5 디렉터리 스캔을 이용한 정보 수집
+
+모의 침투의 첫 단계는 공격 대상의 웹 서버에 어떤 경로와 파일이 있는지 찾는 것이다. `gobuster dir`는 단어 목록(wordlist)의 단어를 경로로 붙여 요청하고, 응답 코드(200, 301, 403, 404)로 존재 여부를 판단한다.
+
+| 옵션 | 뜻 |
+|---|---|
+| `-u <주소>` | 대상 주소 |
+| `-w <파일>` | 단어 목록 파일 |
+| `-x <확장자,...>` | 경로 뒤에 붙여 시도할 확장자(예: `html,php,bak,txt`) |
+
+* 확장자 `bak`, `php.bak`, `txt`는 백업 파일과 메모 파일의 노출을 찾는 용도다. 서버에 남은 백업 파일에는 소스 코드와 설정 값이 들어 있을 수 있다.
+* 방어는 운영 서버에서 백업·임시 파일을 지우고, 웹 루트에 두지 않는 것이다.
+
+{% hint style="danger" %}
+WARNING: 디렉터리 스캔은 대상 서버에 대량의 요청을 보낸다. 본인이 소유하거나 서면으로 허가받은 실습 환경(예: 직접 내려받은 학습용 가상 머신)에서만 실행한다.
+{% endhint %}
+
+## 4. 약어와 용어
+
+| 용어 | 뜻 |
+|---|---|
+| 최소 권한 원칙 | 작업에 필요한 최소한의 권한만 부여하는 원칙이다 |
+| WAF(Web Application Firewall) | 웹 요청을 검사해 공격 패턴을 막는 방화벽이다 |
+| PMM | Percona가 만든 DB 모니터링 도구다 |
+| 버퍼 풀(Buffer Pool) | InnoDB가 데이터와 인덱스를 메모리에 캐시하는 영역이다 |
+| 스왑(Swap) | 메모리가 모자랄 때 디스크를 메모리처럼 쓰는 영역이다 |
+| 단어 목록(wordlist) | 경로 탐색에 쓰는 이름 후보 파일이다 |
+
+## 5. 참조
+
+| 참조 문서 | 제목 |
+|---|---|
+| [dbperformanceinfo.md](../operations/dbperformanceinfo.md) | DB 성능 튜닝 및 사용자 관리 |
+| [mariadb.md](../operations/mariadb.md) | MariaDB 기본 사용법 |
+| [sql_dcl.md](../sql/sql_dcl.md) | 데이터 제어어 (DCL) |
+| [도커 (Docker)](../../Cloud/cloud-devops/docker/README.md) | 컨테이너 설치와 실행 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] `'test'@'localhost'`와 `'test'@'%'`가 다른 계정인 이유를 내 말로 설명한다.
+- [ ] `REVOKE`와 `DROP USER`의 차이를 내가 겪은 예로 설명한다.
+- [ ] 메모리를 확인한 결과를 보고 내가 어떤 판단을 했는지 적는다.
