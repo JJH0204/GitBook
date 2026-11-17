@@ -32,6 +32,7 @@ metaLinks:
 | [툰 셰이더 공부 노트](toon-shader-study/README.md) | 22일 | 1시간 | 실제 게임 셰이더 소스를 한 줄씩 읽는다 |
 | [게임 기획 훈련장](game-design/README.md) | 매일 | 30분 | 템플릿을 AI 없이 채우고, 다 쓴 뒤에만 AI로 검증한다 |
 
+- 원본 레포(비공개, 참고용): [unity-csharp-study](https://github.com/JJH0204/unity-csharp-study), [toon-shader-lab](https://github.com/JJH0204/toon-shader-lab), [toon-shader-study](https://github.com/JJH0204/toon-shader-study), [game-design-drills](https://github.com/JJH0204/game-design-drills)
 - 1시간짜리 트랙은 한 번에 하나만 진행하고, 기획 훈련 30분을 곁들인다.
 - 셰이더는 실습실을 먼저 하고, 레슨 끝의 "더 깊이" 링크로 같은 주제의 공부 노트를 읽는다.
 

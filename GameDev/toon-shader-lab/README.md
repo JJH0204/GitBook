@@ -106,3 +106,7 @@
 - 정답 셰이더는 `tools/templates/*.tpl` 한 벌에서 날짜별로 뽑아요: `python tools/gen_solutions.py`. 템플릿의 `//@ 9-`(9일차부터), `//@ -8`(8일차까지), `//@ end` 표시로 날짜별 코드를 고릅니다.
 - 문서 이미지: 에디터에서 `ToonShaderLab.Editor.LabDocCaptures.CaptureAll("<폴더>")` → `python tools/compose_docs_images.py <폴더>`.
 - 개념 그림(`docs/images/concept-*.png`)은 [toon-shader-study](../toon-shader-study/README.md)의 `tools/`에서 만든 것이에요.
+
+## 원본 레포
+
+* [JJH0204/toon-shader-lab](https://github.com/JJH0204/toon-shader-lab) (비공개, 참고용): 실습용 Unity 프로젝트가 있는 레포다. 레슨은 이 GitBook에서 본다.
