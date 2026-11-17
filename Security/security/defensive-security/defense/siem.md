@@ -1,4 +1,59 @@
 # 보안 정보 이벤트 관리 (SIEM)
 
-* [정보](https://www.google.com/search?q=SIEM\&sca_esv=72649dfb51480aee\&sxsrf=ADLYWIJrR7ohvxluRzgoaqAP6zYgttQjPw%3A1729729395451\&ei=c5MZZ8SVG_7T2roP-sqloA8\&ved=0ahUKEwiEm7GR4KWJAxX-qVYBHXplCfQQ4dUDCBA\&uact=5\&oq=SIEM\&gs_lp=Egxnd3Mtd2l6LXNlcnAiBFNJRU0yCBAAGIAEGLEDMgUQABiABDIOEC4YgAQYsQMY0QMYxwEyBRAAGIAEMgsQLhiABBjRAxjHATIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAESOAMUABY9wRwAHgBkAEAmAH1AaABnAaqAQUwLjMuMbgBA8gBAPgBAZgCBKACvQbCAgoQABiABBhDGIoFwgIEEAAYA8ICEBAuGIAEGNEDGEMYxwEYigXCAg0QLhiABBjRAxjHARgKwgIHEAAYgAQYCsICCxAAGIAEGLEDGIMBmAMAkgcFMC4zLjGgB5ci\&sclient=gws-wiz-serp)
-* [Wazuh](wazuh.md)
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-DEF-003-DO |
+| 유형 | D&O (개념) |
+| 목적 | SIEM의 역할과 구성 요소, 동작 흐름을 설명한다 |
+| 확인 상태 | 미검증 (원본은 검색 링크와 Wazuh 링크뿐이었다. 일반 보안 교재 지식으로 작성했으며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 원본의 검색 결과 링크(구글 검색 주소)는 삭제했다. 본문은 모두 일반 지식으로 새로 썼다.
+{% endhint %}
+
+## 1. 목적
+
+SIEM(Security Information and Event Management)은 여러 장비와 서비스의 로그·이벤트를 한곳에 모아 정규화하고, 상관 분석으로 보안 위협을 찾아 경고하는 시스템이다. 개별 장비의 로그만 보면 놓치는 공격의 흐름을 여러 로그를 이어서 찾는 것이 목적이다.
+
+## 2. 구성 요소
+
+| 구성 요소 | 역할 | 예 |
+|---|---|---|
+| 수집기(에이전트, 로그 전달자) | 장비·서버의 로그를 SIEM으로 보낸다 | Wazuh agent, Filebeat, syslog |
+| 정규화·저장소 | 형식이 다른 로그를 같은 필드로 맞춰 저장한다 | Wazuh indexer(OpenSearch), Elasticsearch |
+| 분석 엔진 | 룰과 상관 분석으로 이벤트를 경고로 만든다 | Wazuh manager |
+| 대시보드 | 경고 조회, 검색, 보고서를 제공한다 | Wazuh dashboard, Kibana |
+| 로그 원천 | 로그를 만드는 대상 | 방화벽, IDS, 서버, 웹 서버 |
+
+도구 구축 절차는 [Wazuh](wazuh.md) (SEC-DEF-007-MP)를 따른다. 원본에는 Wazuh만 연결되어 있었다.
+
+## 3. 동작 원리
+
+1. 로그 원천이 로그를 만든다.
+2. 수집기가 로그를 SIEM 서버로 보낸다.
+3. SIEM이 로그를 파싱해 공통 필드로 정규화하고 저장한다.
+4. 분석 엔진이 룰(예: 짧은 시간 안의 로그인 실패 반복)과 대조한다.
+5. 일치하면 경고를 만들고 대시보드에 표시한다.
+6. 분석가가 경고를 확인하고 대응 절차([침해사고 분석 및 대응 절차](securityincidentanalysisresponse.md), SEC-DEF-015-DO)로 넘긴다.
+
+## 4. 약어와 용어
+
+| 용어 | 뜻 |
+|---|---|
+| SIEM | Security Information and Event Management |
+| 정규화 | 서로 다른 로그 형식을 같은 필드 이름으로 바꾸는 일 |
+| 상관 분석 | 여러 이벤트를 연결해 하나의 공격 흐름으로 판단하는 일 |
+| 에이전트 | 로그를 수집해 서버로 보내는 프로그램 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 로그를 한곳에 모으는 것이 왜 필요한지 내 말로 적어 보자.
+- [ ] 상관 분석이 필요한 공격 예를 하나 들어 보자.
+- [ ] 내가 운영하는 환경에서 SIEM으로 보내고 싶은 로그 원천을 적어 보자.
