@@ -1,8 +1,59 @@
 # 도메인 이름 (Domain Name)
 
-* URL 구성 요소 중 Host는 웹 브라우저가 접속할 웹 서버의 주소를 나타낸다.
-* Host는 Domain name, IP address의 값을 가질 수 있다.
-* 일반적으로 도메인의 특성을 반영한 이름을 정의하여 IP 대신 사용한다.
-* Domain name을 Host 값으로 사용하면 DNS(Domain Name Server)에 질의하고, DNS가 IP address를 사용한다.
-* 웹 브라우저에서 `http://example.com`에 접속할 경우, DNS에 질의해 얻은 example.com의 IP와 통신한다.
-* Domain name에 대한 정보는 `nslookup` 명령어를 사용해 확인할 수 있다.
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-PRT-013-DO |
+| 유형 | D&O (개념) |
+| 목적 | 도메인 이름이 URL에서 맡는 역할과 IP로 바뀌는 과정을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 네트워크 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 목적
+
+URL 구성 요소 중 호스트(Host)는 웹 브라우저가 접속할 웹 서버의 주소를 나타낸다. 호스트 값으로 도메인 이름(domain name)이나 IP 주소를 쓸 수 있다. 도메인 이름은 서버의 특성을 반영한 이름으로, IP 주소 대신 쓴다.
+
+## 2. 구성 요소
+
+| 호스트 값 | 예 | 통신 전 필요한 단계 |
+|---|---|---|
+| 도메인 이름 | `example.com` | DNS 질의로 IP 주소를 얻는다 |
+| IP 주소 | `192.0.2.10` | 없음 |
+
+## 3. 동작 원리
+
+브라우저에서 `http://example.com`에 접속하는 경우를 따른다.
+
+1. 브라우저가 DNS에 `example.com`의 IP 주소를 질의한다.
+2. DNS가 IP 주소를 응답한다.
+3. 브라우저가 그 IP 주소의 서버와 통신한다.
+
+도메인 이름 정보는 `nslookup <도메인>` 명령으로 확인한다.
+
+{% hint style="info" %}
+NOTE: 원본은 DNS를 "Domain Name Server"로 적었다. 표준 이름은 Domain Name System(도메인 네임 시스템)이고 서버는 "DNS 서버"라 하므로 정정했다.
+{% endhint %}
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| URL | Uniform Resource Locator. 자원의 위치를 나타내는 주소 |
+| Host | URL에서 접속 대상 서버를 가리키는 부분 |
+| DNS | Domain Name System |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [dns.md](dns.md) | NET-PRT-009-DO | 도메인 네임 시스템 (DNS) |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] IP 주소 대신 도메인 이름을 쓰는 이유를 내 말로 적어 본다.
+- [ ] `nslookup`으로 조회한 도메인 하나의 결과를 적고, 무슨 뜻인지 내 말로 풀어 본다.

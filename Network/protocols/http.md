@@ -1,58 +1,118 @@
 # HTTP 프로토콜 (HTTP)
 
-## HTTP (Hyper Text Transfer Protocol)
+## 작업 식별
 
-* 서버 클라이언트의 데이터 교환을 요청(Request), 응답(Response) 형식으로 정의한 프로토콜
-* 팀 버너스 리(Team Berners-Lee)와 그의 팀이 제정한 이후, 현대 웹 서비스의 바탕이 되는 프로토콜로 자리 잡았다.
-* 기본 메커니즘은 클라이언트가 서버에 요청하면, 서버가 응답하는 것 뿐
-* 웹 서버는 HTTP 서비스를 HTTP 서비스 포트에 대기 시킨다.
-* 포트는 일반적으로 TCP/80 또는 TCP/8080로 정해진다.
-* 클라이언트가 서비스 포트에 HTTP 요청을 전송 > 이를 해석해 적절한 응답을 반환한다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-PRT-007-DO |
+| 유형 | D&O (개념) |
+| 목적 | HTTP의 요청·응답 구조와 메시지 형식을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 네트워크 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## HTTP 메시지
+## 1. 목적
 
-* 클라이언트가 전송하는 HTTP 요청, 서버가 반환하는 HTTP 응답이 있다.
-* 기능과 세부 구조의 차이를 제외하고 HTTP 헤더와 바디로 구성되는 공통점이 있다.
+HTTP(Hypertext Transfer Protocol)는 클라이언트와 서버의 데이터 교환을 요청(Request)과 응답(Response) 형식으로 정의한 응용 계층 프로토콜이다. 팀 버너스 리(Tim Berners-Lee)가 속한 팀이 제안한 이후 현대 웹 서비스의 바탕이 됐다. 기본 동작은 클라이언트가 요청하면 서버가 응답하는 것이다.
 
-#### HTTP 헤더 (Headers)
+## 2. 구성 요소
 
-* 각 줄은 [CRLF](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/encoding-and-formats/crlf) 로 구분
-* 첫 줄은 시작 줄(Start line), 나머지 줄은 헤더(Header)라 부른다.
-* 영문 표기에 주의해야 한다. (Headers와 Header)
-* 헤더의 끝은 빈 줄로 나타낸다.
-* 시작 줄의 역할은 요청과 응답에서 차이가 있다.
-* 헤더는 필드와 값으로 구성, HTTP 메시지 또는 바디의 속성을 나타낸다.
-* 하나의 HTTP 메시지에는 0개 이상의 헤더가 있을 수 있다.
+### 2.1 포트
 
-#### HTTP 바디 (Body)
+| 항목 | 값 |
+|---|---|
+| 기본 포트 | TCP 80 |
+| 자주 쓰는 대체 포트 | TCP 8080 |
+| 전송 프로토콜 | TCP |
 
-* 헤드의 끝을 나타내는 [CRLF](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/encoding-and-formats/crlf) 뒤 모든 줄을 말한다.
-* 클라이언트나 서버에게 전송하려는 데이터가 바디에 담긴다.
+웹 서버는 HTTP 서비스를 해당 포트에서 대기시킨다. 클라이언트가 그 포트로 HTTP 요청을 보내면 서버가 해석해 응답한다.
 
-## HTTP 요청 (Request)
+{% hint style="info" %}
+NOTE: 원본은 "TCP/80 또는 TCP/8080"으로 적었다. 8080은 대체 포트로 관례적으로 쓰이며 기본 포트가 아니므로 구분했다. 확인 필요.
+{% endhint %}
 
-서버에게 특정 동작을 요구하는 메시지. 서버는 해당 동작을 실현 가능한지, 클라이언트가 그러한 동작을 요청할 권한이 있는지 등을 검토하여 적절할 때 이를 처리한다.
+### 2.2 메시지 구조
 
-#### 시작 줄
+요청과 응답은 시작 줄, 헤더, 빈 줄, 바디로 구성된다.
 
-* HTTP의 시작 줄은 메소드(Method), 요청 대상(Request target), HTTP 버전으로 구성된다.
-* 각각은 띄어쓰기로 구분된다.
-* 요청 URI는 메소드의 대상을, HTTP 버전은 클라이언트가 사용하는 HTTP 프로토콜의 버전을 의미
+| 구성 | 설명 |
+|---|---|
+| 시작 줄 (Start line) | 첫 줄이다. 요청과 응답에서 역할이 다르다 |
+| 헤더 (Headers) | 필드 이름과 값의 쌍이다. 메시지나 바디의 속성을 나타낸다. 0개 이상이다 |
+| 빈 줄 | 헤더의 끝을 나타낸다 |
+| 바디 (Body) | 빈 줄 뒤의 모든 내용이다. 전송하려는 데이터가 담긴다 |
 
-#### 헤더와 바디
+각 줄은 CRLF(캐리지 리턴 + 라인 피드)로 구분한다. 영문 표기에서 Headers(전체)와 Header(한 줄)를 구분한다.
 
-* 시작 줄을 제외한 헤더와 바디는 HTTP 메시지에서 설명한 것과 같다.
-* 자세한 내용은 [HTTP 표준 문서](https://www.rfc-editor.org/rfc/rfc2616.html#section-5)
+### 2.3 요청 (Request)
 
-## HTTP 응답 (Response)
+서버에게 특정 동작을 요구하는 메시지다. 서버는 동작이 가능한지, 요청 권한이 있는지 검토해 처리한다.
 
-* HTTP 요청에 대한 결과를 반환하는 메시지
-* 상태(Status)정보(요청을 수행했는지, 하지 않았는지, 안 했다면 이유가 무엇인지 등), 클라이언트에 전송할 리소스가 응답에 포함된다.
+| 시작 줄 요소 | 설명 |
+|---|---|
+| 메서드 (Method) | 요청 대상에 수행할 동작. [http_method.md](http_method.md) 참조 |
+| 요청 대상 (Request target) | 메서드의 대상 |
+| HTTP 버전 | 클라이언트가 쓰는 HTTP 버전 |
 
-#### 시작 줄
+세 요소는 공백으로 구분한다.
 
-* HTTP 응답의 시작 줄은 HTTP 버전, 상태 코드(Status Code), 처리 사유(Reason Phrase)로 구성된다.
-* 위 요소들은 띄어쓰기로 구분된다.
-* **HTTP 버전**: 서버에서 사용하는 HTTP 버전을 의미
-* [**상태 코드(Status Code)**](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/rfc_2616_code): 요청에 대한 처리 결과를 세 자릿수로 표현
-* 처리 사유는 상태 코드가 발생한 이유를 짧게 기술한 것
+### 2.4 응답 (Response)
+
+요청 결과를 반환하는 메시지다. 요청의 수행 여부와 사유를 나타내는 상태 정보와, 클라이언트에 보낼 리소스가 담긴다.
+
+| 시작 줄 요소 | 설명 |
+|---|---|
+| HTTP 버전 | 서버가 쓰는 HTTP 버전 |
+| 상태 코드 (Status Code) | 처리 결과를 나타내는 세 자리 숫자. [httpstatuscode.md](httpstatuscode.md) 참조 |
+| 처리 사유 (Reason Phrase) | 상태 코드의 이유를 짧게 적은 문구 |
+
+세 요소는 공백으로 구분한다.
+
+## 3. 동작 원리
+
+```
+클라이언트                         서버
+   | -- GET /index.html HTTP/1.1 --> |
+   |    Host: example.com            |
+   | <-- HTTP/1.1 200 OK ----------- |
+   |     Content-Type: text/html     |
+   |     (바디: HTML)                |
+```
+
+1. 클라이언트가 TCP 연결을 맺는다.
+2. 클라이언트가 요청 메시지를 보낸다.
+3. 서버가 요청을 해석해 응답 메시지를 보낸다.
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| CRLF | Carriage Return + Line Feed. 줄 구분 문자 (`\r\n`) |
+| URI | Uniform Resource Identifier. 자원 식별자 |
+| 헤더 필드 | 이름과 값으로 이뤄진 메시지 속성 |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [http_method.md](http_method.md) | NET-PRT-010-REF | HTTP 메서드 상세 |
+| [httpstatuscode.md](httpstatuscode.md) | NET-PRT-011-REF | HTTP 상태 코드 |
+| [https.md](https.md) | NET-PRT-008-DO | HTTPS 프로토콜 |
+
+외부 자료:
+
+* [HTTP 표준 문서 RFC 2616 5절](https://www.rfc-editor.org/rfc/rfc2616.html#section-5)
+* [CRLF 설명 (j-log)](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/encoding-and-formats/crlf)
+* [상태 코드 설명 (j-log)](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/web_technologies/http-and-urls/rfc_2616_code)
+
+{% hint style="info" %}
+NOTE: RFC 2616은 폐기됐고 현재는 RFC 9110(의미 규칙)과 RFC 9112(HTTP/1.1 메시지 형식)가 대체한다. 원본 링크는 보존했다. 확인 필요.
+{% endhint %}
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 브라우저 주소창에 주소를 입력하고 페이지가 뜰 때까지 일어나는 일을 내 말로 적어 본다.
+- [ ] 요청과 응답의 시작 줄이 서로 다른 이유는 무엇일까? 내 생각을 적어 본다.

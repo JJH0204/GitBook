@@ -1,82 +1,41 @@
 # HTTP 메서드 상세 (HTTP Method)
 
-요청 대상에 대해 서버가 수행하길 바라는 동작입니다.
+## 작업 식별
 
-HTTP 표준 메소드는 보통 아래 **8개**를 말합니다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-PRT-010-REF |
+| 유형 | REF (표) |
+| 목적 | HTTP 메서드의 의미와 성질을 찾아본다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 네트워크 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-* GET
-* POST
-* PUT
-* PATCH
-* DELETE
-* HEAD
-* OPTIONS
-* TRACE
+## 1. 메서드 표
 
-<details>
+메서드는 요청 대상에 대해 서버가 수행하길 바라는 동작이다.
 
-<summary>GET</summary>
+| 메서드 | 동작 | 바디 | 안전 | 멱등 |
+|---|---|---|---|---|
+| GET | 리소스를 가져온다 | 보통 없음 | 예 | 예 |
+| HEAD | GET과 같지만 바디 없이 헤더만 받는다 | 없음 | 예 | 예 |
+| POST | 요청 대상에 데이터를 보내 처리하게 한다. 전송할 데이터는 보통 바디에 담는다 | 있음 | 아니오 | 아니오 |
+| PUT | 리소스를 대체한다. 리소스가 없으면 생성할 수 있다 | 있음 | 아니오 | 예 |
+| PATCH | 리소스를 부분 변경한다 | 있음 | 아니오 | 아니오 |
+| DELETE | 리소스를 삭제한다 | 보통 없음 | 아니오 | 예 |
+| OPTIONS | 서버가 지원하는 메서드와 옵션을 조회한다. CORS preflight에도 쓴다 | 보통 없음 | 예 | 예 |
+| TRACE | 요청이 중간에서 어떻게 처리되는지 추적한다. 보안상 실무에서는 보통 끈다 | 없음 | 예 | 예 |
+| CONNECT | 프록시를 통해 대상 서버로 터널을 연다(HTTPS 프록시 등) | 없음 | 아니오 | 아니오 |
 
-리소스를 가져오는 요청입니다.
+* 안전(safe): 서버의 상태를 바꾸지 않는 메서드다.
+* 멱등(idempotent): 같은 요청을 여러 번 보내도 결과가 한 번 보낸 것과 같은 메서드다.
 
-</details>
+{% hint style="info" %}
+NOTE: 원본은 "표준 메서드 8개"로 PATCH를 포함하고 CONNECT를 뺐다. RFC 9110은 GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE를 정의하고, PATCH는 RFC 5789에서 별도로 정의한다. 그래서 CONNECT를 추가하고 PATCH를 표에 함께 뒀다. 바디, 안전, 멱등 열은 원본에 없던 내용이며 일반 규격 지식으로 채웠다. 확인 필요.
+{% endhint %}
 
-<details>
+## 2. 참조
 
-<summary>POST</summary>
-
-요청 대상에게 데이터를 보내는 메소드입니다.\
-전송할 데이터는 보통 HTTP body에 포함됩니다.
-
-</details>
-
-<details>
-
-<summary>PUT</summary>
-
-리소스를 **대체**하는 요청입니다.\
-리소스가 없으면 생성하는 서버도 있습니다.
-
-</details>
-
-<details>
-
-<summary>PATCH</summary>
-
-리소스를 **부분 변경**하는 요청입니다.
-
-</details>
-
-<details>
-
-<summary>DELETE</summary>
-
-리소스를 삭제하는 요청입니다.
-
-</details>
-
-<details>
-
-<summary>HEAD</summary>
-
-GET과 동일하지만 **body 없이 header만** 받습니다.
-
-</details>
-
-<details>
-
-<summary>OPTIONS</summary>
-
-서버가 지원하는 메소드/옵션을 조회합니다.\
-CORS preflight에도 사용됩니다.
-
-</details>
-
-<details>
-
-<summary>TRACE</summary>
-
-요청이 중간에 어떻게 처리되는지 추적합니다.\
-실무에서는 보통 꺼둡니다.
-
-</details>
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [http.md](http.md) | NET-PRT-007-DO | HTTP 프로토콜 |
+| [httpstatuscode.md](httpstatuscode.md) | NET-PRT-011-REF | HTTP 상태 코드 |

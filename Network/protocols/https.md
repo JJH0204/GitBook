@@ -1,20 +1,62 @@
 # HTTPS 프로토콜 (HTTPS)
 
-## HTTP의 문제점
+## 작업 식별
 
-* HTTP의 응답과 요청은 평문으로 전달된다.
-* 누군가 중간에서 가로챈다면 중요한 정보가 유출될 수 있다.
-* HTTPS(HTTP over Secure socket layer)는 [TLS(Transport Layer Security)](../security/ssl.md) 프로토콜을 도입해 위 문제점을 보완한다.
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-PRT-008-DO |
+| 유형 | D&O (개념) |
+| 목적 | HTTP의 보안 문제와 HTTPS가 이를 보완하는 방식을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 네트워크 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-***
+## 1. 목적
 
-## HTTPS
+HTTP의 요청과 응답은 평문으로 전달된다. 누군가 중간에서 가로채면 중요한 정보가 유출될 수 있다. HTTPS(HTTP over TLS)는 [TLS](../security/ssl.md)(Transport Layer Security)를 도입해 이 문제를 보완한다.
 
-* 초기에는 민감한 데이터를 취급하는 웹 서비스(금융, 정부 시스템 등) 위주로 사용되었다.
-* 현재 개발되는 서비스들은 규모에 상관없이 HTTPS를 사용하는 추세이다.
-* 웹 서버의 URL이 `http://` = HTTP 프로토콜, `https://` = HTTPS 프로토콜
-* HTTP 메시지와 달리 HTTPS 메시지의 요청과 응답 내용은 복호화 키가 없으면 확인할 수 없다.
+## 2. 구성 요소
+
+| 항목 | HTTP | HTTPS |
+|---|---|---|
+| URL 시작 | `http://` | `https://` |
+| 기본 포트 | TCP 80 | TCP 443 |
+| 통신 내용 | 평문 | TLS로 암호화 |
+| 내용 확인 | 중간에서 읽을 수 있다 | 복호화 키가 없으면 읽을 수 없다 |
 
 {% hint style="info" %}
-HTTPS는 TLS를 사용해 통신 내용을 암호화함으로써 중간자 공격 등으로부터 데이터를 보호한다. 자세한 내용은 [TLS(Transport Layer Security)](../security/ssl.md)를 참고하세요.
+NOTE: 원본은 HTTPS를 "HTTP over Secure socket layer"로 풀었다. SSL은 이전 이름이며 현재는 TLS를 쓰므로 "HTTP over TLS"로 정정했다. 기본 포트 443은 원본에 없던 내용을 추가한 것이다. 원본의 "복호화 키가 없으면 확인할 수 없다"는 통신 내용에 한한다. 접속 대상 도메인 등 일부 정보는 노출될 수 있다. 확인 필요.
 {% endhint %}
+
+## 3. 동작 원리
+
+1. 클라이언트가 서버의 TCP 443에 연결한다.
+2. 클라이언트와 서버가 TLS 핸드셰이크로 암호화 방식과 키를 합의한다. 이때 클라이언트가 서버 인증서를 검증한다.
+3. 이후 HTTP 요청과 응답을 암호화해 주고받는다.
+
+TLS는 통신 내용을 암호화해 중간자 공격(man-in-the-middle) 등으로부터 데이터를 보호한다.
+
+초기에는 금융, 정부 시스템처럼 민감한 데이터를 다루는 서비스 위주로 썼다. 현재는 규모에 관계없이 HTTPS를 쓰는 추세다.
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| TLS | Transport Layer Security. 전송 구간 암호화 프로토콜 |
+| SSL | Secure Sockets Layer. TLS의 이전 이름 |
+| 중간자 공격 | 통신 중간에서 내용을 가로채거나 바꾸는 공격 |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [ssl.md](../security/ssl.md) | | SSL 및 TLS 프로토콜 |
+| [http.md](http.md) | NET-PRT-007-DO | HTTP 프로토콜 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 공용 Wi-Fi에서 HTTP 사이트를 쓰면 왜 위험한지 내 말로 적어 본다.
+- [ ] 브라우저가 HTTPS 사이트에서 보여 주는 자물쇠가 보장하는 것과 보장하지 않는 것을 적어 본다.
