@@ -1,400 +1,186 @@
 # 몬스터 시스템 아키텍처 (BT)
 
-Behavior Tree\
-(Scriptable Object)
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRJ-MAI-007-DO |
+| 유형 | D&O (구조 설명과 개발 기록) |
+| 목적 | 행동 트리(Behavior Tree, BT) 기반 몬스터 AI의 구성 요소, 실행 순서, 겪은 문제, FSM을 더한 이유를 정리한다 |
+| 적용 대상 | Unity, ScriptableObject 기반 BT |
+| 확인 상태 | 미검증 (원본 메모와 팀 레포 코드를 읽고 정리했으며 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-Behavior Tree Runner\
-(MonoBehavior)
+## 1. 구성 요소
 
-Blackboard\
-(MonoBehavior)
+| 구성 요소 | 종류 | 역할 |
+|---|---|---|
+| Behavior Tree | ScriptableObject | 노드 트리 에셋. `Tick(문맥)`으로 루트 노드를 평가한다 |
+| AIController | MonoBehaviour | 감지(Sense), 판단(Think), 행동(Act)을 순서대로 실행한다. 초기에는 별도의 BT 실행기(Runner)를 두었으나 이 클래스로 합쳤다 |
+| Blackboard | MonoBehaviour | 몬스터의 현재 상태(체력, 타겟, 쿨타임 등)를 보관하고 노드가 읽고 쓰는 공용 저장소다 |
+| MonsterStats | ScriptableObject | 몬스터의 초기 스탯. 시트에서 지정한 인덱스 번호의 값을 불러와 Blackboard에 파라미터로 전달한다 |
+| 명령(Command) 큐 | 우선순위 큐 | 노드가 낸 행동 명령(공격, 추적, 사망, 피격 등)을 모은다 |
 
-MonsterStats\
-(Scriptable Object)
+{% hint style="info" %}
+NOTE: MonsterStats의 값을 Google Sheets에서 불러오는 데 성공했다고 원본에 적혀 있다. 팀 레포에는 시트 로더(`GoogleSheetLoader`)가 있다. 시트 주소와 인증 값은 이 문서에 적지 않았다.
+{% endhint %}
 
-※ 몬스터의 초기 스텟 정보를 관리
+## 2. 동작 원리
 
-* Google Sheets 에서 설정된 인덱스 번호에 해당하는 값 불러옴
-* 파라미터를 활용해 Blackboard가 사용할 수 있도록 값을 전달
+### 2.1 한 프레임의 흐름
 
-※ 몬스터의 현재(게임 씬에서) 상태를 관리
+| 순서 | 시점 | 처리 |
+|---|---|---|
+| 1 | `Update` | Sense: 상태를 감지하고 비용 높은 계산은 여기서 한다 |
+| 2 | `Update` | Think: BT를 `Tick`한다. 노드는 Blackboard를 읽고 행동 명령을 큐에 넣는다(`Enqueue`) |
+| 3 | `LateUpdate` | Act: 큐에서 명령을 꺼내(`Dequeue`) 실행한다 |
 
-Tick();
+처음에는 BT 실행기, 컨트롤러가 각각 다른 `Update` 시점에 돌아 순서가 꼬일 수 있어, `DefaultExecutionOrder`로 순서를 지정하는 초안을 만들었다. 이후 AIController 안에서 Sense, Think, Act를 순서대로 호출하게 바꾸어 이 설정이 필요 없어졌다.
 
-Behavior Tree\
-(Scriptable Object)
+원본의 초안 코드는 다음과 같다. 최종 구조에서는 쓰지 않는다.
 
-Behavior Tree Runner\
-(MonoBehavior)
+```csharp
+[DefaultExecutionOrder(-200)]
+public sealed class AIController : MonoBehaviour { void Update() { /* Sense & High-cost compute -> BB */ } }
 
-Update() => Tree.Tick();
+[DefaultExecutionOrder(-100)]
+public sealed class BehaviorTreeRunner : MonoBehaviour { void Update() { /* Tick -> BB.Intent */ } }
 
-Think
+[DefaultExecutionOrder( +50)]
+public sealed class AIController : MonoBehaviour { void LateUpdate() { /* Consume Intent */ } }
+```
 
-Act
+{% hint style="info" %}
+NOTE: 초안 코드에서 `AIController`가 두 번 선언되어 있다. 첫째는 감지 담당, 셋째는 명령 소비 담당이며 같은 이름이므로 한 클래스로 합칠 의도의 슈도코드로 읽는다.
+{% endhint %}
 
-Controller
+### 2.2 노드 종류와 평가 규칙
 
-Blackboard\
-(MonoBehavior)
+| 노드 | 규칙 |
+|---|---|
+| Sequence | 자식을 순서대로 평가한다 |
+| Selector | 자식을 순서대로 평가해 처음 성공(또는 실행 중)인 자식의 결과를 반환한다. 모두 실패하면 실패다 |
+| Parallel | 자식을 모두 평가하고 결과와 관계없이 즉시 성공을 반환한다 |
+| 조건 노드 | 사망 여부, 피격 여부, 감지 범위, 스킬 사거리, 쿨타임, 체력 비율 등을 검사한다 |
+| 행동 노드 | 추적, 공격, 순찰, 배회, 회피, 사망, 상태 변경 등 명령을 낸다 |
 
-MonsterStats\
-(Scriptable Object)
+Parallel이 항상 성공을 반환하는 점이 설계 문제로 이어졌다. 사용 가능한 스킬이 없어도 공격 명령을 낸 것으로 판단해 이후 판단(추적 등)을 하지 않게 된다.
 
-Awake() => Blackboard.Init();
+### 2.3 BT 초안
 
-Update() { /\* 비용 높은 계산 \*/}
+원본은 노드 이름만 남은 다이어그램이다. 연결 관계는 아래 설명 범위만 확인된다.
 
-??
+| 가지 | 내용 |
+|---|---|
+| Root → Death | 현재 HP가 0 이하이면 성공 |
+| Root → Battle | 전투 시퀀스. 판단 1: 전투 상태에 들어갈 것인가. 판단 2: 어떤 행동을 할 것인가. 이후 실행 |
+| 판단 1(Check the combat) | 감지 범위 안에 타겟이 있는가. 주변 동료가 전투 중인가 |
+| 판단 2(Check Skill) | 모든 스킬의 사용 가능 여부를 확인하고 가능한 스킬을 실행한다. 스킬 A, B, C마다 "사용할 수 있는가 → 사용" 쌍을 둔다. 자식을 모두 실행하는 Parallel로 묶는다 |
+| Root → Chase | 패트롤 데이터 초기화 여부 확인, 배회(Wander), 추적(Chase), 대기 행동 선택(Idle Action Choice), 순찰(Patrol), 대기(Idle). 피격 여부, 타겟 생존 여부도 확인한다 |
 
-Queue \_queue
+### 2.4 스킬 사용 가능 조건
 
-Enqueue(AICommand c)
+| 조건 | 판정 |
+|---|---|
+| 조건 1: 스킬 사거리에 타겟이 들어왔는가 | 예이면 공격 가능 |
+| 조건 2: 스킬이 쿨타임 중이 아닌가 | 예이면 공격 가능 |
+| 조건 3: 내 체력이 n % 미만인가 | 예이면 공격 가능 |
 
-Enqueue(c)
+세 조건은 각각 `Is In Skill Range`, `Is In Skill Cooldown-Time`, `Check My Health` 노드이며, 모든 검사를 묶는 `Can Use Skill ID` 노드는 몬스터의 사용 가능 스킬 목록에 그 스킬 ID가 등록되어 있는지 검사한다.
 
-LateUpdate()
+추적 노드는 전투 가능 여부를 이미 판단한 뒤 들어온다. `minDetection` 값 이하이면 추적을 멈추고, 아니면 계속한다.
 
-\_queue.Count > 0
+## 3. 겪은 문제와 해결
 
-Blackboard blackboard
+| 번호 | 문제 | 해결 또는 상태 |
+|---|---|---|
+| 1 | 스크립터블 오브젝트(SO) 에셋이 고장났다 | `[CreateAssetMenu]` 속성이 적용되어야 SO 에셋으로 만들 수 있다 |
+| 2 | 명령을 처리하는 중에 다른 명령이 끼어들어 실행이 취소됐다 | 명령 실행 전 우선순위 값을 비교하도록 했다. 해결됨 |
+| 3 | 애니메이션이 중간에 취소됐다 | 애니메이션 실행 전 Animator 초기화 메서드로 상태를 초기 상태로 되돌렸다. 해결됨 |
+| 4 | 공격 중 타겟이 멀어지면, 공격 모션이 끝난 뒤 추적해야 하는데 추적이 안 되고 이전 공격 모션이 반복 재생된다 | 미해결(원본 시점). 공격 기능은 아직 구현하지 않았다. 피격 이벤트부터 만들기로 했다. Animator 트리거 기능을 더 조사해야 한다 |
+| 5 | 몬스터가 의도한 대로 움직이지 않는다 | BT를 잘못 짠 것인지 의심했다. 애니메이션을 취소하면서 행동을 처리하는 것이 원인 후보다 |
+| 6 | 달리기 애니메이션만 재생된다 | 몬스터 AI와 애니메이션 병합 과정에서 발생. 플레이어가 최소 추적 범위 안이면 공격하고, 할 행동이 없으면 Idle을 취해야 한다 |
+| 7 | 몬스터가 피격 이후 멍청해진다(2025-09-05 메모) | 느낌 때문인지 점검이 필요하다고 적었다. 원인은 원본에 없음 |
 
-MonsterStats BaseStats
+우선순위 큐를 써서 로직을 더 정교하게 만들 수 있다는 아이디어도 적었다. 팀 레포의 AIController는 우선순위 큐(`PriorityQueue<AICommand>`)로 명령을 처리하며, 피격 명령(`HitCommand`)은 높은 우선순위 값(100)으로 넣는다.
 
-Dequeue()
+## 4. BT의 한계와 FSM 도입
 
-Awake() => Init();
+BT만으로는 상태가 고정되어 다양한 상태 표현과 행동 설정이 어려웠다. FSM을 적용해 BT의 단점을 보완하기로 한 이유는 세 가지다.
 
-Update()
+| 번호 | 이유 |
+|---|---|
+| 1 | 구조화를 통해 재사용성을 높인다 |
+| 2 | 프로그래머의 개입 없이 쉽게 수정할 수 있어야 한다 |
+| 3 | 확장성이 필요하다. 여러 BT를 원하는 조건(상태)에서 실행할 수 있어야 한다 |
 
-비용 높은 계산
+개선안은 다음과 같다.
 
-Behavior Tree\
-(Scriptable Object)
+| 번호 | 개선 | 내용 |
+|---|---|---|
+| 1 | 서브트리 개념 추가 | 재사용성과 모듈화를 높인다 |
+| 2 | Global BT 추가 | 전역에서 AI의 상태 전환만 처리하는 BT다 |
+| 3 | 비트 마스크(BitMask) 사용 | 상태를 동적으로 추가·수정할 수 있다 |
 
-Behavior Tree Runner\
-(MonoBehavior)
+구조는 다음과 같이 확인된다.
 
-Update() => Tree.Tick();
+| 요소 | 내용 |
+|---|---|
+| `BTData` | 문자열 키(`stateName`)와 BT(`behaviorTree`) 한 쌍 |
+| AIController | Global BT를 매 프레임 `Tick`하고, `BTData` 중 현재 상태에 해당하는 항목의 BT만 `Tick`한다 |
+| Global BT | 상태 제어를 맡는다. 예: Death, Battle, Patrol 같은 Sub BT를 상태로 호출한다 |
+| 상태 값 | 비트 마스크 정수 하나로 여러 상태를 겹쳐 표현할 수 있다. 상태 이름과 비트 번호는 데이터 에셋에서 읽는다 |
+| 상태 변경 노드 | 상태를 모두 지우고 새 상태 하나를 설정한다 |
 
-Think
+FSM 구현은 [FSM 몬스터 AI](fsmmonsterai.md)(PRJ-MAI-001-DO)를 참조한다.
 
-Controller
+## 5. 배운 점
 
-blackboard.TryGet(new BBKey("Health"), out float health)
+원본에 남긴 교훈은 다음과 같다.
 
-※ 우선순위 큐를 활용해서 로직을 더 정교하게 만들 수 있지 않을까?
+- 코드를 신뢰하지 않는다. 언제나 예상과 다르게 동작한다.
+- 구조화가 잘된 코드일수록 수정 사항이 생겼을 때 취약하다.
+- 체력 관리를 잘한다. 양질의 수면이 양질의 코드로 이어진다.
 
-\[DefaultExecutionOrder(-200)]\
-public sealed class AIController : MonoBehaviour { void Update() { /\* Sense & High-cost compute -> BB \*/ } }
+남은 TODO는 두 가지다.
 
-\[DefaultExecutionOrder(-100)]\
-public sealed class BehaviorTreeRunner : MonoBehaviour { void Update() { /\* Tick -> BB.Intent \*/ } }
+| 번호 | TODO |
+|---|---|
+| 1 | 몬스터 사망 시 디졸브 효과로 사라지게 한다 |
+| 2 | 장애물을 뛰어넘도록 NavMesh 링크를 사용한다 |
 
-\[DefaultExecutionOrder( +50)]\
-public sealed class AIController : MonoBehaviour { void LateUpdate() { /\* Consume Intent \*/ } }
+## 6. 참조
 
-구조적으로 안전하게 Update 함수를 사용하자
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [fsmmonsterai.md](fsmmonsterai.md) | PRJ-MAI-001-DO | FSM 몬스터 AI |
+| [bossmonsterrndlog.md](bossmonsterrndlog.md) | PRJ-MAI-002-DO | 보스 몬스터 연구 개발 일지 |
+| [AIController.cs](https://github.com/shion0202/2025_Project_ProjectRecombination/blob/main/Branch/Assets/_GameAssets/01.%20Scripts/Monster/AI/AIController.cs) | | 팀 레포. 접근 권한이 필요할 수 있다 |
+| [BehaviorTree.cs](https://github.com/shion0202/2025_Project_ProjectRecombination/blob/main/Branch/Assets/_GameAssets/01.%20Scripts/Monster/AI/BehaviorTree/BehaviorTree.cs) | | 같은 레포 |
 
-데이터베이스에서 데이터를 가져오는데 성공했다.
+## 7. 약어·용어
 
-SO Asset 이 고장났는데 왜이러는 걸까
+| 용어 | 뜻 |
+|---|---|
+| BT | Behavior Tree. 행동 트리 |
+| Blackboard | 노드들이 공유하는 상태 저장소 |
+| SO | ScriptableObject |
+| Tick | BT를 한 번 평가하는 호출 |
+| Sense / Think / Act | 감지 / 판단 / 행동 |
+| CTC | 원본에 약어만 남아 있음(뜻 확인 필요) |
 
-\[CreateAssetMenu()] 키워드가 적용되어야 SO Asset으로 활용할 수 있다.
+## 개정 이력
 
-AI Controller에서 Sence > Tink > Act 를 진행하기 때문에 DefaultExcutionOrder 설정은 필요 없어졌다.
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지(다이어그램 라벨과 개발 메모가 섞인 상태)를 AMM D&O 형식으로 재작성. 욕설, 개인 일정, 마감일 메모 삭제. 팀 레포 코드 사실 추가 |
 
-Queue \_queue
+## 내 말로 채우기
 
-LateUpdate()
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-\_queue.Count > 0
-
-Dequeue()
-
-Blackboard blackboard
-
-Update()
-
-비용 높은 계산
-
-Behavior Tree\
-(Scriptable Object)
-
-Think
-
-Controller
-
-Sence
-
-Act
-
-Awake(), OnEnable()
-
-Init()
-
-Enqueue(c)
-
-몬스터가 애니메이션을 캔슬하면서 행동을 처리한다.\
-몬스터가 의도한데로 움직이지 않는다면 내가 행동트리를 잘못 짠걸까?
-
-Root
-
-Death
-
-Death
-
-Battle
-
-전투 시퀀스
-
-{% stepper %}
-{% step %}
-### 전투 시퀀스 — 판단: 전투 상태에 돌입할 것인지
-
-전투 상태에 돌입할 것인지 판단
-{% endstep %}
-
-{% step %}
-### 전투 시퀀스 — 판단: 어떤 행동을 할 것인지
-
-전투 상태에 돌입한다면 어떤 행동을 할 것인지 판단
-{% endstep %}
-
-{% step %}
-### 전투 시퀀스 — 실행
-
-(다음 단계에 따라 행동 실행)
-{% endstep %}
-{% endstepper %}
-
-Check the combat
-
-감지 범위 안에 타겟이 존재
-
-주변 동료가 전투 상태인지
-
-전투 상태에 돌입할 때 확인할 건 없을까?
-
-{% stepper %}
-{% step %}
-### 스텝: 스킬 사용 가능 여부 확인
-
-스킬 사용 가능 여부
-{% endstep %}
-
-{% step %}
-### 스텝: (기타 확인 항목)
-
-... (추가 확인사항)
-{% endstep %}
-{% endstepper %}
-
-모든 스킬의 사용 가능 여부를 확인하고 사용 가능한 스킬을 액션
-
-Skill을 사용할 수 있는가
-
-Skill 사용
-
-Use Skill A
-
-Skill을 사용할 수 있는가
-
-Skill 사용
-
-Use Skill B
-
-Skill을 사용할 수 있는가
-
-Skill 사용
-
-Use Skill C
-
-Check Skill
-
-전투 상태에 돌입한다면 어떤 행동을 할 것인지 판단
-
-Parallel (일단 자식 노드를 전부 실행)
-
-전투 상태에 돌입할 것인지 판단
-
-Check Chase
-
-패트롤 데이터가 초기화 되었는지 확인
-
-Wander
-
-Chase
-
-Idle Action Choice
-
-Patrol
-
-Idle
-
-피격 당했는지
-
-현재 HP가 0 이하면 Sucesse
-
-CTC
-
-타겟이 살아있는지 확인
-
-일단 parallel 노드로 진입하면 자식 노드의 실행 결과와 상관없이 무조건 성공을 반환할 것이다.\
-그러면 사용가능한 스킬이 없어도 공격 명령을 내린다고 판단하고 그 이후 판단을 하지 않을 것인데 사용가능한 스킬이 없다는 것을
-
-Chase를 할 수 있는가?
-
-Action Chase
-
-이미 타겟과 전투 가능여부는 판단하고 해당 노드에 들어옴\
-추적을 하되 어디까지 할 것인지 판단해야 함\
-minDetection 값이 있으니 이 값 이하인지 판단 ? false : true;
-
-스킬을 사용할 수 있는지 없는지는 어떻게 판단하지?
-
-{% stepper %}
-{% step %}
-### 조건 1
-
-스킬의 사거리에 타겟이 들어왔는지 ? 공격 가능 : 공격 불가능
-{% endstep %}
-
-{% step %}
-### 조건 2
-
-스킬이 현재 쿨타임 적용중이 아닌지 ? 공격 가능 : 공격 불가능
-{% endstep %}
-
-{% step %}
-### 조건 3
-
-내 체력이 n % 미만인가 ? 공격 가능 : 공격 불가능
-{% endstep %}
-
-{% step %}
-### 조건 4
-
-(...)
-{% endstep %}
-{% endstepper %}
-
-Is In Skill Range
-
-Is In Skill Cooldown-Time
-
-Check My Health
-
-...
-
-Can Use Skill ID
-
-몬스터가 현재 사용가능한 스킬 리스트에 등록되어 있는 스킬ID 인지 검사하는 노드\
-모든 검사 노드에 스크립트로 포함되어 사용할 예정
-
-이미 공격이 가능하다는 것을 확인하고 공격 명령을 내린 상태인데 이후에 Chase 명령을
-
-명령어를 처리하는 중에 다른 명령어가 끼어들어 중간에 실행이 취소되는 문제는 해결되었다.\
-ㄴ 명령 실행전 우선순위 값을 비교
-
-애니메이션 실행 전 에니메이터 초기화 메서드를 통해 상태를 초기 상태로 되돌리는 방식으로 애니메이션이 중간에 캔슬되는 문제를 해결했다.
-
-공격 중에 타겟이 거리를 벌리면 > 공격 모션이 끝난 후 추적 상태가 되어 추적해야 한다. (추적이 안되고 있다. 시발)\
-추적을 못하고 있는데 공격 모션은 이전 공격 모션을 계속해서 재생하고 있다. (위 문제가 해결되면 같이 해결될 문제라 생각하게 된다.)\
-아직 제대로된 공격 기능을 구현하지 않았다.\
-ㄴ 시발 29일까지 할 수 있을까. (좆됐다.)\
-ㄴ 피격 이벤트 처리 까지라도 만들어 놓자.\
-ㄴ 에니메이터의 트리거 기능에 대해서 더 알아볼 필요가 있어보인다.
-
-자고 일어난 내일의 재호에게
-
-재호야 일어나면 학점은행제 강의 마저 듣고 얼른 몬스터 피격 이벤트 부터 만들어 놓거라.\
-그래야 다른 사람이 게임성 테스트라도 해보겠지 않그러니\
-피격 이벤트 구현이 얼추 되면 위에 문제를 하나씩 해결해 나가보자\
-예비군 잊지말고 다녀오도록
-
-<25.09.05>\
-몬스터가 피격 이후 멍청해지는 이슈가 있다.
-
-* 느낌 때문인지 아닌지 점검 필요
-
-FSM을 적용하여 BT의 단점을 보완한다. > 왜?
-
-1. 구조화를 통한 재사용성 강화
-2. 프로그래머의 개입없이 쉽게 수정할 수 있어야 하니까
-3. 확장성 때문에
-
-어떻게 하면 확장성을 추가할 수 있을까?\
-여러 BT를 원하는 조건(상태)에 실행할 수 있어야 하는데
-
-개선안
-
-{% stepper %}
-{% step %}
-### 서브트리 개념 추가
-
-서브트리를 활용해 재사용성 및 모듈화 향상
-{% endstep %}
-
-{% step %}
-### Global BT 개념 추가
-
-전역 상태 전환을 담당하는 BT 추가
-{% endstep %}
-
-{% step %}
-### 상태를 동적으로 추가/수정할 수 있도록 BitMask 사용
-
-동적 상태 확장을 위한 BitMask 도입
-{% endstep %}
-{% endstepper %}
-
-Global Behavior Tree 란?
-
-* 전역에서 AI의 상태 전환만 처리하는 BT
-* AIController에서 동작해
-* GlobalBehaviorTree
-* BTData
-* String key
-* BehaviorTree tree
-
-BTData
-
-AIController
-
-Global BT
-
-Death BT
-
-Battle BT
-
-Patrol BT
-
-...
-
-상태 제어
-
-상태에 해당하는 Sub BT 실행
-
-고정된 상태값에 의해 다양한 상태 표현과 행동 설정이 불가능하다.\
-->
-
-몬스터 AI + 애니메이션 병합 과정
-
-플레이어가 최소 추적 범위에 들어 왔다면\
--> 공격\
--> 또는 할 수 있는 행동이 없다면 -> Idle 모션을 취해야 함
-
-달리기 애니메이션만 재생되고 있다.
-
-첫 번째\
-: 코드를 신뢰하지말 것, 언제나 예상과 다르게 동작한다.
-
-두 번째\
-: 구조화가 잘된 코드일 수록 수정사항이 발생했을 때 취약하다.
-
-세 번째\
-: 바빠도 체력 관리를 잘 할 것, 양질의 수면은 양질의 코드로 보답한다.
-
-TODO: 몬스터 사망시 디졸브 효과로 사라지게\
-TODO: 장애물을 뛰어 넘도록 > 네비메시 링크
+- [ ] Sense, Think, Act를 나눈 이유와, 나누지 않았을 때 생기는 문제를 내 경험으로 설명하면?
+- [ ] BT만으로 부족하다고 느낀 순간은 언제였고, FSM이 그것을 어떻게 풀었는가?
+- [ ] 명령 우선순위를 도입하기 전과 후에 몬스터 행동이 어떻게 달라졌는가?
