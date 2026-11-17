@@ -1,39 +1,75 @@
 # 동적 호스트 설정 프로토콜 (DHCP)
 
-DHCP (Dynamic Host Configuration Protocol)는 네트워크 장치들에게 IP 주소를 동적으로 할당하고 기타 네트워크 구성 정보를 관리하는 프로토콜입니다. DHCP를 사용하면 네트워크에 연결하는 장치들에게 수동으로 IP 주소를 할당할 필요가 없어 네트워크 관리가 훨씬 간편해집니다 ([TechTerms](https://techterms.com/definition/dhcp)) ([Lifewire](https://www.lifewire.com/what-is-dhcp-2625848)).
+## 작업 식별
 
-#### DHCP의 작동 방식
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-IPN-007-DO |
+| 유형 | D&O (개념) |
+| 목적 | DHCP가 IP 주소와 네트워크 설정을 자동으로 할당하는 과정을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-{% stepper %}
-{% step %}
-### IP 주소 요청
+{% hint style="info" %}
+NOTE: 메시지 4단계 이름(Discover, Offer, Request, Acknowledge), 포트 번호, 링크 로컬 대체 주소는 원본에 없던 내용이다.
+{% endhint %}
 
-네트워크에 연결하려는 장치(클라이언트)는 네트워크 시작 시 DHCP 서버에게 IP 주소를 요청합니다.
-{% endstep %}
+## 1. 목적
 
-{% step %}
-### IP 주소 할당
+DHCP(Dynamic Host Configuration Protocol)는 네트워크에 연결한 장치에 IP 주소와 기타 설정을 자동으로 할당한다. 장치마다 수동으로 주소를 입력하지 않아도 되므로 관리가 쉬워진다.
 
-DHCP 서버는 사용 가능한 IP 주소 중 하나를 선택하여 해당 장치에 할당합니다. 이 과정은 자동으로 이루어지며, 할당된 IP 주소는 일정 기간 동안만 유효합니다(이를 '임대'라고 함).
-{% endstep %}
+## 2. 구성 요소
 
-{% step %}
-### 네트워크 정보 구성
+| 번호 | 구성 요소 | 역할 |
+|---|---|---|
+| 1 | DHCP 서버 | 주소 풀에서 주소를 골라 임대한다. 가정과 소규모 사무실은 보통 라우터가 맡고, 큰 조직은 전용 서버를 쓴다 |
+| 2 | DHCP 클라이언트 | 네트워크에 연결해 주소를 요청하는 장치다 |
+| 3 | 임대(lease) | 할당한 주소가 유효한 기간이다. 기간이 끝나기 전에 갱신한다 |
+| 4 | 제공 정보 | IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS 서버 주소 등이다 |
 
-DHCP는 IP 주소 외에도 서브넷 마스크, 기본 게이트웨이, DNS 서버 정보 등을 장치에 제공합니다.
-{% endstep %}
-{% endstepper %}
+### 장점
 
-#### DHCP의 장점
+| 장점 | 내용 |
+|---|---|
+| 자동화 | 주소와 네트워크 설정을 자동으로 관리해 관리자의 부담이 준다 |
+| 유연성 | 장치가 자주 연결되고 끊기는 환경에서도 주소를 효율적으로 쓴다 |
+| 확장성 | 새 장치가 추가돼도 자동으로 주소를 받는다 |
 
-* 자동화: DHCP는 IP 주소와 네트워크 설정을 자동으로 관리하여 네트워크 관리자의 부담을 줄여 줍니다.
-* 유연성: 장치가 네트워크에 자주 연결되거나 연결이 끊기는 환경에서 IP 주소를 효율적으로 관리할 수 있습니다.
-* 스케일링: DHCP를 사용하면 큰 네트워크도 쉽게 확장할 수 있습니다. 새로운 장치가 네트워크에 추가될 때마다 자동으로 IP 주소를 할당받을 수 있기 때문입니다.
+## 3. 동작 원리
 
-대부분의 홈 네트워크 및 소규모 비즈니스에서는 라우터가 DHCP 서버 역할을 하며, 큰 조직이나 네트워크에서는 전용 서버가 이 역할을 수행하기도 합니다. DHCP는 네트워크 설정의 복잡성을 줄이고 사용자가 네트워크에 빠르고 쉽게 연결할 수 있도록 도와줍니다 ([TechTerms](https://techterms.com/definition/dhcp)) ([Lifewire](https://www.lifewire.com/what-is-dhcp-2625848)).
+1. (Discover) 클라이언트가 서버를 찾는 브로드캐스트 메시지를 보낸다.
+2. (Offer) 서버가 사용 가능한 주소를 골라 제안한다.
+3. (Request) 클라이언트가 제안받은 주소를 쓰겠다고 요청한다.
+4. (Acknowledge) 서버가 승인하고 임대 기간과 서브넷 마스크, 기본 게이트웨이, DNS 서버 정보를 함께 전달한다.
 
-더 자세한 정보를 원하시면, 다음 링크에서 확인하실 수 있습니다: [TechTerms - DHCP Definition](https://techterms.com/definition/dhcp) 및 [Lifewire - What Is DHCP?](https://www.lifewire.com/what-is-dhcp-2625848).
+DHCP는 UDP를 쓰며 서버는 포트 67, 클라이언트는 포트 68을 쓴다.
 
-### router DHCP Set
+{% hint style="info" %}
+NOTE: DHCP 서버를 찾지 못하면 많은 운영체제가 `169.254.0.0/16` 대역의 주소를 스스로 정한다(APIPA, 링크 로컬). 이 주소를 보이면 DHCP 응답을 받지 못한 상태다.
+{% endhint %}
 
-* 관련링크: https://freewings.tistory.com/45
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| DHCP | Dynamic Host Configuration Protocol. 주소와 설정을 자동 할당하는 프로토콜 |
+| 임대 | 서버가 주소를 일정 기간 빌려주는 방식 |
+| APIPA | Automatic Private IP Addressing. DHCP 실패 시 `169.254.0.0/16`에서 자동 정하는 주소 |
+
+## 5. 참조
+
+| 참조 | 비고 |
+|---|---|
+| [TechTerms - DHCP](https://techterms.com/definition/dhcp) | 원본에 있던 외부 자료 |
+| [Lifewire - What Is DHCP?](https://www.lifewire.com/what-is-dhcp-2625848) | 원본에 있던 외부 자료 |
+| [공유기 DHCP 설정 (freewings 블로그)](https://freewings.tistory.com/45) | 원본에 있던 외부 자료 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 클라이언트가 처음에 서버 주소를 모르는데 어떻게 DHCP 서버와 대화를 시작할까?
+- [ ] 집 공유기에서 DHCP 서버 역할을 하는 설정 화면을 찾아 임대 기간을 적어 본다.
+- [ ] 서버나 프린터에 DHCP 대신 고정 IP를 쓰는 이유는 무엇일까?
