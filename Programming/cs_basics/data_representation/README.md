@@ -6,7 +6,7 @@
 
 | 그룹 | 폴더 | 다루는 내용 |
 |---|---|---|
-| 진법과 비트 | [진법과 비트](number-systems-and-bits/README.md) | 비트와 바이트, 2진법, 2의 보수, 바이트 순서, 비트 연산 |
+| 진법과 비트 (PRG-NUM) | [진법과 비트](number-systems-and-bits/README.md) | 비트와 바이트, 2진법, 2의 보수, 바이트 순서, 비트 연산 |
 | 인코딩 및 형식 (PRG-ENC) | [인코딩 및 형식](encoding-and-formats/README.md) | ASCII, 유니코드, Base64, 개행 문자 |
 | 해싱 및 체크섬 (PRG-HSH) | [해싱 및 체크섬](hashing-and-checksums/README.md) | 해시 함수, MD5, 체크섬 |
 
