@@ -6,7 +6,7 @@
   * ADD EAX(Des) EBX(Src) <- 레지스터의 종류
   * 명령어 목적지 출발지
   * Add 1 2 -> 2 + 1
-  * SUB 1 2 -> 2 - 1
+  * Intel 문법의 `sub a, b`는 a = a - b (첫 피연산자가 목적지. AT&T 문법은 피연산자 순서가 반대)
 
 ## Register
 
@@ -83,9 +83,9 @@ push        edi                         # 과정
 lea         edi,[ebp+FFFFFF1Ch]  
 mov         ecx,39h  
 mov         eax,0CCCCCCCCh  
-rep stos    dword ptr es:[edi]          # dword 자료형을 저장할 메모리 할당
+rep stos    dword ptr es:[edi]          # 스택 프레임을 0xCCCCCCCC로 채움 (MSVC 디버그 빌드의 초기화)
 mov         ecx,9AC003h  
-call        009A1316                    # 함수 호출
+call        009A1316                    # 함수 호출 (MSVC 디버그 빌드의 초기화 함수)
 mov         dword ptr [ebp-8],1         # 1 입력
 mov         dword ptr [ebp-14h],2       # 2 입력
 mov         eax,dword ptr [ebp-8]       # 메모리 8 할당
@@ -94,7 +94,7 @@ mov         dword ptr [ebp-20h],eax     #
 mov         eax,dword ptr [ebp-20h]     # eax 에 결과 저장
 push        eax  
 push        9A7D08h  
-call        009A10CD                    # 결과값 가져와서
+call        009A10CD                    # printf 호출
 add         esp,8  
 xor         eax,eax  
 pop         edi                         # 결과값 pop 

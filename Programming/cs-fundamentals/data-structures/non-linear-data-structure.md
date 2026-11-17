@@ -112,7 +112,7 @@ int main() {
 | **정점(Vertex, Node)**             | 그래프에서 데이터를 저장하는 요소  |
 | **간선(Edge)**                     | 정점 간의 연결            |
 | **무방향 그래프(Undirected Graph)**    | 간선이 방향을 가지지 않는 그래프  |
-| **유방향 그래프(Directed Graph, DAG)** | 간선이 특정 방향을 가지는 그래프  |
+| **방향 그래프(Directed Graph)** | 간선이 특정 방향을 가지는 그래프  |
 | **가중 그래프(Weighted Graph)**       | 간선에 가중치(비용)가 있는 그래프 |
 
 그래프의 표현 방법
@@ -122,7 +122,7 @@ int main() {
 | **인접 행렬(Adjacency Matrix)** | 2차원 배열을 이용하여 연결 관계를 표현 | **O(V²)**    |
 | **인접 리스트(Adjacency List)**  | 연결된 노드를 리스트로 저장        | **O(V + E)** |
 
-그래프 인접 리스트 구현 (C)
+그래프 인접 행렬 구현 (C)
 
 {% code title="graph_adjmatrix.c" %}
 ```c

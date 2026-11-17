@@ -409,7 +409,7 @@ int removeListData(linkedList* _pList_, const int _nIndex_)
     
     if (_pList_ == NULL)
         return 1;
-    if ((_nIndex_ > _pList_->nCurrentCount) || (_nIndex_ < 0))
+    if ((_nIndex_ >= _pList_->nCurrentCount) || (_nIndex_ < 0))
         return 2;
     
     pPrevious = &(_pList_->nodeHeader);

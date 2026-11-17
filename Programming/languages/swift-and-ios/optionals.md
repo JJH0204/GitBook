@@ -23,7 +23,7 @@ optionalNum = 10
 if var num = optionalNum {
     print(num)
 }
-// 옵셔널 타입 변수에서 꺼낸 값은 대괄호 안에서만 사용 가능
+// 옵셔널 타입 변수에서 꺼낸 값은 중괄호 `{}` 안(스코프)에서만 사용 가능
 
 guard var guardNum = optionalNum else {
     return  // 값을 꺼내오기 실패했을 때 처리를 작성

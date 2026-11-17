@@ -11,7 +11,7 @@ void concept(void)
     /*Defining*/
     char *name = "Jung Jaeho";
     /*
-    same as
+    similar to (단, 아래 배열은 수정 가능하지만 리터럴을 가리키는 포인터로는 내용을 수정하면 UB)
     char name[] = "Jung Jaeho";
     char name[11] = "Jung Jaeho";
     */
@@ -21,12 +21,12 @@ void concept(void)
     printf("%s is %d years old.\n", name, age);
 
     /*string Length*/
-    printf("%lu\n", strlen(name));
+    printf("%zu\n", strlen(name));
 
     /*string comparison*/
     if (strncmp(name, "Jung Jaeho", 10) == 0)
     {
-        printf("Helle, Jaeho!\n");
+        printf("Hello, Jaeho!\n");
     }
     else
     {

@@ -11,7 +11,7 @@ using namespace std;
 int solution(vector<string> friends, vector<string> gifts)
 {
     int answer = 0;
-    int size = friends.size()
+    int size = friends.size();
     int** giftIndicator = new int*[size];
 
     // 2차원 선물지표 행렬 초기화
@@ -201,8 +201,8 @@ giftIndex = [-3, 2, 0, 1]
 * 모든 친구 i에 대해 다른 모든 친구 j와 비교:
   * i == j 면 건너뜀
   * dump = giftIndicator\[i]\[j] - giftIndicator\[j]\[i]
-    * dump > 0 이면 j가 i에게 선물 하나 받음 → i의 수 증가
-    * dump < 0 이면 i가 j에게 선물 하나 받음 → 해당 케이스에서는 상대가 받게 되므로 i 증가 X
+    * dump > 0 이면 i가 더 많이 줬으므로 i가 j에게서 선물 하나 받음 → i의 수 증가
+    * dump < 0 이면 j가 i에게서 선물 하나 받음 → 해당 케이스에서는 상대가 받게 되므로 i 증가 X
     * dump == 0 이면 giftIndex 비교:
       * giftIndex\[i] > giftIndex\[j] 이면 i가 j에게 선물 하나 받음 → i 증가
       * giftIndex\[i] <= giftIndex\[j] 이면 증가 없음 (동일하면 주고받지 않음)
