@@ -6,6 +6,7 @@
 
 * [데브섹옵스 (DevSecOps)](completed/devsecops/README.md)
   * [데브섹옵스 해킹대회 (DevSecOps)](completed/devsecops/devsecopshackingcompetition.md)
+  * [Aurora 앱 구조 (Aurora)](completed/devsecops/auroraappstructure.md)
   * [노바 프로젝트 (Nova)](completed/devsecops/nova/README.md)
     * [데브섹옵스 프로세스 (DevSecOps)](completed/devsecops/nova/devsecopsprocess.md)
     * [애자일 개발 방법론 (Agile)](completed/devsecops/nova/agiledevelopment.md)
