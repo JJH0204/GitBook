@@ -1,27 +1,65 @@
 # fdisk 파티션 관리 유틸리티
 
-FDISK는 리눅스 시스템에서 하드 디스크 파티션을 관리하는 명령줄 유틸리티로, 사용자가 디스크 파티션 테이블을 생성·수정·삭제할 수 있게 해줍니다. 이 도구는 특히 MBR(Master Boot Record) 파티션 테이블을 지원하지만, GPT(GUID Partition Table)는 지원하지 않습니다. ([LFCS Certification Prep](https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/))
+## 작업 식별
 
-## 주요 명령어
-
-* `n`: 새 파티션을 추가합니다.
-* `d`: 기존 파티션을 삭제합니다.
-* `p`: 파티션 테이블을 표시합니다.
-* `q`: 변경사항을 저장하지 않고 종료합니다.
-* `w`: 변경사항을 디스크에 쓰고 종료합니다.\
-  (출처: [LFCS Certification Prep](https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/))
-
-## 파티션 제한 및 확장 파티션
-
-* 기본적으로 최대 네 개의 기본 파티션을 만들 수 있습니다.
-* 더 많은 파티션이 필요한 경우, 하나의 기본 파티션을 확장 파티션으로 설정하고 그 안에 여러 개의 논리 파티션을 포함시킬 수 있습니다. ([Linuxize](https://linuxize.com/post/fdisk-command-in-linux/))
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-LAS-002-REF |
+| 유형 | REF (명령 표) |
+| 목적 | fdisk의 대화형 명령과 파티션 제한을 찾아본다 |
+| 확인 상태 | 미검증 (원본 페이지와 util-linux fdisk의 일반 지식을 정리한 것이며 직접 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="danger" %}
-FDISK는 파티션을 조정할 때 주의를 요구하는 도구입니다. 잘못된 사용은 데이터 손실로 이어질 수 있으므로, 변경 사항을 적용하기 전에 항상 현재의 파티션 구성을 검토하고, 필요한 경우 데이터를 백업하세요.\
-(출처: [Linuxize](https://linuxize.com/post/fdisk-command-in-linux/), [LFCS Certification Prep](https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/))
+WARNING: fdisk는 파티션 테이블을 바꾸는 도구다. 잘못된 디스크를 고르면 데이터를 잃는다. 실제 작업은 LNX-LAS-003-MP의 안전 사항과 절차를 따른다.
 {% endhint %}
 
-## 참고 자료
+fdisk는 리눅스에서 디스크 파티션 테이블을 만들고, 고치고, 지우는 명령줄 유틸리티다. 실행은 `fdisk <디스크>` 형식이며, 대화형 프롬프트에 아래 명령을 입력한다.
 
-* Linuxize - Fdisk Command in Linux: https://linuxize.com/post/fdisk-command-in-linux/
-* Tecmint - 10 fdisk Commands: https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/
+## 1. 대화형 명령
+
+| 명령 | 동작 | 디스크에 기록 |
+|---|---|---|
+| `m` | 도움말을 표시한다 | 아니오 |
+| `p` | 현재 파티션 테이블을 표시한다 | 아니오 |
+| `n` | 새 파티션을 추가한다 | `w` 전까지 아니오 |
+| `d` | 파티션을 삭제한다 | `w` 전까지 아니오 |
+| `t` | 파티션 유형을 바꾼다 | `w` 전까지 아니오 |
+| `l` | 파티션 유형 목록을 표시한다 | 아니오 |
+| `g` | 비어 있는 GPT 테이블을 새로 만든다 | `w` 전까지 아니오 |
+| `o` | 비어 있는 DOS(MBR) 테이블을 새로 만든다 | `w` 전까지 아니오 |
+| `w` | 변경을 디스크에 쓰고 종료한다 | 예 |
+| `q` | 변경을 저장하지 않고 종료한다 | 아니오 |
+
+* fdisk는 `w`를 입력하기 전까지 변경을 메모리에만 둔다.
+* `g`와 `o`는 기존 파티션 정보를 모두 없앤 새 테이블을 만든다.
+
+## 2. 파티션 테이블 방식과 제한
+
+| 항목 | MBR(DOS) | GPT |
+|---|---|---|
+| 기본 파티션 수 | 최대 4개 | 기본 128개 |
+| 확장·논리 파티션 | 지원한다. 기본 파티션 1개를 확장 파티션으로 만들고 그 안에 논리 파티션을 둔다 | 필요 없다 |
+| 디스크 크기 | 2 TiB까지 | 2 TiB를 넘을 수 있다 |
+
+{% hint style="info" %}
+NOTE: 원본 페이지는 "fdisk는 GPT를 지원하지 않는다"고 적었다. 현재 util-linux의 fdisk(2.23 이상)는 GPT를 지원한다. 오래된 배포판의 fdisk는 지원하지 않을 수 있으므로 `fdisk --version`으로 확인한다. 위 표의 GPT 128개와 2 TiB 기준은 일반 지식이며 미검증이다.
+{% endhint %}
+
+## 3. 관련 명령
+
+| 명령 | 용도 |
+|---|---|
+| `lsblk` | 디스크와 파티션을 트리로 본다 |
+| `fdisk -l <디스크>` | 대화형 모드 없이 파티션 테이블을 출력한다 |
+
+## 4. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [fdisk 파티션 생성과 삭제](fdisk-partition.md) | LNX-LAS-003-MP | 실제 작업 절차 |
+
+외부 자료는 아래와 같다.
+
+* [Linuxize - Fdisk Command in Linux](https://linuxize.com/post/fdisk-command-in-linux/)
+* [Tecmint - 10 fdisk Commands](https://www.tecmint.com/fdisk-commands-to-manage-linux-disk-partitions/)
