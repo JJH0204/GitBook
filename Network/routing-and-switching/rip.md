@@ -1,131 +1,95 @@
 # RIP 라우팅 프로토콜
 
-Distance Vector 라우팅 방식으로 오로지 거리([Hop](../fundamentals/networkterminology.md))와 방향을 기준으로 최적 경로를 설정
+## 작업 식별
 
-* AS(Autonomous System) 내부를 구성하는 내부용 라우팅 프로토콜(IGP)
-* 경로를 설정하는 기준은 거리(Hop)카운트로 최대 15개 까지만 허용
-* 라우팅 광고를 참고하여 주기적으로 라우팅 테이블을 업데이트
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-RSW-006-DO |
+| 유형 | D&O (개념) |
+| 목적 | RIP의 동작 방식, 한계, RIPv1과 RIPv2의 차이를 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-#### 장점
+{% hint style="info" %}
+NOTE: 이 문서는 개념만 다룬다. 설정 절차는 [rip-config.md](rip-config.md)(NET-RSW-010-MP)로 옮겼다. 원본은 명령 블록이 일부 깨져 있었다. RIPv2 호환성 서술은 정정했다.
+{% endhint %}
 
-* 소규모 네트워크에서 효율적
-* 비교적 구성이 간편
-* 모든 제조사 라우터에서 지원하는 프로토콜 (호환성 좋음)
+## 1. 목적
 
-#### 단점
+RIP(Routing Information Protocol)는 거리 벡터(Distance Vector) 방식의 IGP다. 목적지까지의 거리(홉 수, [Hop](../fundamentals/networkterminology.md))와 방향(어느 이웃을 거치는가)만으로 최적 경로를 정한다.
 
-* Hop 수가 16 이상이면 네트워크를 찾지 못함
-* 속도, 거리, 지연 등 고려하지 않아 최적의 경로 산정에 비효율적일 때가 있다.
+## 2. 구성 요소
 
-연결 과정
+### 2.1 특징
 
-{% stepper %}
-{% step %}
-### 시작 상태
+| 번호 | 항목 | 내용 |
+|---|---|---|
+| 1 | 적용 범위 | AS 내부용 라우팅 프로토콜(IGP)이다 |
+| 2 | 메트릭 | 홉 수다. 최대 15홉까지만 허용하고, 16홉은 도달 불가(무한대)로 본다 |
+| 3 | 갱신 | 라우팅 광고를 받아 라우팅 테이블을 주기적으로 갱신한다. 기본 30초마다 전체 테이블을 보낸다 |
+| 4 | AD | 120 |
+| 5 | 통신 | UDP 포트 520 |
 
-아래와 같이 서브넷팅한 네트워크를 장치에 할당한 상태에서 시작합니다. (topology를 라우터의 [Loopback](../ip-addressing-and-nat/ipv4.md) 을 이용해 간소화한 상태)
+### 2.2 장점과 단점
 
-아직 라우팅이 되어 있지 않아 서로 간 통신이 불가능한 상태입니다.
-{% endstep %}
+| 번호 | 구분 | 내용 |
+|---|---|---|
+| 1 | 장점 | 소규모 네트워크에서 효율적이다 |
+| 2 | 장점 | 구성이 비교적 간단하다 |
+| 3 | 장점 | 모든 제조사 라우터가 지원한다(호환성이 좋다) |
+| 4 | 단점 | 홉 수가 16 이상이면 네트워크를 찾지 못한다 |
+| 5 | 단점 | 속도, 거리, 지연을 고려하지 않아 최적 경로가 아닐 수 있다 |
 
-{% step %}
-### 현재 라우팅 테이블 확인
+### 2.3 RIPv1과 RIPv2 비교
 
-다음 명령으로 라우팅 테이블을 확인합니다:
+| 번호 | 항목 | RIPv1 | RIPv2 |
+|---|---|---|---|
+| 1 | 주소 방식 | 클래스풀(Classful). 서브넷 마스크를 광고하지 않는다 | 클래스리스(Classless). 서브넷 마스크를 광고한다 |
+| 2 | 전송 방식 | 브로드캐스트 | 멀티캐스트 `224.0.0.9` |
+| 3 | 자동 요약 | 항상 클래스 경계로 요약한다 | `no auto-summary`로 끌 수 있다. 세부 경로를 광고할 수 있다 |
+| 4 | 인증 | 없다 | 키 체인(key chain)으로 인증할 수 있다 |
 
-{% code title="명령" %}
-```
-```
-{% endcode %}
+{% hint style="info" %}
+NOTE: 원본은 "RIPv2는 다른 RIP 버전의 라우터와 통신할 수 없다"고 적었고, "key chain으로 암호화한다"고 적었다. Cisco 라우터에서 `version 2`를 명시하면 v2만 주고받으므로 v1 라우터와는 경로를 교환하지 못한다. 버전을 지정하지 않은 기본값은 v1과 v2를 모두 받는다. key chain은 암호화가 아니라 인증(평문 또는 MD5)이다. 확인 필요.
+{% endhint %}
 
-```bash
-sh ip route
-```
-{% endstep %}
+## 3. 동작 원리
 
-{% step %}
-### RIP 설정
+1. 라우터가 `network` 명령으로 지정한 인터페이스에서 자신의 경로를 이웃에게 광고한다.
+2. 이웃은 받은 경로의 홉 수에 1을 더해 자신의 테이블에 넣는다.
+3. 같은 목적지가 여러 경로면 홉 수가 가장 작은 경로를 고른다.
+4. 라우터가 30초마다 전체 테이블을 광고한다.
+5. 홉 수가 16이 되면 그 경로는 도달 불가로 처리된다.
 
-라우터 설정 모드로 들어가서 RIP를 설정합니다:
+{% hint style="info" %}
+NOTE: 원본은 RIPv2 사용이 일반적이라고 적었다. RIP 자체가 소규모·학습용에 주로 쓰이고, 실무에서는 OSPF나 EIGRP를 많이 쓴다.
+{% endhint %}
 
-{% code title="명령" %}
-```
-```
-{% endcode %}
+## 4. 약어·용어
 
-```bash
-conf t
-router rip
-network [연결된 네트워크]
-```
+| 용어 | 뜻 |
+|---|---|
+| RIP | Routing Information Protocol |
+| IGP | Interior Gateway Protocol |
+| AS | Autonomous System |
+| Hop | 경로에서 지나는 라우터 한 대 |
+| 클래스풀 / 클래스리스 | 서브넷 마스크를 쓰지 않는 / 쓰는 주소 해석 방식 |
+| Loopback | 라우터 안에 만드는 가상 인터페이스. 실습에서 토폴로지를 단순하게 만드는 데 쓴다 |
 
-`network [연결된 네트워크]` 를 통해 연결된 네트워크 정보를 모두 입력하고, 다른 라우터에도 동일한 과정을 진행합니다.
-{% endstep %}
+## 5. 참조
 
-{% step %}
-### 라우팅 광고 및 확인
+| 참조 | 설명 |
+|---|---|
+| [RIP 설정 (NET-RSW-010-MP)](rip-config.md) | 설정 절차 |
+| [IPv4 주소](../ip-addressing-and-nat/ipv4.md) | Loopback 관련 |
+| [Redistribution](../../Linux/guide/operations/redistribution.md) | 재분배 문서 |
 
-호스트 간 라우팅 광고 설정이 끝나면, 다른 라우터의 가상 단말로 Ping을 날려 전달되는지 확인합니다.
+## 내 말로 채우기
 
-현재 라우터에 적용된 라우팅 프로토콜 정보를 확인하려면:
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-{% code title="명령" %}
-```
-```
-{% endcode %}
-
-```bash
-sh ip protocols
-```
-
-````
-
-{% endstep %}
-{% endstepper %}
-
-연결 2
-{% stepper %}
-{% step %}
-## RIP 버전 전환 안내
-
-RIP 프로토콜은 버전이 두 가지(RIPv1, RIPv2)가 있습니다. 이전 연결은 RIPv1을 통해 이루어진 것이고, 지금은 RIPv2로 연결하려 합니다.
-
-기존의 v1 연결은 다음 명령으로 제거할 수 있습니다:
-
-{% code title="명령" %}
-```bash
-no router rip
-````
-
-````
-
-굳이 삭제하지 않아도, 기존 라우팅이 유지된 상태에서 아래와 같이 입력하면 바로 버전 전환이 가능합니다.
-
-</div>
-
-<div data-gb-custom-block data-tag="step">
-
-## RIPv2로 전환
-
-기존 router rip 설정으로 들어가서 버전을 변경합니다:
-
-<div data-gb-custom-block data-tag="code" data-title='명령'>
-
-```bash
-router rip
-version 2
-````
-{% endstep %}
-{% endstepper %}
-
-RIP v2 특징
-
-* 다른 RIP 버전의 라우터와 통신 불가능 (호환성 떨어짐)
-* auto-summary 기능을 끌 수 있다. (라우팅에 필요한 세부 정보를 활용할 수 있다.)
-* key chain 기능으로 암호화 가능하다.
-
-최근에는 RIPv2를 사용하는 것이 일반적입니다.
-
-관련 링크
-
-* [Redistribution](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/redistribution)
+- [ ] 최대 홉 수가 15라는 제한이 실무에서 어떤 문제를 만드는지 설명한다.
+- [ ] RIPv1에서 서브넷이 다른 두 네트워크가 있을 때 어떤 일이 생길지 내 말로 쓴다.
+- [ ] 내가 RIP를 쓸 것 같은 상황과 쓰지 않을 상황을 하나씩 쓴다.

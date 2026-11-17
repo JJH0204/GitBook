@@ -1,118 +1,112 @@
 # EIGRP 라우팅 프로토콜
 
-cisco에서 개발한 IGRP 기반의 개방형 라우팅 프로토콜\
-망 구성 방식이 변경된 뒤 일어나는 불안정한 라우팅을 최소화하는데 최적화 됨\
-hop count가 커 대학/병원 등에서 사용한다.\
-rip와 달리 경로 비용을 가중치로 관리해 유동적이다.
+## 작업 식별
 
-* [관련정보](https://m.blog.naver.com/luexr/222441096481)
+| 항목 | 내용 |
+|---|---|
+| Task ID | NET-RSW-004-DO |
+| 유형 | D&O (개념) |
+| 목적 | EIGRP의 특징, 3가지 테이블, 경로 선택 방식, AS 번호의 의미를 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 연결
+{% hint style="info" %}
+NOTE: 이 문서는 개념만 다룬다. 설정 절차는 [eigrp-config.md](eigrp-config.md)(NET-RSW-012-MP)로 옮겼다. 원본의 일부 서술은 정정했다. 정정한 곳은 "비고"에 표시했다.
+{% endhint %}
 
-위와 같이 초기 설정된 topology에 AS를 구분해서 라우팅 진행
+## 1. 목적
 
-각 라우터의 연결 정보는 `sh ip route`를 통해 확인한다.
+EIGRP(Enhanced Interior Gateway Routing Protocol)는 Cisco가 IGRP를 개선해 만든 라우팅 프로토콜이다. 네트워크 구성이 바뀐 뒤 라우팅이 불안정해지는 시간을 줄이도록 설계됐다. 경로 비용을 대역폭과 지연 같은 값으로 계산해 RIP보다 유연하다. 원본은 홉 수 제한이 커서 대학, 병원 같은 큰 네트워크에 쓴다고 적었다.
 
-다음은 라우터에서 광고할 네트워크를 설정하는 과정이다.
+## 2. 구성 요소
 
-{% stepper %}
-{% step %}
-### 네트워크 광고 설정 (로컬 AS)
+### 2.1 특징
 
-1. 전역 구성 모드로 진입:
-   * `conf t`
-2. EIGRP 프로세스 생성 및 AS 지정:
-   * `router eigrp <ASN>`
-3. 광고할 네트워크 추가:
-   * `network <네트워크IP> <와일드카드>`
-   * 참고
-     * ASN
-     * 와일드카드 마스크
-4. 자동 요약 해제:
-   * 모든 네트워크를 설정한 뒤 `no auto-summary` 실행
-5. 다른 라우터에서도 동일하게 구성
+| 번호 | 항목 | 내용 | 비고 |
+|---|---|---|---|
+| 1 | 개발 | Cisco가 IGRP를 바탕으로 개발했다 | 원본은 "개방형"으로 적었다. 2016년 RFC 7868(Informational)로 공개됐으나 원래는 Cisco 독자 프로토콜이다. 확인 필요 |
+| 2 | 분류 | IGP. 고급 거리 벡터 방식이다 | |
+| 3 | 메트릭 | 기본값은 대역폭(Bandwidth)과 지연(Delay)을 쓴다. MTU와 부하·신뢰도는 기본 계산에 쓰지 않는다 | 원본은 `show interface`에서 MTU, BW, DLY를 확인한다고 적었다. MTU는 값만 전달된다 |
+| 4 | 최대 홉 수 | 기본 100, 최대 255로 설정할 수 있다 | RIP의 15보다 훨씬 크다. 확인 필요 |
+| 5 | AD | 내부 경로 90, 외부(재분배된) 경로 170 | |
+| 6 | 알고리즘 | DUAL(Diffusing Update Algorithm) | |
+| 7 | 통신 | 멀티캐스트 `224.0.0.10`, IP 프로토콜 번호 88 | |
 
-결과: 같은 AS 안에서는 ping 송수신이 원활해진다.
-{% endstep %}
+### 2.2 EIGRP가 유지하는 테이블
 
-{% step %}
-### 이웃 및 토폴로지 확인
+| 번호 | 테이블 | 내용 | 확인 명령 |
+|---|---|---|---|
+| 1 | 이웃 테이블 | 직접 연결된 EIGRP 이웃 라우터 목록 | `show ip eigrp neighbors` |
+| 2 | 토폴로지 테이블 | 이웃이 알려 준 모든 경로와 거리 값 | `show ip eigrp topology` |
+| 3 | 라우팅 테이블 | 토폴로지 테이블에서 고른 최적 경로 | `show ip route` |
 
-* 라우팅 테이블에서 EIGRP로 학습한 경로는 D 코드로 표시된다.&#x20;
-*   이웃 확인:
+### 2.3 경로 선택 용어
 
-    * `sh ip eigrp neighbors`&#x20;
+| 번호 | 용어 | 뜻 |
+|---|---|---|
+| 1 | FD (Feasible Distance) | 이 라우터에서 목적지까지의 전체 메트릭이다. 값이 가장 작은 경로가 최적 경로(Successor)가 된다 |
+| 2 | RD/AD (Reported Distance) | 이웃 라우터가 알려 준, 이웃에서 목적지까지의 메트릭이다 |
+| 3 | Successor | 라우팅 테이블에 올라가는 최적 경로의 다음 홉이다 |
+| 4 | Feasible Successor | 백업 경로다. 그 RD가 현재 Successor의 FD보다 작아야 한다 |
 
-    이곳에 이웃 정보가 없다면 네트워크 광고 데이터를 받지 못해 라우팅 테이블을 갱신할 수 없다.
-* 인터페이스 속성 확인 (경로 비용 계산에 사용):
-  * `sh int <인터페이스이름>`에서 MTU, BW, DLY 확인&#x20;
-* 토폴로지 테이블 확인:
-  * `sh ip eigrp topology`\
-    FD(Feasible Distance) 값이 가장 작은 경로가 최적 경로가 된다.
-{% endstep %}
-{% endstepper %}
+### 2.4 AS 번호(ASN)
 
-## 서로 다른 ASN 끼리 재분배
+| 번호 | 항목 | 내용 |
+|---|---|---|
+| 1 | 역할 | EIGRP 프로세스를 구분하는 번호다. 이웃끼리 ASN이 같아야 경로를 교환한다 |
+| 2 | ASN이 다른 경우 | 같은 라우터가 두 프로세스를 돌려도 재분배(Redistribution)를 설정해야 서로의 경로를 받는다 |
+| 3 | 재분배 방식 | Multi: 양쪽 프로세스에 모두 재분배한다. Single: 한쪽 프로세스에만 재분배한다 |
 
-ASN 값이 서로 다른 경우 재분배 설정이 없으면 네트워크 정보를 받아올 수 없다.\
-서로 다른 라우터 끼리 연결 하는 기능을 Redistribution이라 한다.
+### 2.5 라우팅 테이블의 EIGRP 코드
 
-두 가지 방법이 있다:
+| 번호 | 코드 | 뜻 |
+|---|---|---|
+| 1 | `D` | EIGRP로 학습한 내부 경로 |
+| 2 | `D EX` | 다른 AS에서 재분배돼 온 외부 경로 |
 
-* Multi : 양 라우터에 재분배
-* Single : 한쪽 라우터에 재분배
+## 3. 동작 원리
 
-***
+1. 라우터가 EIGRP를 켠 인터페이스로 Hello 패킷을 보낸다.
+2. ASN이 같은 이웃이 응답하면 이웃 테이블에 올린다.
+3. 이웃끼리 경로 정보를 교환해 토폴로지 테이블을 만든다.
+4. 라우터가 DUAL로 FD가 가장 작은 경로를 Successor로 고른다.
+5. Successor가 라우팅 테이블(`D`)에 올라간다.
+6. Successor 경로가 끊기면 Feasible Successor로 즉시 바꾼다. 없으면 이웃에 경로를 다시 묻는다.
 
-재분배 할 라우터에 접속한다.
+{% hint style="info" %}
+NOTE: 원본은 "이웃 정보가 없으면 네트워크 광고 데이터를 받지 못해 라우팅 테이블을 갱신할 수 없다"고 적었다. 이웃이 맺어지지 않는 대표 원인은 ASN 불일치, `network` 명령 누락, 인터페이스 `shutdown`이다.
+{% endhint %}
 
-{% stepper %}
-{% step %}
-### Single / 다수 재분배 설정 (예시)
+{% hint style="info" %}
+NOTE: 원본은 "같은 프로토콜이면 네트워크를 중복 광고해도 문제없고, 다르면 한쪽에서만 해야 하며 중복 광고 시 오류가 난다"고 적었다. 정확한 조건과 오류 내용을 알 수 없어 확인 필요로 둔다.
+{% endhint %}
 
-1. 재분배 명령 적용 (재분배 실행할 라우터에서):
-   * `router eigrp <ASN>`
-   * `redistribute eigrp <연결할ASN>`
+## 4. 약어·용어
 
-예시:
+| 용어 | 뜻 |
+|---|---|
+| EIGRP | Enhanced Interior Gateway Routing Protocol |
+| IGRP | Interior Gateway Routing Protocol. EIGRP의 전신 |
+| ASN | Autonomous System Number. EIGRP 프로세스 번호 |
+| DUAL | Diffusing Update Algorithm. 루프 없는 경로를 계산하는 알고리즘 |
+| FD | Feasible Distance |
+| 와일드카드 마스크 | 서브넷 마스크의 비트를 뒤집은 값. `255.255.255.0`의 와일드카드는 `0.0.0.255` |
+| Redistribution | 서로 다른 라우팅 프로세스·프로토콜 사이에서 경로를 넘겨 주는 기능 |
 
-```
-Router(config)#router eigrp 100
-Router(config-router)#redistribute eigrp 200
-```
+## 5. 참조
 
-2. 네트워크 확인:
-   * `do sh ip route`
+| 참조 | 설명 |
+|---|---|
+| [EIGRP 설정 (NET-RSW-012-MP)](eigrp-config.md) | 설정 절차 |
+| [Redistribution](../../Linux/guide/operations/redistribution.md) | 재분배 문서 |
+| [원본 참고 글(네이버 블로그)](https://m.blog.naver.com/luexr/222441096481) | 원본이 가리킨 관련 정보 |
 
-(출력 예시는 원문 참조)
-{% endstep %}
+## 내 말로 채우기
 
-{% step %}
-### 추가 네트워크 광고 및 자동 요약 해제
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-1. 네트워크 추가:
-   * `net <네트워크> <와일드카드>` (예: `net 192.168.20.192 0.0.0.63`)
-2. 자동 요약 해제:
-   * `no auto-summary`
-
-예시 세션:
-
-```
-Router(config-router)#net 192.168.20.192 0.0.0.63
-Router(config-router)#
-%DUAL-5-NBRCHANGE: IP-EIGRP 100: Neighbor 192.168.20.193 (Serial0/3/1) is up: new adjacency
-
-Router(config-router)#no auto-summary
-```
-{% endstep %}
-{% endstepper %}
-
-재분배한 라우터에서는 D 코드로 다른 AS 네트워크의 경로 정보가 표시된다.\
-다른 라우터에서는 D EX로 외부에서 온 네트워크라는 점을 확인할 수 있도록 표시된다.
-
-참고: 라우팅 프로토콜이 같으면 네트워크를 중복으로 광고해도 문제가 없다.\
-다르면 한쪽에서만 진행해야 하며, 중복 광고 시 오류가 발생할 수 있다.
-
-## 관련 문서
-
-* [Redistribution](https://krjaeh0.gitbook.io/j-log/linux/guide/operations/redistribution)
+- [ ] EIGRP가 RIP보다 유연하다고 하는 이유를 메트릭 관점에서 설명한다.
+- [ ] 이웃 테이블이 비어 있다면 어디부터 확인할지 순서대로 쓴다.
+- [ ] ASN이 서로 다른 두 라우터가 경로를 교환하려면 무엇이 필요한지, 직접 겪은 경험이나 상상으로 적는다.
