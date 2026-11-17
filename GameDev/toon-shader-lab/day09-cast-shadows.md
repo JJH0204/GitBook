@@ -1,38 +1,74 @@
 # Day 09. 그림자 드리우기 — 패스를 더 만들고 코드를 나눠 쓰기
 
-> ⏱ **약 1시간** — 정리 15분 · 새 패스 두 개 30분 · 확인 15분
-> 🧸 **오늘의 비유**: 한 물체를 그리는 **촬영 팀**이 늘어나요. 색칠 팀 말고 **그림자 팀**(빛 자리에서 거리 사진 찍기)과 **깊이 팀**(카메라에서 거리 사진 찍기)이 생겨요. 팀이 여럿이면 **공용 준비물**을 한곳에 둬요.
+## 작업 식별
 
-![Day 09 결과](../.gitbook/assets/day09-cast-shadow.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-009-MP |
+| 목적 | 공용 코드를 `HLSLINCLUDE`로 모으고 `ShadowCaster`, `DepthOnly` 패스를 추가해 물체가 그림자와 깊이 텍스처에 기록되게 한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x, Forward 렌더링. Day 08 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (정리 15분, 새 패스 두 개 30분, 확인 15분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: `ShadowCaster` 패스의 `ApplyShadowBias`, `_LightDirection`, `_LightPosition`, `_CASTING_PUNCTUAL_LIGHT_SHADOW`, `UNITY_REVERSED_Z` 처리와 `DepthOnly` 패스의 `LightMode` 이름은 URP 버전에 따라 다르다. URP 버전 확인 필요. 렌더링 경로가 Deferred이거나 Render Graph 기반인 경우 패스 호출 방식이 다를 수 있다.
+{% endhint %}
 
-우리 물체가 바닥과 서로에게 **그림자를 드리워요**(오른쪽). 그리고 깊이 지도에도 찍혀요(나중에 SSAO와 화면 외곽선이 써요).
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day05-textures.md](day05-textures.md) | GMD-TSL-005-MP | `clip` 도입 |
+| [day08-receive-shadows.md](day08-receive-shadows.md) | GMD-TSL-008-MP | 이전: 그림자 받기 |
+| [day10-ambient-fog.md](day10-ambient-fog.md) | GMD-TSL-010-MP | 다음: 환경광과 안개 |
+| [day19-depthnormals-ssao.md](day19-depthnormals-ssao.md) | GMD-TSL-019-MP | 깊이 텍스처 사용처 (SSAO) |
+| [day21-screen-outline.md](day21-screen-outline.md) | GMD-TSL-021-MP | 깊이 텍스처 사용처 (화면 외곽선) |
+| [toon-shader-study Day 08](../toon-shader-study/day08-shadows.md), [Day 18](../toon-shader-study/day18-passes.md) | - | 그림자, 패스 총정리 (짝꿍 과정) |
+| [LearnOpenGL Shadow Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping), [Unity Pass 태그(LightMode)](https://docs.unity3d.com/Manual/SL-Pass.html) | - | 그림자 여드름, LightMode 참고 |
 
-- [ ] `HLSLINCLUDE`로 여러 패스가 같은 코드를 나눠 쓴다
-- [ ] 모든 패스가 **같은 CBUFFER**를 써야 하는 이유를 안다
-- [ ] ShadowCaster 패스와 `ApplyShadowBias`를 짠다
-- [ ] DepthOnly 패스를 짠다
-- [ ] "모든 패스가 같은 가위를 쓴다"는 규칙을 안다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 08 완료 상태 | |
 
-## 1. 공용 준비물 모으기: HLSLINCLUDE (15분)
+## 3. 안전 사항
 
-패스를 더 만들면 각 패스도 `_BaseMap`, `_BaseColor`, `_Cutoff`가 필요해요. 그리고 SRP Batcher는 **모든 패스의 CBUFFER 모양이 똑같아야** 동작해요. 패스마다 따로 적다가 하나만 빠뜨리면 끝이에요.
+{% hint style="danger" %}
+WARNING: 모든 패스의 `UnityPerMaterial` CBUFFER는 모양이 같아야 SRP Batcher가 동작한다. CBUFFER를 패스마다 따로 쓰지 말고 `HLSLINCLUDE`의 한 곳에만 둔다.
+{% endhint %}
 
-그래서 `SubShader` 안, `Pass`보다 **위에** `HLSLINCLUDE` 블록을 만들어요. 여기 적은 코드는 **모든 패스의 `HLSLPROGRAM` 앞에 자동으로 붙어요.**
+{% hint style="warning" %}
+CAUTION: 5-B 절차는 코드를 옮기기만 한다. 5-B 이후 화면이 Day 08과 같아야 한다. 다르면 5-C로 넘어가지 말고 코드 이동 오류를 먼저 찾는다.
+{% endhint %}
 
-### ① Forward 패스에서 잘라 내서 위로 옮기기
+## 4. 준비
 
-Forward 패스의 `HLSLPROGRAM` 안에서 아래 세 가지를 **잘라 내요.**
-- `#include ".../Core.hlsl"` 줄
-- `TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);` 줄
-- `CBUFFER_START` … `CBUFFER_END` 블록 전체
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 08 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | 현재 코드를 커밋한다 | `git commit -am "Day 08 완료"` 후 `git status`가 깨끗하다 |
 
-그리고 `Tags { "RenderPipeline" ... }` 줄 **아래**에 붙여 넣고, 가위 함수 `ClipAlpha`를 추가해요.
+## 5. 절차
+
+### A. 개념 확인
+
+| 패스 | `LightMode` | 하는 일 |
+|---|---|---|
+| Forward | `UniversalForward` | 색칠 |
+| ShadowCaster | `ShadowCaster` | 광원 위치에서 거리만 기록(섀도맵 생성) |
+| DepthOnly | `DepthOnly` | 카메라 기준 깊이만 기록(`_CameraDepthTexture`) |
+
+### B. 공용 코드를 HLSLINCLUDE로 이동
+
+`SubShader` 안, `Pass`보다 위에 둔 `HLSLINCLUDE` 블록은 모든 패스의 `HLSLPROGRAM` 앞에 자동으로 붙는다.
+
+1. (5-B-01) Forward 패스의 `HLSLPROGRAM`에서 다음 세 가지를 잘라 낸다.
+   - `#include ".../Core.hlsl"` 줄
+   - `TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);` 줄
+   - `CBUFFER_START` ~ `CBUFFER_END` 블록 전체
+2. (5-B-02) `Tags { "RenderPipeline" ... }` 줄 아래에 붙여 넣고 `ClipAlpha` 함수를 추가한다. → 결과: Forward 패스에는 `Lighting.hlsl` include만 남는다.
 
 ```hlsl
         Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" "Queue" = "Geometry" }
@@ -72,26 +108,16 @@ Forward 패스의 `HLSLPROGRAM` 안에서 아래 세 가지를 **잘라 내요.*
             ...
 ```
 
-Forward 패스에는 `#include ".../Lighting.hlsl"`만 남아요.
-
-### ② Forward의 가위도 공용 함수로
-
-frag의 `clip(baseColor.a - _Cutoff);`를 바꿔요.
+3. (5-B-03) Forward frag의 `clip(baseColor.a - _Cutoff);`를 공용 함수 호출로 바꾼다. `void`는 반환값이 없다는 뜻이다. → 결과: 저장 후 화면이 Day 08과 같다(리팩터링).
 
 ```hlsl
     half4 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv) * _BaseColor;
     ClipAlpha(input.uv);
 ```
 
-`void`는 "돌려주는 값 없음"이에요. 가위질만 하는 함수니까요.
+### C. ShadowCaster 패스 추가
 
-{% hint style="success" %}
-여기까지 저장하면 화면은 **어제와 똑같아야** 해요. 코드를 옮기기만 했으니까요. 이렇게 "모양만 바꾸고 결과는 그대로"인 정리를 **리팩터링**이라고 해요. 정리할 때마다 결과가 그대로인지 확인하는 습관을 들이세요.
-{% endhint %}
-
-## 2. 그림자 팀: ShadowCaster 패스 (20분)
-
-Forward 패스의 마지막 `}` **다음**(SubShader 안)에 새 패스를 추가해요.
+1. (5-C-01) Forward 패스의 마지막 `}` 다음(SubShader 안)에 새 패스를 추가한다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
         // 그림자 지도 찍기: 빛의 자리에서 '거리'만 기록한다
@@ -155,21 +181,21 @@ Forward 패스의 마지막 `}` **다음**(SubShader 안)에 새 패스를 추�
         }
 ```
 
-| 부분 | 뜻 |
+| 부분 | 의미 |
 |---|---|
-| `LightMode = ShadowCaster` | "그림자 지도 찍을 때 불러 주세요" |
-| `ColorMask 0` | 색은 안 써요. 거리(깊이)만 기록하니까 |
-| `_CASTING_PUNCTUAL_LIGHT_SHADOW` | 포인트·스폿 조명은 위치가 있어서 점마다 방향을 따로 계산 |
-| `_LightDirection`, `_LightPosition` | 이름만 맞춰 선언하면 URP가 값을 넣어 줘요 |
-| `ApplyShadowBias` | 섀도맵은 픽셀로 된 사진이라 비스듬한 면은 **자기 자신을 가린다고 착각**해요(그림자 여드름). 표면을 빛·노멀 쪽으로 살짝 밀어서 막아요 |
-| `UNITY_REVERSED_Z` 블록 | 빛 카메라 앞쪽 경계를 넘어간 점을 경계에 붙여서 그림자가 잘리지 않게 해요 (URP 표준 코드) |
-| `ClipAlpha` | 공용 가위 — Day 05의 구멍이 그림자에도 뚫려요 |
+| `LightMode = ShadowCaster` | URP가 섀도맵을 만들 때 이 패스를 호출한다 |
+| `ColorMask 0` | 색을 쓰지 않고 깊이만 기록한다 |
+| `_CASTING_PUNCTUAL_LIGHT_SHADOW` | 포인트, 스폿 조명은 위치가 있어 정점마다 광원 방향을 계산한다 |
+| `_LightDirection`, `_LightPosition` | 이름을 맞춰 선언하면 URP가 값을 넣는다 |
+| `ApplyShadowBias` | 섀도맵은 해상도가 있는 텍스처라 비스듬한 면이 자기 자신을 가린다고 판정하는 오류(그림자 여드름)가 난다. 표면을 광원과 노멀 방향으로 조금 밀어 막는다 |
+| `UNITY_REVERSED_Z` 블록 | 광원 카메라의 앞 클립 경계를 넘은 점을 경계에 붙여 그림자가 잘리지 않게 한다 (URP 표준 코드) |
+| `ClipAlpha` | 공용 가위. Day 05의 구멍이 그림자에도 뚫린다 |
 
-패스마다 함수 이름이 달라요(`ShadowVert`/`ShadowFrag`). 같은 이름을 써도 패스끼리는 남남이지만, 다르게 지으면 읽기 쉬워요.
+### D. DepthOnly 패스 추가
 
-## 3. 깊이 팀: DepthOnly 패스 (10분)
+DepthOnly 패스는 카메라 기준 깊이 텍스처(`_CameraDepthTexture`)에 물체를 기록한다. Day 19의 SSAO와 Day 21의 화면 외곽선이 이 텍스처를 읽는다.
 
-ShadowCaster 패스 다음에 추가해요. 카메라 기준 **깊이 지도**(`_CameraDepthTexture`)에 우리 물체를 찍는 패스예요. 나중에 SSAO(Day 19)와 화면 외곽선(Day 21)이 이 지도를 읽어요.
+1. (5-D-01) `ShadowCaster` 패스 다음에 추가한다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
         // 깊이 지도 찍기: 카메라에서 얼마나 먼지만 기록한다
@@ -213,34 +239,45 @@ ShadowCaster 패스 다음에 추가해요. 카메라 기준 **깊이 지도**(`
         }
 ```
 
-정답: [`Assets/Solutions/Day09/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day09/MyToon.shader)
+정답 파일: [`Assets/Solutions/Day09/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day09/MyToon.shader)
 
-## 4. 확인하기 (15분)
+### E. 화면 확인
 
-- 바닥에 물체 세 개의 **그림자**가 생겨요(맨 위 오른쪽). 캡슐 그림자가 큐브에도 떨어져요.
-- 머티리얼 Alpha Cutoff를 0.5로 올리면 바닥 그림자에도 **구멍**이 보여요. 공용 가위 덕분이에요. 확인 후 0으로 되돌려요.
-- **모든 패스가 같은 가위를 써야 하는 이유**: 색칠 팀만 오리면 없는 부분이 그림자를 드리우고, 깊이 지도에 유령 모양이 남아요. 실제 게임 셰이더에서도 자주 나오는 버그예요([toon-shader-study Day 18](../toon-shader-study/day18-passes.md) 참고).
+1. (5-E-01) Lab 씬의 바닥을 본다. → 결과: 세 물체의 그림자가 생기고 Capsule 그림자가 Cube에도 떨어진다.
+2. (5-E-02) 머티리얼 `Alpha Cutoff`를 0.5로 올린다. → 결과: 바닥 그림자에도 구멍이 보인다. 확인 후 0으로 되돌린다.
 
-{% hint style="info" %}
-구의 그림자 쪽 경계에 **얼룩덜룩한 계단**이 보일 수 있어요. 자기 그림자가 빛과 거의 직각인 곳(경계)에 걸리면서 툰 계단이 그 오차를 키워서 생기는 현상이에요. Directional Light의 Shadows → **Bias**를 Custom으로 바꾸고 Normal 값을 올리거나 머티리얼의 **Receive Shadow**를 낮추면 줄어요. 툰 셰이더에서 흔히 만나는 숙제예요.
+![Day 09 결과: 그림자 드리우기](../.gitbook/assets/day09-cast-shadow.png)
+
+모든 패스가 같은 `ClipAlpha`를 써야 한다. 색칠 패스만 오리면 없는 부분이 그림자를 드리우고 깊이 텍스처에 유령 모양이 남는다. 실제 게임 셰이더에서도 자주 나오는 버그다.
+
+{% hint style="warning" %}
+CAUTION: 구의 그림자 경계에 얼룩덜룩한 계단이 보일 수 있다. 자기 그림자가 빛과 거의 직각인 경계에 걸릴 때 툰 계단이 오차를 키워서 생긴다. Directional Light의 `Shadows > Bias`를 `Custom`으로 바꿔 `Normal` 값을 올리거나, 머티리얼의 `Receive Shadow`를 낮추면 줄어든다.
 {% endhint %}
 
-## 5. 실험해 보기
+### F. 실험
 
-1. **패스 하나 지워 보기** — ShadowCaster 패스를 통째로 주석 처리(`/* … */`)하면 그림자가 사라져요. 되돌려요.
-2. **Bias 체험** — Directional Light의 Shadows → Bias를 **Custom**으로 바꾸고 Depth·Normal을 0으로 내리면 물체 표면에 줄무늬 **그림자 여드름**이 생겨요. 다 보면 Bias를 다시 *Use settings from Render Pipeline Asset*으로 돌려놔요.
-3. 커밋: `git commit -am "Day 09: 그림자 드리우기와 깊이 패스"`
+1. (5-F-01) `ShadowCaster` 패스를 `/* ... */`로 주석 처리한다. → 결과: 그림자가 사라진다. 확인 후 되돌린다.
+2. (5-F-02) Directional Light의 `Shadows > Bias`를 `Custom`으로 바꾸고 `Depth`, `Normal`을 0으로 내린다. → 결과: 표면에 줄무늬 그림자 여드름이 생긴다. 확인 후 `Use settings from Render Pipeline Asset`으로 되돌린다.
+3. (5-F-03) 커밋한다: `git commit -am "Day 09: 그림자 드리우기와 깊이 패스"`
 
-## 6. 오늘의 액기스
+## 6. 기능 확인
 
-👉 [ESSENCE.md — Day 09](essence.md#day-09)
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 5-B 완료 후 화면을 Day 08과 비교한다 | 동일 | 차이 없음 |
+| 2 | 바닥을 본다 | 세 물체의 그림자 | 그림자 3개 |
+| 3 | `Alpha Cutoff = 0.5` | 그림자에도 구멍 | 구멍이 보인다 |
+| 4 | 셰이더 Inspector | `SRP Batcher: compatible` | 표시 일치 |
 
-## 더 읽을거리
+## 7. 복구
 
-- [LearnOpenGL — Shadow Mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping) (그림자 여드름, 피터팬 현상 그림)
-- [Unity — Pass 태그(LightMode)](https://docs.unity3d.com/Manual/SL-Pass.html)
-- 더 깊이: [toon-shader-study Day 08 — 그림자](../toon-shader-study/day08-shadows.md) · [Day 18 — 패스 총정리](../toon-shader-study/day18-passes.md)
+1. (7-01) 변경을 되돌린다: `git restore Assets/MyToon/MyToon.shader` (4절에서 만든 Day 08 커밋 기준).
+2. (7-02) `Bias`, `Alpha Cutoff`를 기본값으로 되돌린다.
 
----
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 09 페이지를 AMM 형식으로 재작성. URP 버전 의존 NOTE 추가 |
 
 [← Day 08](day08-receive-shadows.md) · [목차](README.md) · [다음: Day 10 →](day10-ambient-fog.md)

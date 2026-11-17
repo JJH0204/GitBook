@@ -1,72 +1,93 @@
 # Day 10. 하늘빛과 안개 — 그림자 속이 깜깜하지 않은 이유
 
-> ⏱ **약 1시간** — 개념 15분 · 코드 25분 · 실험 20분
-> 🧸 **오늘의 비유**: 직접광은 **해가 직접 비추는 빛**, 간접광은 **하늘과 벽에 튕겨서 온 빛**이에요. SH는 사방의 하늘빛을 **숫자 몇 개로 줄인 날씨 엽서**예요.
+## 작업 식별
 
-![Day 10 결과](../.gitbook/assets/day10-ambient.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-010-MP |
+| 목적 | `SampleSH`로 환경광(간접광)을 그림자 쪽에 덜 더하고, 그림자 바닥값과 URP 안개를 적용한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x. Day 09 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (개념 15분, 코드 25분, 실험 20분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: `SampleSH`, `ComputeFogFactor`, `MixFog`, 키워드 `multi_compile_fog`는 URP 버전에 따라 시그니처와 동작이 다를 수 있다. Unity 6의 Adaptive Probe Volumes를 쓰면 환경광 샘플링 방식이 다르다. URP 버전 확인 필요.
+{% endhint %}
 
-그림자 쪽에 **은은한 하늘빛**이 더해져서 탁하던 그림자가 맑아져요(오른쪽). 덤으로 **안개**도 받아요.
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day09-cast-shadows.md](day09-cast-shadows.md) | GMD-TSL-009-MP | 이전: 그림자 드리우기 |
+| [day11-additional-lights.md](day11-additional-lights.md) | GMD-TSL-011-MP | 다음: 보조 조명 |
+| [toon-shader-study Day 10](../toon-shader-study/day10-ambient-gi-ssao.md) | - | 환경광, GI, SSAO (짝꿍 과정) |
+| [Spherical harmonic lighting](https://en.wikipedia.org/wiki/Spherical_harmonic_lighting), [Unity 라이트 프로브 기술 정보](https://docs.unity3d.com/Manual/LightProbes-TechnicalInformation.html) | - | SH 참고 |
 
-- [ ] `SampleSH(N)`으로 하늘빛(환경광)을 받는다
-- [ ] 환경광을 **그림자 쪽엔 덜** 더하는 이유를 안다
-- [ ] 그림자 바닥(Shade Floor)으로 너무 까매지는 걸 막는다
-- [ ] URP 안개를 셰이더에 연결한다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 09 완료 상태 | |
 
-## 1. 간접광 (개념 15분)
+## 3. 안전 사항
 
-해가 직접 닿지 않는 그늘도 물체가 보이죠. 하늘의 파란빛, 땅에서 튕긴 빛이 사방에서 조금씩 들어오기 때문이에요. 정확히 계산하면 너무 비싸서 Unity는 사방에서 오는 빛을 **SH**(구면 조화)라는 숫자 몇 개로 요약해 둬요. 노멀 방향을 넣으면 "그쪽에서 오는 하늘빛"을 돌려줘요: `SampleSH(N)`.
+{% hint style="warning" %}
+CAUTION: 밝은 조명에서 빛 쪽과 그림자 쪽 모두에 환경광을 더하면 두 영역이 1을 넘어 하얗게 잘리고 툰 계단이 사라진다. 환경광은 그림자 쪽에 덜 더한다(`환경광 * (1 - 그림자 정도)`).
+{% endhint %}
 
-### 그냥 더하면 안 될까?
+## 4. 준비
 
-툰에서는 조심해야 해요. 밝은 조명에서 빛 쪽과 그림자 쪽 **둘 다** 큰 값을 더하면 둘 다 1을 넘어 하얗게 잘리고, 애써 만든 계단이 사라져요. 그래서 **그림자 쪽엔 덜** 더해서 명암 대비를 지켜요.
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 09 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | Fog가 꺼져 있다 | `Window > Rendering > Lighting > Environment`의 `Fog` 체크 해제 |
 
-```
-환경광 × (1 - 그림자 정도)
-```
+## 5. 절차
 
-## 2. 코드 고치기 (25분)
+### A. 개념 확인
 
-### ① Properties (`_ReceiveShadow` 아래) + CBUFFER
+그늘이 완전히 까맣지 않은 것은 하늘과 주변 표면에서 반사된 간접광이 들어오기 때문이다. Unity는 사방의 빛을 SH(구면 조화, spherical harmonics) 계수 몇 개로 요약한다. 노멀 방향을 넣으면 그 방향에서 오는 환경광을 돌려주는 함수가 `SampleSH(N)`이다.
+
+### B. Properties와 CBUFFER
+
+1. (5-B-01) `_ReceiveShadow` 아래에 Properties를 추가한다.
 
 ```shaderlab
         _AmbientStrength ("Ambient Strength", Range(0, 2)) = 1
         _ShadeFloor ("Shade Floor", Range(0, 1)) = 0.15
 ```
 
+2. (5-B-02) `HLSLINCLUDE` 안 CBUFFER의 `_ReceiveShadow` 아래에 추가한다. → 결과: 모든 패스가 같은 CBUFFER 모양을 유지한다.
+
 ```hlsl
             half   _AmbientStrength;
             half   _ShadeFloor;
 ```
 
-CBUFFER는 이제 `HLSLINCLUDE` 안에 있다는 것, 잊지 마세요. (`_ReceiveShadow` 아래에 추가)
+### C. 안개 키워드와 Varyings
 
-### ② 안개 키워드 (Forward 패스의 pragma들 아래)
+1. (5-C-01) Forward 패스의 `#pragma` 줄들 아래에 추가한다.
 
 ```hlsl
             #pragma multi_compile_fog
 ```
 
-### ③ 택배 상자와 vert
+2. (5-C-02) Forward 패스의 `Varyings`에 추가한다.
 
 ```hlsl
                 half   fogFactor  : TEXCOORD3;    // Varyings 에 추가
 ```
 
+3. (5-C-03) `vert`의 `return` 바로 위에 추가한다. 안개는 카메라에서 먼 정도로 정해지므로 정점마다 한 번 계산해 넘긴다. → 결과: 컴파일 오류가 없다.
+
 ```hlsl
                 o.fogFactor  = ComputeFogFactor(o.positionCS.z);   // vert 의 return 바로 위
 ```
 
-안개는 **카메라에서 먼 정도**에 따라 정해지니까, 점마다 한 번 계산해서 넘겨요(픽셀마다 하는 것보다 싸요).
+### D. frag 끝부분 수정
 
-### ④ frag 끝부분
-
-`toon = lerp(...)` 두 줄 다음부터 끝까지를 이렇게 바꿔요.
+1. (5-D-01) `toon = lerp(...)` 두 줄 다음부터 `frag` 끝까지를 다음으로 바꾼다. → 결과: 그림자 쪽이 은은하게 밝아진다.
 
 ```hlsl
                 half shadeMask = max(shadow1, shadow2);   // 얼마나 그림자인가 (0~1)
@@ -81,41 +102,52 @@ CBUFFER는 이제 `HLSLINCLUDE` 안에 있다는 것, 잊지 마세요. (`_Recei
             }
 ```
 
-| 줄 | 뜻 |
+| 줄 | 의미 |
 |---|---|
-| `shadeMask` | 1차·2차 중 더 진한 그림자 정도. 0 = 빛, 1 = 그림자 |
-| `SampleSH(N) * albedo` | 하늘빛 × 바탕색 |
-| `* (1 - shadeMask)` | 그림자 쪽엔 덜 |
-| `max(color, albedo * _ShadeFloor)` | 아무리 어두워도 바탕색의 15% 아래로는 안 내려가게 |
-| `MixFog` | 안개 색과 섞기. 안개가 꺼져 있으면 아무 일도 안 해요 |
+| `shadeMask` | 1차, 2차 중 더 진한 그림자 정도. 0은 빛, 1은 그림자 |
+| `SampleSH(N) * albedo` | 환경광 색 x 바탕색 |
+| `* (1 - shadeMask)` | 그림자 쪽에 덜 더한다 |
+| `max(color, albedo * _ShadeFloor)` | 색이 바탕색의 `_ShadeFloor`(기본 15%) 아래로 내려가지 않게 한다 |
+| `MixFog` | 안개 색과 섞는다. 안개가 꺼져 있으면 변화가 없다 |
 
-정답: [`Assets/Solutions/Day10/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day10/MyToon.shader)
+정답 파일: [`Assets/Solutions/Day10/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day10/MyToon.shader)
 
-## 3. 확인하기
+### E. 화면 확인
 
-- 그림자 쪽이 살짝 **푸르고 맑게** 밝아져요(맨 위 오른쪽). 하늘(스카이박스)이 파래서 하늘빛도 파래요.
-- **안개**: Window → Rendering → **Lighting** → Environment 탭 → **Fog** 체크. Mode를 Exponential Squared, Density 0.08 정도로 하면 멀리 있는 것이 안개에 묻혀요.
+1. (5-E-01) Lab 씬의 그림자 쪽을 본다. → 결과: 그림자 쪽이 살짝 푸르고 맑게 밝아진다. 스카이박스가 파랗기 때문이다.
 
-![안개](../.gitbook/assets/day10-fog.png)
+![Day 10 결과: 환경광](../.gitbook/assets/day10-ambient.png)
 
-확인 후 Fog는 꺼 두세요. (켜 두면 앞으로의 화면이 정답 사진과 달라 보여요.)
+2. (5-E-02) `Window > Rendering > Lighting > Environment`에서 `Fog`를 체크하고 `Mode`를 `Exponential Squared`, `Density`를 0.08로 설정한다. → 결과: 먼 물체가 안개에 묻힌다.
 
-## 4. 실험해 보기 (20분)
+![Day 10 안개](../.gitbook/assets/day10-fog.png)
 
-1. **그냥 더하기** — `color += ambient;`로 바꾸고 Directional Light Intensity를 3으로 올려 보세요. 그림자 계단이 하얗게 사라지는 게 보여요. 되돌리면 계단이 살아나요. Intensity도 1.2로 되돌려요.
-2. **Shade Floor** — Ambient Strength를 0으로 하고 Shade Floor를 0 ↔ 0.5로 움직여 보세요. 2차 그림자가 바닥에 닿는 곳이 들렸다 내려갔다 해요.
-3. **하늘색 바꾸기** — Lighting 창 Environment의 Environment Lighting Source를 Color로, 색을 주황으로 바꾸면 그림자 쪽이 주황빛이 돼요. 확인 후 Skybox로 되돌려요.
-4. 커밋: `git commit -am "Day 10: 환경광과 안개"`
+3. (5-E-03) 확인 후 `Fog`를 끈다. → 결과: 이후 Day의 화면이 정답 이미지와 같아진다.
 
-## 5. 오늘의 액기스
+### F. 실험
 
-👉 [ESSENCE.md — Day 10](essence.md#day-10)
+1. (5-F-01) `color += ambient * (1.0h - shadeMask);`를 `color += ambient;`로 바꾸고 Directional Light `Intensity`를 3으로 올린다. → 결과: 그림자 계단이 하얗게 사라진다. 코드와 `Intensity`(원래 값 1.2)를 되돌린다.
+2. (5-F-02) `Ambient Strength`를 0으로 두고 `Shade Floor`를 0과 0.5 사이로 움직인다. → 결과: 2차 그림자의 바닥 밝기가 따라 변한다.
+3. (5-F-03) `Lighting > Environment`의 `Environment Lighting Source`를 `Color`로 바꾸고 주황색을 지정한다. → 결과: 그림자 쪽이 주황빛이 된다. 확인 후 `Skybox`로 되돌린다.
+4. (5-F-04) 커밋한다: `git commit -am "Day 10: 환경광과 안개"`
 
-## 더 읽을거리
+## 6. 기능 확인
 
-- [Wikipedia — Spherical harmonic lighting](https://en.wikipedia.org/wiki/Spherical_harmonic_lighting) · [Unity — 라이트 프로브 기술 정보](https://docs.unity3d.com/Manual/LightProbes-TechnicalInformation.html)
-- 더 깊이: [toon-shader-study Day 10 — 환경광, GI, SSAO](../toon-shader-study/day10-ambient-gi-ssao.md) (라이트맵을 계단으로 만드는 배경 셰이더 방식)
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 그림자 쪽을 본다 | 검정이 아닌 푸른 빛 | 바탕색의 15% 이상 밝기 |
+| 2 | `Fog` 켬 | 먼 물체가 안개색에 가까워진다 | 거리에 따라 변화 |
+| 3 | `Fog` 끔 | 안개 없음 | Day 09와 같은 화면 |
 
----
+## 7. 복구
+
+1. (7-01) 변경을 되돌린다: `Ctrl+Z` 또는 `git restore Assets/MyToon/MyToon.shader`.
+2. (7-02) `Fog`를 끄고 `Environment Lighting Source`를 `Skybox`로, `Intensity`를 1.2로 되돌린다.
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 10 페이지를 AMM 형식으로 재작성. 비유 삭제, 버전 의존 NOTE 추가 |
 
 [← Day 09](day09-cast-shadows.md) · [목차](README.md) · [다음: Day 11 →](day11-additional-lights.md)

@@ -1,37 +1,68 @@
 # Day 21. 화면 공간 외곽선 — 다 그린 그림 위에 펜으로
 
-> ⏱ **약 1시간** — 개념 10분 · 셰이더 25분 · 연결 15분 · 실험 10분
-> 🧸 **오늘의 비유**: 그림을 다 그린 뒤 **"깊이나 면 방향이 확 바뀌는 곳"을 찾아 펜으로 선을 긋는 화가**예요.
+## 작업 식별
 
-![Day 21 결과](../.gitbook/assets/day21-screen-outline.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-021-MP |
+| 목적 | 깊이 텍스처와 노멀 텍스처의 이웃 픽셀 차이로 경계를 찾는 풀스크린 셰이더를 만들고 Full Screen Pass Renderer Feature에 연결한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x, `Assets/Settings/PC_Renderer`. Day 09(`DepthOnly`)와 Day 19(`DepthNormals`) 완료 상태 |
+| 소요 시간 | 약 60분 (개념 10분, 셰이더 25분, 연결 15분, 실험 10분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: 이 Day는 URP 버전과 Render Graph 사용 여부에 크게 의존한다. `Blit.hlsl`의 `Varyings`, `_BlitTexture`, `sampler_LinearClamp`, `SampleSceneDepth`, `SampleSceneNormals`, Full Screen Pass Renderer Feature의 설정 항목(`Injection Point`, `Fetch Color Buffer`, `Requirements`)은 URP 버전마다 이름과 동작이 다르다. `SampleSceneNormals`가 읽는 노멀 형식은 Day 19의 `DepthNormals` 패스 출력 형식과 맞아야 한다. URP 버전 확인 필요.
+{% endhint %}
 
-물체 하나가 아니라 **화면 전체**에 한 번 칠하는 셰이더. 외곽선 패스(Day 13)가 못 그리는 **큐브의 안쪽 모서리**에도 선이 생겨요(오른쪽).
+## 1. 참조
 
-## 오늘 배울 것
-
-- [ ] 화면 전체에 칠하는 셰이더(풀스크린 셰이더)를 짠다
-- [ ] 깊이 텍스처·노멀 텍스처를 읽어 경계를 찾는다
-- [ ] URP의 **Full Screen Pass Renderer Feature**에 연결한다
-
----
-
-## 1. 이웃과 비교하기 (개념 10분)
-
-![엣지 검출](../.gitbook/assets/concept-edge-detection.png)
-
-화면의 각 픽셀에서 **이웃 픽셀과 깊이를 비교**해요. 몸통과 배경 사이처럼 깊이가 확 뛰는 곳이 경계예요. 깊이만으로는 **같은 거리에서 꺾인 면**(큐브 모서리)을 못 찾으니 **노멀**도 비교해요.
-
-| | 외곽선 패스 (Day 13) | 화면 외곽선 (오늘) |
+| 참조 문서 | Task ID | 제목 |
 |---|---|---|
-| 방식 | 물체마다 부푼 껍질 | 다 그린 화면에서 경계 찾기 |
-| 잘하는 것 | 실루엣, 물체별 색·두께 | **안쪽 모서리**, 배경 전체 |
-| 필요한 것 | 메시 노멀 | DepthOnly·DepthNormals 패스 (Day 09, 19!) |
+| [day09-cast-shadows.md](day09-cast-shadows.md) | GMD-TSL-009-MP | `DepthOnly` 패스 |
+| [day13-outline-pass.md](day13-outline-pass.md) | GMD-TSL-013-MP | 물체별 외곽선(비교 대상) |
+| [day19-depthnormals-ssao.md](day19-depthnormals-ssao.md) | GMD-TSL-019-MP | `DepthNormals` 패스 |
+| [day20-two-sided.md](day20-two-sided.md) | GMD-TSL-020-MP | 이전: 양면 그리기 |
+| [day22-graduation.md](day22-graduation.md) | GMD-TSL-022-INS | 다음: 졸업 점검 |
+| [toon-shader-study Day 14](../toon-shader-study/day14-screen-space-outline.md) | - | C# Renderer Feature와 RenderGraph (짝꿍 과정) |
+| [Roberts cross](https://en.wikipedia.org/wiki/Roberts_cross), [Sobel operator](https://en.wikipedia.org/wiki/Sobel_operator), [Edge detection](https://en.wikipedia.org/wiki/Edge_detection), [LearnOpenGL Depth testing](https://learnopengl.com/Advanced-OpenGL/Depth-testing) | - | 경계 검출, 깊이 비선형성 참고 |
 
-## 2. 풀스크린 셰이더 짜기 (25분)
+## 2. 필요 장비와 자재
 
-`MyToon` 폴더에 **Create → Shader → Unlit Shader** → 이름 `MyScreenOutline` → 내용을 지우고:
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/Settings/PC_Renderer` | URP Renderer Data | 이 에셋에 피처를 추가한다 |
+| 2 | `Assets/MyToon` 폴더 | | 셰이더와 머티리얼 저장 |
+
+## 3. 안전 사항
+
+{% hint style="warning" %}
+CAUTION: Renderer Feature는 프로젝트 전체 렌더러에 적용된다. 실습이 끝나면 `PC_Renderer`의 변경을 되돌릴 수 있게 작업 전에 커밋한다. 실습 프로젝트의 `PC_Renderer`에는 이 피처가 처음부터 들어 있지 않다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | `DepthOnly`, `DepthNormals` 패스가 `MyToon.shader`에 있다 | Day 09, 19 완료 |
+| 2 | 현재 상태를 커밋한다 | `git status`가 깨끗하다 |
+
+## 5. 절차
+
+### A. 개념 확인
+
+화면 각 픽셀에서 이웃 픽셀과 깊이를 비교한다. 깊이가 급격히 변하는 곳이 경계다. 같은 거리에서 꺾인 면(Cube 모서리)은 깊이만으로 찾을 수 없으므로 노멀도 비교한다.
+
+| 항목 | 외곽선 패스 (Day 13) | 화면 외곽선 (Day 21) |
+|---|---|---|
+| 방식 | 물체마다 부푼 껍질 | 완성된 화면에서 경계 검출 |
+| 강점 | 실루엣, 물체별 색과 두께 | 안쪽 모서리, 배경 전체 |
+| 필요 조건 | 메시 노멀 | `DepthOnly`, `DepthNormals` 패스 |
+
+### B. 풀스크린 셰이더 작성
+
+1. (5-B-01) `MyToon` 폴더를 우클릭하고 `Create > Shader > Unlit Shader`를 눌러 이름을 `MyScreenOutline`으로 한다.
+2. (5-B-02) 파일 내용을 전부 지우고 다음 코드를 입력한다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
 // 화면 전체에 한 번 칠하는 셰이더. URP 의 Full Screen Pass Renderer Feature 가 이 머티리얼로 화면을 다시 그린다.
@@ -105,58 +136,64 @@ Shader "MyToon/Screen Outline"
 }
 ```
 
-| 부분 | 뜻 |
+| 부분 | 의미 |
 |---|---|
-| `#pragma vertex Vert` + `Blit.hlsl` | 화면을 덮는 삼각형 하나를 그려 주는 URP 표준 버텍스 셰이더. 우리는 frag만 짜면 돼요 |
-| `_BlitTexture` | URP가 넘겨주는 **지금까지 그린 화면** |
-| `SampleSceneDepth` / `SampleSceneNormals` | Day 09·19의 패스가 그린 깊이·노멀 지도 읽기 |
-| `LinearEyeDepth` | 깊이 버퍼는 가까운 곳을 촘촘하게 저장해서 거리와 비례하지 않아요. 진짜 거리(m)로 바꿔요 |
-| `/ max(d, 1e-3)` | 멀리 있는 바닥은 원래 깊이 차가 커서 줄무늬가 생겨요. 내 거리로 나눠 **비율**로 비교해요 |
-| `distance(n, nx)` | 노멀 화살표끼리의 거리. 같은 면이면 0, 꺾이면 커요 |
-| `step(기준, 값)` | 값이 기준 이상이면 1 (딱딱한 문턱) |
-| `lerp(color, 선색, edge)` | 경계면 선 색, 아니면 원래 그림 |
+| `#pragma vertex Vert` + `Blit.hlsl` | 화면을 덮는 삼각형 하나를 그리는 URP 표준 버텍스 셰이더. `Frag`만 작성하면 된다 |
+| `_BlitTexture` | URP가 넘기는 지금까지 그린 화면 |
+| `SampleSceneDepth`, `SampleSceneNormals` | Day 09, 19의 패스가 만든 깊이, 노멀 텍스처를 읽는다 |
+| `LinearEyeDepth` | 깊이 버퍼는 가까운 곳을 촘촘히 저장해 거리와 비례하지 않는다. 실제 거리(m)로 바꾼다 |
+| `/ max(d, 1e-3)` | 먼 바닥은 깊이 차가 원래 커서 줄무늬가 생긴다. 자기 거리로 나눠 비율로 비교한다 |
+| `distance(n, nx)` | 노멀 벡터 간 거리. 같은 면이면 0, 꺾이면 커진다 |
+| `step(기준, 값)` | 값이 기준 이상이면 1 |
+| `lerp(color, 선 색, edge)` | 경계면 선 색, 아니면 원래 화면 |
 
-이 셰이더는 화면 전체에 한 번만 쓰여서 SRP Batcher와 상관없어요. 그래서 CBUFFER 없이 간단히 선언했어요.
+이 셰이더는 화면 전체에 한 번만 쓰므로 SRP Batcher와 무관하다. 그래서 `CBUFFER` 없이 선언했다.
 
-## 3. URP에 연결하기 (15분)
+정답 파일: [`Assets/Solutions/Day21/MyScreenOutline.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day21/MyScreenOutline.shader)
 
-1. `MyToon` 폴더에서 **Create → Material** → 이름 `MyScreenOutline` → Shader: **MyToon → Screen Outline**.
-2. Project 창에서 `Assets/Settings/PC_Renderer` 선택 → Inspector 맨 아래 **Add Renderer Feature** → **Full Screen Pass Renderer Feature**.
-3. 추가된 피처를 이렇게 설정해요.
+### C. URP에 연결
+
+1. (5-C-01) `MyToon` 폴더에서 `Create > Material`을 눌러 이름을 `MyScreenOutline`으로 한다.
+2. (5-C-02) 머티리얼의 `Shader`를 `MyToon > Screen Outline`으로 지정한다.
+3. (5-C-03) `Assets/Settings/PC_Renderer`를 선택하고 Inspector 맨 아래에서 `Add Renderer Feature` > `Full Screen Pass Renderer Feature`를 누른다. → 결과: 피처가 목록에 추가된다.
+4. (5-C-04) 추가된 피처를 다음 표와 같이 설정한다. → 결과: Game 뷰와 Scene 뷰 모두에 선이 생긴다.
 
 | 항목 | 값 | 이유 |
 |---|---|---|
-| Pass Material | `MyScreenOutline` | 우리 셰이더 |
-| Injection Point | **Before Rendering Post Processing** | 불투명·투명을 다 그린 뒤, 후처리 전 |
-| Fetch Color Buffer | ✅ 켬 | 지금까지 그린 화면을 `_BlitTexture`로 받기 |
-| Requirements | **Depth**, **Normal** | 깊이·노멀 지도가 필요하다고 URP에 알려 줌 |
+| `Pass Material` | `MyScreenOutline` | 이 Day의 셰이더 |
+| `Injection Point` | `Before Rendering Post Processing` | 불투명, 투명을 다 그린 뒤 후처리 전 |
+| `Fetch Color Buffer` | 켬 | 지금까지 그린 화면을 `_BlitTexture`로 받는다 |
+| `Requirements` | `Depth`, `Normal` | 깊이와 노멀 텍스처가 필요함을 URP에 알린다 |
 
-Game 뷰와 Scene 뷰 모두에 선이 생겨요.
+![Day 21 결과: 화면 공간 외곽선](../.gitbook/assets/day21-screen-outline.png)
 
-정답: [`Assets/Solutions/Day21/MyScreenOutline.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day21/MyScreenOutline.shader)
+### D. 확인과 실험
 
-{% hint style="info" %}
-실습 프로젝트의 `PC_Renderer`에는 일부러 이 피처를 넣어 두지 않았어요. 직접 붙여 보는 게 오늘의 실습이니까요.
-{% endhint %}
+1. (5-D-01) Cube의 안쪽 모서리(면과 면이 만나는 세로선)를 본다. → 결과: 선이 생긴다. Day 13 외곽선은 실루엣에만 있었다.
+2. (5-D-02) `Normal Threshold`를 0.1로 내린다. → 결과: `Use Normal Map`이 켜져 있으면 노멀맵 홈에도 선이 생긴다. 2로 올리면 안쪽 선이 사라진다.
+3. (5-D-03) `Thickness`를 2로 올린다. → 결과: 선이 굵어진다.
+4. (5-D-04) 한쪽 기준(`Depth Threshold` 또는 `Normal Threshold`)을 최대로 올린다. → 결과: 깊이 기준과 노멀 기준이 각각 어떤 선을 그리는지 비교할 수 있다.
+5. (5-D-05) 렌더러 피처 체크를 껐다 켠다. → 결과: 선이 사라지고 나타난다.
+6. (5-D-06) 커밋한다: `git add Assets && git commit -m "Day 21: 화면 공간 외곽선"`
 
-## 4. 확인하고 실험하기 (10분)
+## 6. 기능 확인
 
-1. 큐브의 **안쪽 모서리**(면과 면이 만나는 세로선)에 선이 생겼는지 보세요(맨 위 오른쪽). Day 13 외곽선은 실루엣에만 있었어요.
-2. **Normal Threshold**를 0.1로 내리면 노멀맵 홈까지 선이 생겨요(Use Normal Map 켰다면). 2로 올리면 안쪽 선이 사라져요.
-3. **Thickness** 2 → 굵은 선.
-4. **Depth만 / Normal만** — 한쪽 기준을 최대로 올려서 각각이 어떤 선을 그리는지 비교해 보세요.
-5. 렌더러 피처 체크를 껐다 켜며 비교해요. 커밋: `git add Assets && git commit -m "Day 21: 화면 공간 외곽선"`
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | Cube 안쪽 모서리를 본다 | 선이 있다 | 선이 보인다 |
+| 2 | 렌더러 피처를 끈다 | 선이 사라진다 | Day 20과 같은 화면 |
+| 3 | `Thickness = 2` | 선이 굵어진다 | `Thickness = 1`보다 굵다 |
 
-## 5. 오늘의 액기스
+## 7. 복구
 
-👉 [ESSENCE.md — Day 21](essence.md#day-21)
+1. (7-01) 렌더러 피처를 끈다: `PC_Renderer`의 `Full Screen Pass Renderer Feature` 체크를 해제한다.
+2. (7-02) 렌더러를 원래대로 되돌린다: `git restore Assets/Settings/PC_Renderer.asset`
+3. (7-03) 새로 만든 `MyScreenOutline.shader`, `MyScreenOutline` 머티리얼을 삭제한다.
 
-## 수학 참고 자료
+## 8. 개정 이력
 
-- [Wikipedia — Roberts cross](https://en.wikipedia.org/wiki/Roberts_cross) · [Sobel operator](https://en.wikipedia.org/wiki/Sobel_operator) · [Edge detection](https://en.wikipedia.org/wiki/Edge_detection) — 이미지에서 경계 찾기
-- [LearnOpenGL — Depth testing](https://learnopengl.com/Advanced-OpenGL/Depth-testing) — 깊이 값이 왜 비선형인지
-- 더 깊이: [toon-shader-study Day 14 — 화면 공간 외곽선](../toon-shader-study/day14-screen-space-outline.md) (C# Renderer Feature와 RenderGraph로 직접 만드는 방법)
-
----
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 21 페이지를 AMM 형식으로 재작성. 비유 삭제, URP 버전·Render Graph 의존 NOTE 추가 |
 
 [← Day 20](day20-two-sided.md) · [목차](README.md) · [다음: Day 22 →](day22-graduation.md)

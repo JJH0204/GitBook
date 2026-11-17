@@ -1,30 +1,61 @@
 # Day 11. 보조 조명 — 그리고 나만의 공구함 파일
 
-> ⏱ **약 1시간** — 파일 만들기 25분 · 연결 15분 · 실험 20분
-> 🧸 **오늘의 비유**: 해는 **주인공 조명**, 포인트·스폿 라이트는 **보조 조명**이에요. 보조 조명은 **더하기만** 해요. 주인공 조명이 만든 그림자 모양은 건드리지 않아요.
+## 작업 식별
 
-![Day 11 결과](../.gitbook/assets/day11-point-light.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-011-MP |
+| 목적 | 조명 계산을 `MyToonLighting.hlsl`로 분리하고 포인트, 스폿 라이트(보조 조명)를 툰 계단으로 더한다 |
+| 적용 대상 | Unity 6000.3, URP 17.x, Forward 또는 Forward+ 렌더링. Day 10 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (파일 작성 25분, 연결 15분, 실험 20분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: 이 Day의 코드는 URP 버전에 크게 의존한다. `_ADDITIONAL_LIGHTS`, `_ADDITIONAL_LIGHT_SHADOWS`, `_CLUSTER_LIGHT_LOOP` 키워드(이전 버전은 `_FORWARD_PLUS`), `USE_CLUSTER_LIGHT_LOOP`, `LIGHT_LOOP_BEGIN`, `URP_FP_DIRECTIONAL_LIGHTS_COUNT`, `GetAdditionalLight` 오버로드, `GetNormalizedScreenSpaceUV`는 URP 버전마다 이름과 시그니처가 다르다. URP 버전 확인 필요.
+{% endhint %}
 
-빨간 **포인트 라이트**가 물체를 툰 계단으로 비춰요(오른쪽). 그리고 조명 계산을 **내 `.hlsl` 공구함 파일**로 옮겨요.
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day07-toon-steps.md](day07-toon-steps.md) | GMD-TSL-007-MP | `CelStep` 정의 |
+| [day10-ambient-fog.md](day10-ambient-fog.md) | GMD-TSL-010-MP | 이전: 환경광과 안개 |
+| [day12-rim-light.md](day12-rim-light.md) | GMD-TSL-012-MP | 다음: 림 라이트 |
+| [day18-keywords.md](day18-keywords.md) | GMD-TSL-018-MP | 키워드와 변형 |
+| [toon-shader-study Day 09](../toon-shader-study/day09-many-lights.md) | - | 여러 개의 빛 (짝꿍 과정) |
+| [LearnOpenGL Light casters](https://learnopengl.com/Lighting/Light-casters), [Multiple lights](https://learnopengl.com/Lighting/Multiple-lights), [URP Forward+ 렌더링 경로](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.0/manual/rendering/forward-plus-rendering-path.html) | - | 거리 감쇠, Forward+ 참고 |
 
-- [ ] `.hlsl` 파일을 만들어 `#include`로 가져온다
-- [ ] `#ifndef` 중복 방지 스티커를 붙인다
-- [ ] 보조 조명을 하나씩 돌며 더하는 루프를 짠다
-- [ ] Forward와 Forward+의 차이를 안다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 10 완료 상태 | |
+| 2 | 파일 탐색기 | | `.hlsl` 파일 생성에 사용 |
+| 3 | Lab 씬의 `Point Light` | 기본 비활성 | 빨간 전구 |
 
-## 1. 공구함 파일 만들기 (25분)
+## 3. 안전 사항
 
-같은 계단 계산(`CelStep`)을 해와 보조 조명이 함께 써요. 셰이더 파일이 길어지니까 **조명 도구만 따로 파일**로 빼요.
+{% hint style="danger" %}
+WARNING: `GetAdditionalLight`는 인자 3개(`index, positionWS, shadowMask`) 버전을 써야 보조 조명의 그림자가 반영된다. 인자 2개 버전은 그림자 감쇠가 항상 1이라 빛이 물체를 뚫고 비춘다.
+{% endhint %}
 
-1. Project 창 `MyToon` 폴더 우클릭 → **Show in Explorer**.
-2. 탐색기에서 새 텍스트 파일을 만들고 이름을 **`MyToonLighting.hlsl`** 로 바꿔요(확장자 `.txt`가 남지 않게).
-3. 아래 내용을 쳐요.
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 10 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | `CelStep` 함수가 `MyToon.shader`에 있다 | 5-B-01에서 이동한다 |
+
+## 5. 절차
+
+### A. 공구함 파일 만들기
+
+같은 `CelStep`을 메인 라이트와 보조 조명이 함께 쓰므로 조명 함수를 별도 파일로 분리한다.
+
+1. (5-A-01) Project 창에서 `MyToon` 폴더를 우클릭하고 `Show in Explorer`를 누른다. → 결과: 파일 탐색기가 열린다.
+2. (5-A-02) 새 텍스트 파일을 만들어 이름을 `MyToonLighting.hlsl`로 바꾼다. → 결과: 확장자가 `.txt`로 남지 않는다.
+3. (5-A-03) 다음 내용을 입력하고 저장한다. → 결과: Unity가 파일을 인식한다.
 
 ```hlsl
 // 툰 조명 공구함. URP Lighting.hlsl 다음에 include 할 것 (Light 타입, GetAdditionalLight 가 필요하다).
@@ -75,36 +106,25 @@ half3 AdditionalLightsToon(float3 positionWS, float4 positionCS, half3 N, half3 
 #endif // MYTOON_LIGHTING_INCLUDED
 ```
 
-### 처음 보는 것들
-
-| 코드 | 뜻 |
+| 코드 | 의미 |
 |---|---|
-| `#ifndef X` / `#define X` / `#endif` | **중복 방지 스티커**. "아직 X 스티커가 없으면 붙이고 내용을 넣어라. 이미 있으면 통째로 건너뛰어라." 같은 파일이 두 번 include 돼도 함수가 두 번 정의되지 않아요 |
-| `light.distanceAttenuation` | 거리 감쇠. 촛불에서 멀어질수록 어두워지는 것 (대략 거리의 제곱에 반비례) |
-| `light.shadowAttenuation` | 보조 조명의 그림자. **인자 3개**짜리 `GetAdditionalLight`라야 들어와요. 2개짜리는 항상 1(그림자 없음)이에요 |
-| `LIGHT_LOOP_BEGIN` / `END` | URP가 주는 반복문 매크로. 렌더러 설정에 따라 알맞은 반복문으로 바뀌어요 |
-| `#if defined(_ADDITIONAL_LIGHTS)` | 보조 조명이 꺼진 설정이면 이 계산을 통째로 빼요 |
+| `#ifndef X` / `#define X` / `#endif` | 중복 방지 가드. 같은 파일이 두 번 include돼도 함수가 두 번 정의되지 않는다 |
+| `light.distanceAttenuation` | 거리 감쇠. 거리가 멀수록 어두워진다(대략 거리 제곱에 반비례) |
+| `light.shadowAttenuation` | 보조 조명의 그림자. 인자 3개 `GetAdditionalLight`에서만 반영된다 |
+| `LIGHT_LOOP_BEGIN` / `LIGHT_LOOP_END` | URP가 제공하는 반복문 매크로. 렌더러 설정에 맞는 반복문으로 바뀐다 |
+| `#if defined(_ADDITIONAL_LIGHTS)` | 보조 조명이 꺼진 설정이면 이 계산을 통째로 제외한다 |
 
-### Forward vs Forward+
-
-화면에 보조 조명이 50개면 픽셀마다 50개를 다 계산하긴 너무 비싸요. "이 픽셀에 닿는 조명만" 골라야 해요.
-
-| 방식 | 비유 |
+| 방식 | 설명 |
 |---|---|
-| Forward | **물체마다** "너한테 닿는 조명" 쪽지를 줌 (물체당 개수 제한) |
-| Forward+ | 화면을 **바둑판**으로 나누고 **칸마다** 조명 목록을 만듦 (이 프로젝트 PC 설정) |
+| Forward | 물체마다 영향을 주는 조명 목록을 준다(물체당 개수 제한) |
+| Forward+ | 화면을 타일(바둑판)로 나누고 타일마다 조명 목록을 만든다 (원본 프로젝트 설정) |
 
-`inputData.normalizedScreenSpaceUV`는 Forward+에서 "내가 바둑판 몇 번 칸인지" 찾는 데 써요. 해가 아닌 Directional 조명은 어디에나 닿아서 바둑판에 안 들어가니 앞에서 따로 돌아요.
+`inputData.normalizedScreenSpaceUV`는 Forward+에서 현재 픽셀이 속한 타일을 찾는 데 쓴다. 메인 라이트 외의 Directional 조명은 타일에 들어가지 않아 별도 루프로 처리한다.
 
-## 2. 셰이더에 연결하기 (15분)
+### B. 셰이더에 연결
 
-### ① CelStep 옮기기
-
-`MyToon.shader`의 `CelStep` 함수(Day 07에 만든 것)를 **지워요.** 이제 공구함에 있으니까요.
-
-### ② include + 키워드
-
-Forward 패스 `#pragma` 들 아래에 키워드 세 줄, `Lighting.hlsl` include 아래에 내 공구함:
+1. (5-B-01) `MyToon.shader`에서 Day 07에 만든 `CelStep` 함수를 삭제한다. → 결과: 공구함 파일의 정의만 남는다.
+2. (5-B-02) Forward 패스의 `#pragma` 줄들 아래에 키워드 세 줄을 추가한다.
 
 ```hlsl
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
@@ -112,22 +132,26 @@ Forward 패스 `#pragma` 들 아래에 키워드 세 줄, `Lighting.hlsl` includ
             #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
 ```
 
+3. (5-B-03) `Lighting.hlsl` include 아래에 공구함을 include한다.
+
 ```hlsl
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "MyToonLighting.hlsl"     // ← 같은 폴더의 내 파일
+            #include "MyToonLighting.hlsl"     // 같은 폴더의 내 파일
 ```
 
-### ③ 세기 조절 + frag
+4. (5-B-04) Properties의 `_ShadeFloor` 아래에 추가한다.
 
 ```shaderlab
         _AdditionalLightStrength ("Additional Light Strength", Range(0, 2)) = 1     // _ShadeFloor 아래
 ```
 
+5. (5-B-05) CBUFFER의 `_ShadeFloor` 아래에 추가한다.
+
 ```hlsl
             half   _AdditionalLightStrength;     // CBUFFER, _ShadeFloor 아래
 ```
 
-frag의 `color = max(...)` 다음, `MixFog` 전에:
+6. (5-B-06) frag의 `color = max(...)` 다음, `MixFog` 앞에 추가한다. frag에서 `input.positionCS`는 픽셀 좌표를 담고 있다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
                 // 보조 조명(포인트·스폿)은 더하기만 한다
@@ -135,33 +159,41 @@ frag의 `color = max(...)` 다음, `MixFog` 전에:
                                               _ShadowBorder, _ShadowBlur) * _AdditionalLightStrength;
 ```
 
-`input.positionCS`는 frag에서는 **픽셀 좌표**가 들어 있어요. 바둑판 칸을 찾는 데 써요.
+정답 파일: [`Assets/Solutions/Day11/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day11/MyToon.shader), [`MyToonLighting.hlsl`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day11/MyToonLighting.hlsl)
 
-정답: [`Assets/Solutions/Day11/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day11/MyToon.shader) · [`MyToonLighting.hlsl`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day11/MyToonLighting.hlsl)
+### C. 화면 확인
 
-## 3. 확인하기
+1. (5-C-01) Hierarchy에서 `Point Light`를 켠다. → 결과: Cube 앞면과 Capsule 옆면이 빨간 계단으로 밝아진다. 같은 Border, Blur를 쓰므로 경계가 해 그림자와 비슷한 느낌이다.
+2. (5-C-02) `Point Light`를 움직인다. → 결과: 빛이 따라온다.
+3. (5-C-03) `Point Light`를 Cube 뒤로 보낸다. → 결과: Cube 그림자에 가려 Capsule에 빛이 닿지 않는다(보조 조명 그림자).
 
-1. Hierarchy에서 **Point Light**를 켜요.
-2. 큐브 앞면과 캡슐 옆이 **빨간 계단**으로 밝아져요(맨 위 오른쪽). 같은 Border/Blur를 쓰니 경계가 해 그림자와 같은 느낌이에요.
-3. Point Light를 움직이면 빛이 따라와요. 큐브 뒤로 보내면 큐브 그림자에 가려 캡슐에 안 닿아요(보조 조명 그림자).
+![Day 11 결과: 포인트 라이트](../.gitbook/assets/day11-point-light.png)
 
-## 4. 실험해 보기 (20분)
+### D. 실험
 
-1. **2인자로 바꿔 보기** — `GetAdditionalLight(lightIndex, positionWS, shadowMask)`의 세 번째 인자를 지우면? 그림자 없이 **물체를 뚫고** 비춰요. 실제 프로젝트에서 있었던 버그예요. 되돌려요.
-2. **스폿 라이트** — Point Light의 Type을 Spot으로 바꾸고 각도를 좁혀 보세요. 같은 코드로 동작해요.
-3. **더하기만?** — Point Light Intensity를 10으로 올려도 해가 만든 그림자 **모양**은 그대로고, 빨간 쪽만 밝아져요. 끝나면 Point Light를 끄세요.
-4. 커밋: `git add Assets/MyToon && git commit -m "Day 11: 보조 조명과 공구함 파일"`
+1. (5-D-01) `GetAdditionalLight(lightIndex, positionWS, shadowMask)`의 세 번째 인자를 지운다. → 결과: 그림자 없이 물체를 뚫고 비춘다. 확인 후 되돌린다.
+2. (5-D-02) `Point Light`의 `Type`을 `Spot`으로 바꾸고 각도를 좁힌다. → 결과: 같은 코드로 동작한다.
+3. (5-D-03) `Point Light`의 `Intensity`를 10으로 올린다. → 결과: 메인 라이트가 만든 그림자 모양은 그대로이고 빨간 쪽만 밝아진다. 확인 후 `Point Light`를 끈다.
+4. (5-D-04) 커밋한다: `git add Assets/MyToon && git commit -m "Day 11: 보조 조명과 공구함 파일"`
 
-## 5. 오늘의 액기스
+## 6. 기능 확인
 
-👉 [ESSENCE.md — Day 11](essence.md#day-11)
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `Point Light` 켬 | 물체가 빨간 계단으로 비춰진다 | 경계가 뚜렷하다 |
+| 2 | `Point Light`를 Cube 뒤로 이동 | 가려진 면에 빛이 닿지 않는다 | 그림자 반영 |
+| 3 | `Point Light` 끔 | Day 10 화면과 같다 | 차이 없음 |
 
-## 더 읽을거리
+## 7. 복구
 
-- [LearnOpenGL — Light casters](https://learnopengl.com/Lighting/Light-casters) (거리 감쇠 공식) · [Multiple lights](https://learnopengl.com/Lighting/Multiple-lights)
-- [URP — Forward+ 렌더링 경로](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.0/manual/rendering/forward-plus-rendering-path.html)
-- 더 깊이: [toon-shader-study Day 09 — 여러 개의 빛](../toon-shader-study/day09-many-lights.md) (라이트 레이어, 캐릭터 전용 조명)
+1. (7-01) `Point Light`를 끈다.
+2. (7-02) 변경을 되돌린다: `git restore Assets/MyToon/MyToon.shader`. 새 파일 `MyToonLighting.hlsl`은 삭제한다.
+3. (7-03) 5-B-01에서 지운 `CelStep` 함수를 Day 07 코드에서 다시 가져온다(GMD-TSL-007-MP).
 
----
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 11 페이지를 AMM 형식으로 재작성. 키워드 이름의 URP 버전 의존 NOTE 추가 |
 
 [← Day 10](day10-ambient-fog.md) · [목차](README.md) · [다음: Day 12 →](day12-rim-light.md)

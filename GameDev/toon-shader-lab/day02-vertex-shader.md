@@ -1,63 +1,91 @@
 # Day 02. 버텍스 셰이더 — 점을 움직여 보자
 
-> ⏱ **약 1시간** — 개념 20분 · 코드 15분 · 실험 25분
-> 🧸 **오늘의 비유**: 좌표 공간은 **주소 체계**("내 방 책상 위" → "서울시 ○○동" → "모니터 몇 번째 칸"), 행렬은 **주소를 바꿔 주는 기계**예요.
+## 작업 식별
 
-![Day 02 결과](../.gitbook/assets/day02-breathing.png)
-
-## 오늘 만들 것
-
-물체가 **숨을 쉬어요.** 표면이 노멀 방향으로 부풀었다 줄었다 하고, 높이마다 박자가 달라서 물결이 위로 올라가는 것처럼 보여요. 위 사진의 구가 울퉁불퉁한 게 그 순간을 찍은 거예요.
-
-## 오늘 배울 것
-
-- [ ] 오브젝트(OS) · 월드(WS) · 클립(CS) 공간을 구분한다
-- [ ] `TransformObjectToWorld`, `TransformWorldToHClip`으로 주소를 바꿀 수 있다
-- [ ] 노멀(`NORMAL`)을 받아 월드 노멀로 바꿀 수 있다
-- [ ] `_Time`과 `sin`으로 시간에 따라 움직이는 값을 만든다
-
----
-
-## 1. 같은 점, 다른 주소 (개념 20분)
-
-![좌표 공간](../.gitbook/assets/concept-coordinate-spaces.png)
-
-| 공간 | 변수 끝 | 기준 | 비유 |
-|---|---|---|---|
-| 오브젝트 | `OS` | 모델 자기 자신 | 내 방 책상 왼쪽에서 10cm |
-| 월드 | `WS` | 세상 전체 | 서울시 ○○동 123번지 |
-| 뷰 | `VS` | 카메라 | 내 눈에서 앞으로 50cm |
-| 클립 | `CS` | 화면 직전 상자 (`x, y, z, w`) | 사진기 뷰파인더 안 |
-
-Day 01의 `TransformObjectToHClip`은 오브젝트 → 클립을 **한 번에** 했어요. 오늘은 중간에 **월드에 들렀다 가요.** 월드에서 위치를 고치려고요.
-
-![행렬 기계](../.gitbook/assets/concept-matrix-machine.png)
-
-행렬은 이동·회전·크기를 한 번에 하는 기계예요. URP가 기계를 미리 만들어 둬서 우리는 함수 이름만 부르면 돼요. `Transform A To B` = "A 동네 주소를 B 동네 주소로".
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-002-MP |
+| 목적 | 정점을 월드 공간에서 노멀 방향으로 움직여 시간에 따라 부풀었다 줄어드는 물체를 만든다 |
+| 적용 대상 | Unity 6000.3, URP 17.x. Day 01 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (개념 20분, 코드 15분, 실험 25분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="info" %}
-`HClip`의 H는 "동차(Homogeneous)"예요. 클립 주소는 숫자가 4개(`x, y, z, w`)이고, GPU가 마지막에 `x, y`를 `w`로 나눠서 **먼 것을 작게** 만들어요. `w`는 Day 14에서 아주 중요하게 다시 만나요.
+NOTE: 숨쉬기 효과는 이 Day의 실험용이다. Day 03에서 원래 코드로 되돌린다. 실제 툰 셰이더는 정점을 움직이지 않지만, 버텍스 셰이더가 할 수 있는 일을 확인하는 것이 목적이다.
 {% endhint %}
 
-## 2. 코드 고치기 (15분)
+{% hint style="info" %}
+NOTE: `TransformObjectToWorld`, `TransformObjectToWorldNormal`, `TransformWorldToHClip`, `_Time`은 URP 버전에 따라 이름과 정의 위치가 다를 수 있다. URP 버전 확인 필요.
+{% endhint %}
 
-### ① 택배 상자에 노멀 칸 추가
+## 1. 참조
 
-`Attributes`에 한 줄을 추가해요.
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day01-first-shader.md](day01-first-shader.md) | GMD-TSL-001-MP | 이전: 첫 셰이더 |
+| [day03-properties.md](day03-properties.md) | GMD-TSL-003-MP | 다음: Properties와 CBUFFER |
+| [toon-shader-study Day 02](../toon-shader-study/day02-coordinate-spaces.md) | - | 좌표 공간 (짝꿍 과정) |
+| [3Blue1Brown 벡터](https://www.3blue1brown.com/lessons/vectors), [선형 변환](https://www.3blue1brown.com/lessons/linear-transformations), [행렬 곱셈](https://www.3blue1brown.com/lessons/matrix-multiplication) | - | 수학 참고 |
+| [LearnOpenGL Transformations](https://learnopengl.com/Getting-started/Transformations), [Coordinate Systems](https://learnopengl.com/Getting-started/Coordinate-Systems) | - | 좌표 변환 참고 |
+| [위키백과 삼각함수](https://ko.wikipedia.org/wiki/%EC%82%BC%EA%B0%81%ED%95%A8%EC%88%98) | - | `sin` 참고 |
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | Day 01의 `Assets/MyToon/MyToon.shader` | GMD-TSL-001-MP 완료 | |
+| 2 | Lab 씬 | `Assets/Scenes/Lab` | |
+
+## 3. 안전 사항
+
+{% hint style="warning" %}
+CAUTION: 수정 전에 현재 셰이더 파일을 커밋하거나 복사해 둔다. 실험 후 Day 03에서 되돌릴 때 기준이 된다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 01 셰이더가 주황색으로 보인다 | Lab 씬 물체 셋이 주황색이다 |
+| 2 | Console에 오류가 없다 | 빨간 오류 0건 |
+
+## 5. 절차
+
+### A. 개념 확인: 좌표 공간
+
+같은 점도 기준에 따라 주소(좌표)가 다르다.
+
+| 공간 | 변수 끝 | 기준 | 예 |
+|---|---|---|---|
+| 오브젝트 | `OS` | 모델 자신 | 모델 원점에서 오른쪽 10cm |
+| 월드 | `WS` | 씬 전체 | 씬 원점 기준 좌표 |
+| 뷰 | `VS` | 카메라 | 카메라에서 앞으로 50cm |
+| 클립 | `CS` | 화면 직전 상자 (`x, y, z, w`) | GPU가 `w`로 나누기 전의 값 |
+
+Day 01의 `TransformObjectToHClip`은 오브젝트에서 클립으로 한 번에 변환했다. 이 Day에서는 월드 공간을 거쳐 위치를 수정한다. `TransformAToB`는 A 공간 좌표를 B 공간 좌표로 바꾸는 함수다. 변환은 행렬이 수행하며 URP가 행렬을 미리 제공한다.
+
+{% hint style="info" %}
+NOTE: `HClip`의 H는 동차(Homogeneous)를 뜻한다. 클립 좌표는 `x, y, z, w` 4개이며, GPU가 마지막에 `x, y`를 `w`로 나눠(원근 나눗셈) 먼 물체를 작게 만든다. `w`는 Day 14에서 다시 사용한다.
+{% endhint %}
+
+### B. Attributes에 노멀 추가
+
+노멀(normal)은 표면이 바라보는 방향의 단위 벡터다.
+
+1. (5-B-01) `struct Attributes`를 다음과 같이 수정한다. → 결과: 저장 후 컴파일 오류가 없다.
 
 ```hlsl
 struct Attributes
 {
     float4 positionOS : POSITION;
-    float3 normalOS   : NORMAL;      // ← 추가: 표면이 바라보는 방향
+    float3 normalOS   : NORMAL;      // 추가: 표면이 바라보는 방향
 };
 ```
 
-**노멀**(normal)은 표면이 바라보는 방향이에요. 해바라기 얼굴이 향하는 쪽이라고 생각하세요. `: NORMAL` 이름표를 붙이면 Unity가 메시의 노멀을 이 칸에 넣어 줘요.
+### C. vert 함수 수정
 
-### ② vert 함수 바꾸기
-
-`vert` 안의 `o.positionCS = ...` 한 줄을 아래 네 줄로 바꿔요.
+1. (5-C-01) `vert` 함수 전체를 다음으로 바꾼다. → 결과: 저장 후 컴파일 오류가 없다.
 
 ```hlsl
 Varyings vert(Attributes input)
@@ -72,53 +100,54 @@ Varyings vert(Attributes input)
 }
 ```
 
-| 줄 | 하는 일 |
+| 줄 | 동작 |
 |---|---|
-| `TransformObjectToWorld` | 오브젝트 주소 → **월드 주소** |
-| `TransformObjectToWorldNormal` | 노멀도 월드로. 노멀은 위치가 아니라 **방향**이라 전용 함수가 있어요(물체를 한쪽으로 납작하게 늘려도 노멀이 비뚤어지지 않게) |
-| `_Time.y` | 게임 시작 후 흐른 **초**. URP가 매 프레임 넣어 줘요 |
-| `sin(...)` | -1과 1 사이를 오가는 **파도**. 시간을 넣으면 앞뒤로 흔들려요 |
-| `positionWS.y * 8.0` | 높이를 섞어서 **위치마다 박자를 다르게** |
-| `* 0.03` | 최대 3cm만 움직이게 |
-| `positionWS += normalWS * (...)` | **노멀 방향으로** 밀기 = 부풀리기 |
-| `TransformWorldToHClip` | 고친 월드 주소 → 클립 주소 |
-
-{% hint style="success" %}
-"**노멀 방향으로 밀기**"를 꼭 기억하세요. Day 13에서 이 기술로 **외곽선**을 만들어요.
-{% endhint %}
-
-## 3. 확인하기
-
-- Scene 뷰는 평소에 멈춰 있어요. Scene 뷰 위쪽 툴바의 **효과(Effects) 메뉴 → Always Refresh**를 켜거나, **Play** 버튼을 누르면 숨쉬는 모습이 보여요.
-- 숨쉬지 않는다면? Console에 오류가 있는지 먼저 보세요. 오타가 가장 흔해요(`TransformObjectToWorldNormal`은 길어서 잘 틀려요).
-
-정답: [`Assets/Solutions/Day02/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day02/MyToon.shader)
-
-## 4. 실험해 보기 (25분)
-
-1. **크게 숨쉬기** — `0.03`을 `0.2`로. 풍선처럼 부풀어요. 큐브는 **면이 따로따로 떨어지는 것**이 보이나요? 큐브는 모서리 점이 면마다 따로 있어서 노멀이 달라요. (Day 13에서 외곽선을 만들 때 이 문제를 다시 만나요.)
-2. **월드 vs 오브젝트** — `positionWS.y * 8.0`을 `input.positionOS.y * 8.0`으로 바꿔 보세요. 그리고 Capsule을 위로 들어 올려 보세요.
-   - `positionWS.y`일 때: 물결 무늬가 **세상에 붙어 있어서** 물체를 움직이면 무늬가 물체 위를 미끄러져요.
-   - `positionOS.y`일 때: 물결 무늬가 **물체에 붙어서** 같이 따라와요.
-   - 어떤 주소로 계산하느냐에 따라 결과가 달라진다는 게 핵심이에요.
-3. **옆으로 흔들기** — 마지막 줄 전에 `positionWS.x += sin(_Time.y * 2.0) * 0.3;`을 넣으면? 셋이 똑같이 좌우로 흔들려요.
-4. 커밋: `git commit -am "Day 02: 숨쉬는 버텍스 셰이더"`
+| `TransformObjectToWorld` | 오브젝트 좌표를 월드 좌표로 바꾼다 |
+| `TransformObjectToWorldNormal` | 노멀을 월드 방향으로 바꾼다. 노멀은 위치가 아니라 방향이므로 전용 함수를 쓴다. 비균등 스케일에도 노멀이 틀어지지 않는다 |
+| `_Time.y` | 게임 시작 후 경과 시간(초). URP가 매 프레임 넣는다 |
+| `sin(...)` | -1과 1 사이를 오가는 값. 시간을 넣으면 왕복한다 |
+| `positionWS.y * 8.0` | 높이를 섞어 위치마다 박자를 다르게 한다 |
+| `* 0.03` | 최대 이동량을 0.03 단위(미터)로 제한한다 |
+| `positionWS += normalWS * (...)` | 노멀 방향으로 민다. 부풀리기 효과다 |
+| `TransformWorldToHClip` | 수정한 월드 좌표를 클립 좌표로 바꾼다 |
 
 {% hint style="info" %}
-숨쉬기는 오늘만 하는 실험이에요. Day 03에서 원래대로 되돌려요. 실제 툰 셰이더는 점을 움직이지 않지만, 버텍스 셰이더가 무엇을 할 수 있는지 손으로 느껴 보는 게 목적이에요.
+NOTE: "노멀 방향으로 민다"는 Day 13의 외곽선(법선 확장)에서 같은 방식으로 쓴다.
 {% endhint %}
 
-## 5. 오늘의 액기스
+### D. 화면 확인
 
-👉 [ESSENCE.md — Day 02](essence.md#day-02)
+1. (5-D-01) Scene 뷰 툴바의 `Effects` 메뉴에서 `Always Refresh`를 켠다. 또는 `Play`를 누른다. → 결과: 물체 표면이 위로 올라가는 물결처럼 부풀었다 줄어든다. (Scene 뷰는 기본값에서 `_Time`이 갱신되지 않을 수 있다.)
+2. (5-D-02) 움직임이 없으면 Console의 오류를 확인한다. → 결과: 오타(특히 `TransformObjectToWorldNormal`)가 흔한 원인이다.
 
-## 수학 참고 자료
+![Day 02 결과](../.gitbook/assets/day02-breathing.png)
 
-- 🎥 [3Blue1Brown — 벡터](https://www.3blue1brown.com/lessons/vectors) · [선형 변환과 행렬](https://www.3blue1brown.com/lessons/linear-transformations) · [행렬 곱셈 = 변환 이어 붙이기](https://www.3blue1brown.com/lessons/matrix-multiplication)
-- [LearnOpenGL — Transformations](https://learnopengl.com/Getting-started/Transformations) · [Coordinate Systems](https://learnopengl.com/Getting-started/Coordinate-Systems)
-- [위키백과 — 삼각함수](https://ko.wikipedia.org/wiki/%EC%82%BC%EA%B0%81%ED%95%A8%EC%88%98) — sin 파도가 처음이면 · [Desmos](https://www.desmos.com/calculator)에서 `y = \sin(3x)`를 그려 보세요
-- 더 깊이: [toon-shader-study Day 02 — 좌표 공간 여행](../toon-shader-study/day02-coordinate-spaces.md)
+정답 파일: [`Assets/Solutions/Day02/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day02/MyToon.shader)
 
----
+### E. 실험
+
+1. (5-E-01) 진폭을 키운다: `0.03`을 `0.2`로 바꾼다. → 결과: 풍선처럼 부푼다. Cube는 면이 서로 떨어져 보인다. 큐브는 모서리 정점이 면마다 따로 있어 노멀이 서로 다르기 때문이다. Day 13에서 외곽선을 만들 때 같은 문제를 다시 다룬다.
+2. (5-E-02) 좌표 공간을 바꿔 본다: `positionWS.y * 8.0`을 `input.positionOS.y * 8.0`으로 바꾸고 Capsule을 위로 옮긴다. → 결과: `positionWS.y`일 때는 물결이 씬에 고정돼 물체 위를 미끄러진다. `positionOS.y`일 때는 물결이 물체와 함께 움직인다.
+3. (5-E-03) 좌우 흔들림을 추가한다: `TransformWorldToHClip` 줄 앞에 `positionWS.x += sin(_Time.y * 2.0) * 0.3;`을 넣는다. → 결과: 세 물체가 같은 박자로 좌우로 흔들린다.
+4. (5-E-04) 커밋한다: `git commit -am "Day 02: 숨쉬는 버텍스 셰이더"`
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | `Always Refresh`를 켜고 Scene 뷰를 본다 | 표면이 물결치듯 움직인다 | 3초 안에 형태 변화가 보인다 |
+| 2 | Console을 본다 | 오류 없음 | 빨간 오류 0건 |
+| 3 | 5-E-02 실험을 한다 | 좌표 공간에 따라 무늬 고정 대상이 달라진다 | 두 경우의 차이를 설명할 수 있다 |
+
+## 7. 복구
+
+1. (7-01) 숨쉬기를 제거한다: Day 03의 5-A 절차를 따른다(GMD-TSL-003-MP). `vert`를 Day 01의 한 줄 변환으로 되돌린다.
+2. (7-02) 에디터에서 되돌린다: `Ctrl+Z` 또는 `git restore Assets/MyToon/MyToon.shader`.
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 02 페이지를 AMM 형식으로 재작성. 비유 삭제, 외부 링크를 참조 절로 이동 |
 
 [← Day 01](day01-first-shader.md) · [목차](README.md) · [다음: Day 03 →](day03-properties.md)
