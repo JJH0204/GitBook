@@ -62,6 +62,13 @@
   * [도입 전: NAS 시절과 사고](projects/forge-selfhost/before-nas.md)
   * [도입 과정](projects/forge-selfhost/process.md)
   * [도입 결과와 회고](projects/forge-selfhost/results-and-retrospective.md)
+* [Maiden Dormireve 출시 준비와 마케팅](projects/dormireve-launch/README.md)
+  * [스팀 상점 페이지](projects/dormireve-launch/steam-store.md)
+  * [데모와 Next Fest](projects/dormireve-launch/demo-and-nextfest.md)
+  * [크라우드 펀딩(텀블벅)](projects/dormireve-launch/crowdfunding.md)
+  * [커뮤니티(디스코드)와 채널 전략](projects/dormireve-launch/community.md)
+  * [홍보 영상과 UTM 측정](projects/dormireve-launch/promo-video.md)
+  * [등급분류와 표시 의무](projects/dormireve-launch/rating-and-compliance.md)
 
 ## 보류
 
