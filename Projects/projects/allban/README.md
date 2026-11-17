@@ -1,33 +1,74 @@
 ---
-description: PC방 주방 메니지먼트 프로그램 구현
+description: PC방 주방 매니지먼트 프로그램 구현
 ---
 
 # 올반 프로젝트 (Allban)
 
-***
+## 작업 식별
 
-#### 사용툴
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRJ-ALB-001-DO |
+| 유형 | D&O (프로젝트 개요) |
+| 목적 | PC방 주방의 주문 확인, 레시피 공유, 조리 타이머를 한 프로그램으로 처리하는 올반 프로젝트의 범위, 도구, 의의를 설명한다 |
+| 확인 상태 | 미검증 (원본 기록을 정리한 것이며 이 환경에서 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-* 피그마: UI/UX 디자인 초안 작성
-* Gemini: 구현 계획 및 기획
-* 안티그래비티: 소스 코드 구현
-* 플러터: 윈도우, 안드로이드 앱 빌드 및 배포
+## 1. 한눈에 보기
 
-#### 사용 언어
+| 항목 | 내용 |
+|---|---|
+| 한 줄 설명 | PC방 주방 매니지먼트 프로그램. Windows 호스트 서버 프로그램과 Android 태블릿 클라이언트로 구성한다 |
+| 기간 | 원본에 없음, 확인 필요 (UI 초안 영상은 2026-01-29, 피드백은 2026-02-02 기록) |
+| 내 역할 | 기획, UI/UX 초안, 개발, 배포를 1인으로 진행 (원본의 "1인 개발 역량 강화"에 근거) |
+| 현재 상태 | 원본에 없음, 확인 필요 |
 
-* React: 피그마 UI/UX 초안 디자인
-* Dart: 플러터(윈도우, 안드로이드 앱) 개발
+## 2. 구성 요소
 
-***
+### 2.1 사용 도구
 
-#### 관련 페이지
+| 도구 | 용도 |
+|---|---|
+| Figma | UI/UX 디자인 초안 작성 |
+| Gemini | 구현 계획과 기획 |
+| Antigravity | 소스 코드 구현 |
+| Flutter | Windows, Android 앱 빌드와 배포 |
 
-<table data-view="cards"><thead><tr><th data-type="content-ref"></th><th data-hidden></th><th data-hidden data-card-cover data-type="image">Cover image</th></tr></thead><tbody><tr><td><a href="planning.md">기획</a></td><td>기획</td><td data-object-fit="contain"><a href="https://t3.ftcdn.net/jpg/17/77/26/38/360_F_1777263832_oFqCdRTLJR40FZ2yf7OCelVrQoNoS5Tm.jpg">https://t3.ftcdn.net/jpg/17/77/26/38/360_F_1777263832_oFqCdRTLJR40FZ2yf7OCelVrQoNoS5Tm.jpg</a></td></tr><tr><td><a href="ui-ux/README.md">UI/UX 디자인</a></td><td>UI/UX 디자인</td><td><a href="https://designcompass.org/wp-content/uploads/2025/05/logo-figma.png">https://designcompass.org/wp-content/uploads/2025/05/logo-figma.png</a></td></tr><tr><td><a href="dev-and-deploy/README.md">개발 및 배포</a></td><td>개발 및 배포</td><td><a href="https://cdn.digitaltoday.co.kr/news/photo/202511/607927_563291_3136.png">https://cdn.digitaltoday.co.kr/news/photo/202511/607927_563291_3136.png</a></td></tr></tbody></table>
+### 2.2 사용 언어
 
-***
+| 언어 | 용도 |
+|---|---|
+| React | Figma UI/UX 초안 디자인 |
+| Dart | Flutter(Windows, Android 앱) 개발 |
 
-#### 프로젝트 의의
+## 3. 관련 페이지
 
-* "바이브코딩"으로 플러터(다트)에 이해가 부족한 내가 어느 정도 수준까지 구현할 수 있는지 파악
-* 앱 기획 및 개발 과정의 전반을 직접 진행하면서 실무와 유사한 개발 프로세스를 경험
-* 1인 개발 역량 강화
+| Task ID | 페이지 | 설명 |
+|---|---|---|
+| PRJ-ALB-002-DO | [올반 프로젝트 기획](planning.md) | 문제 인식, 문제 정의, 기술 스택 선정 |
+| PRJ-ALB-003-DO | [UI/UX 디자인 초안](ui-ux/README.md) | 화면 설계와 활용 예시 |
+| (그룹) | [개발 및 배포 개요](dev-and-deploy/README.md) | 패킷 수집, 큐, 로깅, 임베디드 파이썬, 인스톨러 |
+
+## 4. 프로젝트 의의
+
+1. 바이브코딩으로 Flutter(Dart) 이해가 부족한 상태에서 어느 수준까지 구현할 수 있는지 파악한다.
+2. 앱 기획과 개발 전 과정을 직접 진행하며 실무와 유사한 개발 프로세스를 경험한다.
+3. 1인 개발 역량을 강화한다.
+
+## 5. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| 바이브코딩 | AI에게 구현을 맡기고 방향과 검토를 사람이 하는 개발 방식 |
+| 호스트 PC | 매장 안에서 서버 프로그램이 도는 관리 PC |
+| 클라이언트 | 주방에서 쓰는 Android 태블릿 앱 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 이 프로젝트에서 AI가 맡은 부분과 내가 직접 판단한 부분은 각각 무엇이었는가?
+- [ ] Dart를 모르는 상태에서 구현이 막혔을 때 어떻게 풀었는가?
+- [ ] 1인 개발에서 가장 부담이 컸던 단계는 어디였는가?
