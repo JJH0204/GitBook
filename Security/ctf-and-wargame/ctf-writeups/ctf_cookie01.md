@@ -1,8 +1,5 @@
 # CTF: Cookie01
 
-{% hint style="warning" %}
-{% endhint %}
-
 이미지 파일을 업로드 하면 파일의 명칭이 바뀌어 업로드 된다.
 
 파일을 업로드 하는 과정을 proxy로 잡아 보았다.

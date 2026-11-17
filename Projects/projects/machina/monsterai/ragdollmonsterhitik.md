@@ -1,8 +1,5 @@
 # 래그돌 피격 및 사망 처리 (Ragdoll)
 
-{% hint style="warning" %}
-{% endhint %}
-
 ### 요약 / 개요
 
 기존의 3D 모델 리소스의 본 게임 오브젝트에 콜라이더 컴포넌트와 리지드바디, Character Joint를 활용해 isKinematic 설정을 일괄적으로 켜고 끄는 것으로 활성화 가능한 레그돌(ragdoll)을 구현했다.

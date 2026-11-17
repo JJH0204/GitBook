@@ -1,8 +1,5 @@
 # OWASP Juice Shop 실습 풀이
 
-{% hint style="info" %}
-{% endhint %}
-
 ### 요약 (텍스트 요소)
 
 * OWASP JuiceShop 서비스를 모의 해킹 하며 웹 보안 점검 사항들을 숙지한다.

@@ -1,8 +1,5 @@
 # 네트워크와 프로토콜의 관계
 
-{% hint style="warning" %}
-{% endhint %}
-
 * A Protocol
 * pc 1
 * pc 2

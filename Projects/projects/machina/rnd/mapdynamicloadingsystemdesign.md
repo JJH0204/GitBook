@@ -1,8 +1,5 @@
 # 맵 동적 로딩 시스템 설계
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 {% code title="DungeonManager.cs" %}

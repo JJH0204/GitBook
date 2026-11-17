@@ -46,7 +46,7 @@ metaLinks:
 
 | 주제 | 내용 |
 |---|---|
-| [게임플레이 프로그래밍](gameplayprogrammer/README.md) | 3D 게임 개발, 애니메이션·IK, Cinemachine, 셰이더 그래프 |
+| [게임플레이 프로그래밍](gameplayprogrammer/README.md) | 3D 그래픽스 기초, IK, 셰이더 강의 메모와 연구 일지 |
 | [게임 수학](gamemath/README.md) | 삼각함수, 벡터 |
 | [Unity](unity/README.md) | CharacterController, Rigidbody, NavMeshAgent, 전투 시스템 설계 |
-| [기획](planning/README.md) | 게임 아이디어, 회의록 |
+| [기획](planning/README.md) | 게임 아이디어 |

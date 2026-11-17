@@ -1,24 +1,13 @@
 # 캐릭터 컨트롤러 이동 구현
 
-{% hint style="warning" %}
-You can decompress drawing data with the command palette: "Decompress current Excalidraw file". For more info check in plugin settings under "Saving".
-{% endhint %}
-
 CharacterController 컴포넌트를 활용해서 캐릭터 이동을 구현할 수 있다.
 
-Rigidbody에서 변경한 내용
+Rigidbody 버전([리지드바디 캐릭터 이동 구현](rigidbody.md))에서 바꾼 점
 
-컴포넌트 캐싱
-
-characterController에 isGrounded 필드 값으로 바닥인지 확인이 가능하다.
-
-키 입력을 Vector 객체에 저장
-
-CharacterController 컴포넌트에 이동 메서드 호출해 사용(왜... 에러가 발생하는 걸까?)
-
-{
-
-}
+* 컴포넌트 캐싱
+* characterController의 isGrounded 필드 값으로 바닥인지 확인이 가능하다.
+* 키 입력을 Vector 객체에 저장
+* CharacterController 컴포넌트의 이동 메서드(`Move`)를 호출해 이동한다. 처음엔 NaN 에러가 났다 (원인은 아래 코드 뒤에 정리).
 
 점프, 대쉬, 중력, 저항 으로 인한 물리 처리 결과 값을 \_calcVelocity 값에 저장하고 위와 같은 방법으로 CharacterController에 처리
 
@@ -154,8 +143,6 @@ public class CharControllerCharacter : MonoBehaviour
 ```
 {% endcode %}
 
-^FMkMovIf
-
 transform.positionWithLocalOffset assign attempt for 'CharControllerCharacter' is not valid.\
 Input positionWithLocalOffset is { NaN, NaN, NaN }.
 
@@ -192,3 +179,35 @@ private void ProcessDrag()
 (양수는 하늘로 솓아오름)
 
 흠... 다시 만들어야 겠는걸
+
+## 이 코드에 남은 문제
+
+NaN 말고도 코드를 다시 읽어 보면 고칠 곳이 더 있다.
+
+* `transform.forward = vInputDirection;`: `vInputDirection`은 어디서도 값을 넣지 않아 항상 (0, 0, 0)이다. 방향이 0 벡터라 회전이 안 되고 경고가 난다. 입력 벡터(`vMovement`)를 써야 한다.
+* `ProcessGravity`가 `+fGravity`를 더해서 위로 솟는다 (위에서 직접 찾은 문제).
+* 점프는 `Physics.gravity.y`로 계산하고 중력은 `fGravity`로 적용해서 두 값이 다르다. 같은 중력 값을 써야 점프 높이가 `fJumpHeight`와 맞는다 (v = √(2gh)).
+* 바닥에서 y 속도를 0으로 만들면 `isGrounded`가 프레임마다 true/false를 오간다. 바닥에서는 작은 음수(예: -2)로 눌러 둔다.
+* `Move`를 한 프레임에 두 번 호출한다. `isGrounded`는 마지막 `Move` 결과만 반영하므로, 입력 이동과 속도를 더해 한 번에 호출하는 편이 낫다.
+* `Input.GetButtonDown("Dash")`는 Input Manager에 "Dash" 축이 없으면 에러가 난다. Unity 6 기본 설정(새 Input System 전용)에서는 `Input.GetAxis` 자체가 예외를 던진다. `Project Settings > Player > Active Input Handling`을 확인한다.
+
+## CharacterController 정리
+
+| 항목 | 내용 |
+|---|---|
+| `Move(motion)` | 이번 프레임에 움직일 **거리**를 받는다. `Time.deltaTime`을 직접 곱해야 하고, 중력은 적용하지 않는다 |
+| `SimpleMove(speed)` | 초당 **속도**를 받는다. 중력을 자동 적용하고 y 성분은 무시해서 점프가 안 된다 |
+| `isGrounded` | 마지막 `Move` 호출 중에 아래쪽이 무언가에 닿았는지 |
+| 충돌 콜백 | `OnCollisionEnter` 대신 `OnControllerColliderHit(ControllerColliderHit hit)` |
+| 주요 설정 | Slope Limit(오를 수 있는 경사), Step Offset(오를 수 있는 턱 높이), Skin Width(겹침 여유) |
+| Rigidbody와 함께 | 같은 오브젝트에 함께 쓰지 않는다. 물리 엔진이 밀어내지 않으므로 넉백 같은 힘은 직접 계산한다 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 페이지 끝의 "다시 만들어야겠다"를 실행한다. 위 문제를 반영해 `Move`를 한 번만 호출하는 버전으로 다시 짠다.
+- [ ] CharacterController와 Rigidbody 이동을 각각 언제 고를지, 장단점 2개씩 쓴다.
+- [ ] NaN이 한 번 생기면 왜 위치 전체가 망가지는지(NaN의 연산 성질) 쓴다.

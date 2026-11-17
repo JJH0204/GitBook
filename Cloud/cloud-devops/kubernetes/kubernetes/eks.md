@@ -1,8 +1,5 @@
 # AWS EKS 구축 및 운영
 
-{% hint style="warning" %}
-{% endhint %}
-
 * AWS EKS workshop
 * DevOps (CI/CD) + Security = DevSecOps
 * CI (Continous Intergrity): 빌드, 테스트

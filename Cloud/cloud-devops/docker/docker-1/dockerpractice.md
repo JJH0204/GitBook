@@ -1,8 +1,5 @@
 # Docker Compose 워드프레스 실습
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 {% code title="docker-compose.yml" %}
