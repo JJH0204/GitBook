@@ -1,192 +1,130 @@
 # 도커 핵심 이론 (Docker)
 
-## Code Block
+## 작업 식별
 
-```bash
-vi docker.sh
-```
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-DKR-002-DO |
+| 유형 | D&O (개념) |
+| 목적 | 가상 머신과 컨테이너의 구조 차이, 도커 명령어 분류, 이미지 태그, 볼륨, 컨테이너 수명 주기를 설명한다 |
+| 확인 상태 | 미검증 (원본 메모와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## Code Block 1
+{% hint style="info" %}
+NOTE: 원본은 설치 단계, 명령어 메모, 스크립트가 섞여 있었다. 설치는 [RHEL 계열 도커 설치](docker-install-rhel.md)(CLD-DKR-006-MP), 실행과 삭제는 [도커 컨테이너 실행과 관리](docker-container-run.md)(CLD-DKR-008-MP), 명령 표는 [도커 필수 명령어](docker_commend.md)(CLD-DKR-007-REF)로 옮겼다. 이 문서는 개념만 남겼다.
+{% endhint %}
 
-```bash
-#!/bin/bash
+## 1. 목적
 
-for i in $(seq 1 10)
-do
-docker container create nginx
-done
-```
+컨테이너 기반 서비스는 호스트 시스템 위에 이미지로 격리 환경을 만들어 필요한 개발 환경을 쉽게 구축하게 한다. 내가 만든 이미지를 다른 사람에게 공유할 수도 있다. 이 문서는 그 바탕이 되는 개념을 정리한다.
 
-* 컨테이너 기반 클라우드 서비스
-* docker / docker hub
-* system 위에 별도의 컨테이너를 이미지를 활용해 구축
-  * 쉽고 간단하게 필요한 개발 환경을 가져오고 구축할 수 있게 된다.
-  * 내가 구축한 이미지를 다른 사람에게 공유도 할 수 있다.
-* private(유료) / public(무료)
-* APP / APP/ APP
-* VM1 / VM2 / VM3
-* Hyper-v
-* Host OS
-* 인프라
-* VM 들은 인프라에 종속된다.
-* 리소스를 나눠서 사용해야 된다.
-* VM 을 삭제하지 않으면 점유한 리소스를 Host OS나 다른 VM에 분배할 수 없다.
-* Host OS 의 여유 리소스가 중요
-* APP(image) / APP(image) / APP(image)
-* (링크/바인드 표현 생략)
-* Docker Engine
-* Host OS
-* 인프라
-* VM 기준
-* Docker 기준
+## 2. 구성 요소
 
-#### Docker command (카테고리별)
+### 2.1 가상 머신과 컨테이너 비교
 
-* system\
-  docker \[version / system info / system prune / system df / logout / login / 등]
-* image\
-  docker \[images / images ls / images inspect / image prune / pull / push / rm / 등]
-* container\
-  docker container \[ps / stats / logs / ls / port / 등]
-* network\
-  docker network \[ls / create / connect / disconnect / inspect / rm / 등]
-* volumn (원문에 'volumn' 표기)
+| 번호 | 항목 | 가상 머신(VM) | 도커 컨테이너 |
+|---|---|---|---|
+| 1 | 구조 | 인프라 > 호스트 OS > 하이퍼바이저(예: Hyper-V) > VM1, VM2, VM3 > 각 VM의 앱 | 인프라 > 호스트 OS > 도커 엔진 > 앱(이미지) 여러 개 |
+| 2 | 자원 | 자원을 VM별로 나눠 쓴다. VM을 삭제하지 않으면 점유한 자원을 호스트 OS나 다른 VM에 돌려줄 수 없다 | 이미지로 만든 프로세스가 호스트 자원을 공유한다 |
+| 3 | 의존성 | VM은 인프라에 종속된다. 호스트 OS의 여유 자원이 중요하다 | 호스트 커널을 공유한다 |
 
-#### 컨테이너와 볼륨
+### 2.2 도커 명령어 분류
 
-* 컨테이너란?\
-  격리된 환경 (다른 컨테이너 끼리 서로 영향을 줄 수 없다.)
-* python 3.9
-* python 2.1
-* 볼륨이란?\
-  이미지가 가진 내용(패키징된)
-* 파일(디렉터리)열거 뿐 아니라 공유가 필요할 때 사용
-* 컨테이너-컨테이너
-* 컨테이너-호스트
-* "컨테이너의 데이터 관리를 위한 매커니즘"
+| 번호 | 분류 | 명령 예 |
+|---|---|---|
+| 1 | system | `docker version`, `docker system info`, `docker system df`, `docker system prune`, `docker login`, `docker logout` |
+| 2 | image | `docker images`, `docker image ls`, `docker image inspect`, `docker image prune`, `docker pull`, `docker push`, `docker image rm` |
+| 3 | container | `docker container ps`, `docker container stats`, `docker container logs`, `docker container ls`, `docker container port` |
+| 4 | network | `docker network ls`, `docker network create`, `docker network connect`, `docker network disconnect`, `docker network inspect`, `docker network rm` |
+| 5 | volume | `docker volume ls`, `docker volume create`, `docker volume inspect` |
 
-### Docker install on Linux (원문 단계 요약)
+원본의 `docker system info`, `docker image ls` 계열 표기는 그대로 두었다. 옵션과 사용 예는 CLD-DKR-007-REF를 따른다.
 
-경로 확인 > 설치 (repo)
+### 2.3 컨테이너와 볼륨
 
-{% stepper %}
-{% step %}
-### 패키지 관리자 업데이트
+| 번호 | 개념 | 설명 |
+|---|---|---|
+| 1 | 컨테이너 | 격리된 환경이다. 다른 컨테이너끼리 서로 영향을 줄 수 없다. 예: 컨테이너마다 다른 Python 버전을 쓸 수 있다 |
+| 2 | 이미지 | 패키징된 내용이다. 컨테이너를 만들 때 이미지에서 복사해 온다 |
+| 3 | 볼륨(Volume) | 컨테이너의 데이터를 관리하는 메커니즘이다. 파일과 디렉터리를 컨테이너 밖에 두거나, 컨테이너와 컨테이너, 컨테이너와 호스트 사이에서 공유할 때 쓴다 |
 
-1. 패키지 관리자 업데이트
-{% endstep %}
+{% hint style="warning" %}
+CAUTION: 볼륨 없이 컨테이너 안에 저장한 데이터는 컨테이너를 삭제할 때 함께 사라진다. 보존이 필요한 데이터는 볼륨에 둔다.
+{% endhint %}
 
-{% step %}
-### Docker 리포지터리 추가
+### 2.4 이미지 태그와 내려받기
 
-dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-{% endstep %}
+| 번호 | 항목 | 설명 |
+|---|---|---|
+| 1 | 자동 내려받기 | 컨테이너를 실행할 때 이미지가 로컬에 없으면 Docker Hub에서 같은 이름의 이미지를 `pull`한다. 태그를 생략하면 `latest`를 받는다 |
+| 2 | 태그 | 원하는 버전의 이미지를 구분해 설치·관리하려고 쓴다. 앱에 필요한 도구·IDE 버전을 태그로 골라 쓴다 |
+| 3 | 공식 이미지 | Docker Hub 검색에서 공식(Official) 이미지만 걸러 볼 수 있다 |
 
-{% step %}
-### Docker 설치
+### 2.5 컨테이너 수명 주기
 
-dnf install -y docker-ce
-{% endstep %}
+| 번호 | 단계 | 명령 | 설명 |
+|---|---|---|---|
+| 1 | 생성 | `docker create` | 이미지로 컨테이너만 만든다. 실행하지 않는다 |
+| 2 | 생성과 실행 | `docker run` | 컨테이너를 만들고 바로 실행한다 |
+| 3 | 시작 | `docker start` | 중지된 컨테이너를 시작한다 |
+| 4 | 종료 | `docker stop` | 실행 중인 컨테이너를 중지한다 |
+| 5 | 삭제 | `docker rm` | 컨테이너를 삭제한다. 이미지는 삭제되지 않는다 |
 
-{% step %}
-### 버전 확인
+컨테이너를 만든 뒤 중지하고 다시 시작해도 컨테이너 ID는 바뀌지 않는다.
 
-docker --version
-{% endstep %}
+{% hint style="info" %}
+NOTE: 백그라운드 실행(`-d`)을 지정하지 않으면 컨테이너의 표준 입출력이 현재 터미널에 연결된다. 원본의 "해당 머신 안으로 들어가게 된다"는 표현은 `-it`로 셸을 지정했을 때의 동작이다.
+{% endhint %}
 
-{% step %}
-### Docker 서비스 활성화 및 시작
+### 2.6 도커 권한
 
-systemctl enable --now docker
-{% endstep %}
-{% endstepper %}
+도커 엔진을 설치하면 `docker` 그룹이 만들어진다. 일반 사용자는 기본적으로 `docker` 명령을 쓸 수 없다. 사용자를 `docker` 그룹에 추가하면 쓸 수 있다. 절차는 CLD-DKR-005-MP의 구역 B를 따른다.
 
-* 설치 흐름: docker hub > image install > 컨테이너 구축 > 실행
-* 설치한 이미지가 없더라도 실행하는 컨테이너에 이미지 이름과 같은 이미지를 docker hub 에서 pull 하여 실행한다. (이때 가장 최신 버전의 이미지를 가져옴)
-* 원하는 버전의 이미지를 설치(관리)하기 위해서 태그를 사용
-* 태그로 이미지를 구분하여 구현한 app에 필요한 버전의 tool/IDE를 불러올 수 있다.
+### 2.7 DevOps 순환
 
-예시:
+원본 Dockerfile 페이지에 있던 DevOps 순환 설명이다.
 
-* 우분투를 실행할 때 함께 실행할 명령어를 지정할 수 있다.\
-  docker container run ubuntu:latest /bin/echo "hello Ubuntu"
-* 컨테이너를 삭제할 수 있다.(실행 중이면 불가능)\
-  단, 이미지가 삭제된 것은 아니다.
-* nignx툴을 활용해 웹 서버를 구축할 때\
-  docker image pull nginx:latest
-* 도커 이미지 삭제 명령어\
-  docker image rm hello-world
-* 도커 관리 명령어\
-  또는 docker image ls
-* 컨테이너 실행 예시:\
-  docker container run --name linux-web -d -p 80:80 nginx\
-  설명: 실행할 컨테이너 이름 ^Lrc5aP21, 포트 설정 ^T6FgksuG, 실행 이미지 ^2UsE4ZAG, 백그라운드 실행 여부
-* 백그라운드 실행을 하지 않으면 해당 머신 안으로 들어가게 된다.
-* 모니터링 / 제어
-  * docker stats \[컨테이너 이름/컨테이너ID]
-  * 종료: docker container stop \[컨테이너 이름/컨테이너ID]
-  * 시작: docker container start linux-web
-  * 실행중인 컨테이너 정보: docker container ls
-  * 설치한 이미지 확인: docker image ls
-* 컨테이너를 생성한 후에는 중지/실행 해도 ID는 바뀌지 않음
-* 권한 관련: 일반 사용자는 docker 명령어를 사용할 수 없다. docker도 docker를 설치하면 docker 사용자를 만든다. (http,apache 처럼)\
-  그룹에 추가하여 docker를 사용할 수 있도록 한다.
-* 이미지 조회/검색 팁: 즐겨찾기 필터 적용 ^P04XgUTJ (주로 공식 계정) 이미지 5종 필터
-* 이미지 내려받기 예시:\
-  docker pull ubuntu:bionic (이미지/태그)\
-  docker run -it ubuntu:bionic bash\
-  ubuntu 18.0.4 쉘에 접속하게 됨
-* 컨테이너에서 필요한 프로그램 설치, 작업 디렉터리 설명 등:
-  * 필요한 프로그램 설치
-  * 이미지가 설치된 디렉터리
-  * 실제 작업이 진행되는 디렉터리
-* 이미지/컨테이너 관리 예시:
-  * docker commit \[컨테이너ID] \[이미지이름]:\[태그]
-  * docker image tag \[사용하는이미지이름] \[사용자이름]/\[이미지이름]:\[태그]
-* 도커 로그인:
-  * docker login -u
-  * 로그인 성공 시 설정 파일에 인증 키 값이 저장됨
-* 일반 워크플로우: 생성 > 구동 > 시작 > 종료 > 삭제
-* 명령어 요약: docker \[run/create]
-  * 뒤에 지정한 이미지를 담은 컨테이너를 생성
-  * 컨테이너를 생성하고 실행까지 진행
-* 사용이 중지된 모든 컨테이너 삭제: docker container prune
-* 컨테이너 ID만 출력: docker container ls -a -q (원문 참조)
-* 모든 컨테이너 강제 삭제(실행중 포함): docker container rm -f $(docker container ls -a -q)\
-  (: prune와 달리 실행 중인 모든 컨테이너를 삭제 ^OujsIx8a)
-* docker container \[options]
-  * -a: 추가
-  * -i: 대화형으로 실행
-  * -d: 백그라운드 실행
-  * \--rm: 컨테이너 종료 시 자동 삭제
-  * -it: 컨테이너 실행 시 컨테이너에 접속
-  * \--name: 이름 설정
-* 도커 실행 없이 컨테이너만 생성 가능한 예:
-  * docker create --name wordpress -p 80:80 wordpress ^OMq5oLtW (외부:내부 ^yb2Zm7se)
-* 컨테이너 실행 후 바로 실행시킬 명령어 추가 가능:\
-  docker run -it --name web nginx df -h
-* 프로세스 확인/강제종료:
-  * docker top \[컨테이너 ID]: 프로세스 ID 확인가능
-  * docker kill \[컨테이너 ID]: 컨테이너 강제 종료
+| 번호 | 단계 | 내용 |
+|---|---|---|
+| 1 | 기획, 개발 | 요구사항을 정의하고 애플리케이션을 개발한다 |
+| 2 | CI(빌드, 테스트), CD(배포) | 코드가 바뀌면 자동으로 빌드, 테스트, 배포 파이프라인을 실행한다 |
+| 3 | 운영, 모니터링 | 배포한 서비스를 운영하고 성능과 장애를 감시한다 |
+| 4 | 수정, 반복 | 피드백이나 버그를 수정하고 1단계로 돌아간다 |
 
-#### 볼륨 관련
+## 3. 동작 원리
 
-* docker volume ls
-* docker volume create \[volume이름]
-* docker volume inspect \[volume이름]\
-  볼륨에 저장된 데이터를 확인\[마운트]할 수 있다.
+1. 사용자가 `docker run <이미지>`를 실행한다.
+2. 도커 엔진이 로컬에서 이미지를 찾는다.
+3. 이미지가 없으면 레지스트리(Docker Hub)에서 내려받는다.
+4. 이미지로 컨테이너를 만들고 지정한 명령을 실행한다.
+5. 컨테이너의 주 프로세스가 끝나면 컨테이너는 종료 상태가 된다. 삭제하기 전까지 `docker ps -a`에 남는다.
 
-### 추가 노트 / 예시
+## 4. 약어·용어
 
-* ex) nginx 이미지를 활용해 10개의 컨테이너를 생성하고 싶다.
-* 생성 관련 명령: docker create / docker run 등의 차이 설명이 원문에 다수 포함
-* 컨테이너를 생성하고 실행까지 진행한다는 점 강조
+| 용어 | 뜻 |
+|---|---|
+| VM | Virtual Machine. 가상 머신 |
+| 하이퍼바이저(Hypervisor) | 가상 머신을 만들고 실행하는 소프트웨어 |
+| 볼륨(Volume) | 컨테이너 데이터를 컨테이너 밖에 보관하는 도커 저장 단위 |
+| CI/CD | Continuous Integration / Continuous Delivery(또는 Deployment). 자동 통합·배포 |
+| 태그(Tag) | 이미지 버전 이름 |
 
-***
+## 5. 참조
 
-### 참고 링크
+| 참조 문서 | 비고 |
+|---|---|
+| [도커 개요](docker.md) | CLD-DKR-001-DO |
+| [도커 이미지 개념](docker_image.md) | CLD-DKR-003-DO |
+| [도커 컨테이너](docker_container.md) | CLD-DKR-004-DO |
+| [Docker 공식 사이트](https://www.docker.com/) | 외부 문서 |
+| [Docker 공식 문서](https://docs.docker.com/) | 외부 문서 |
 
-* https://www.docker.com/
-* https://docs.docker.com/
-* https://download.docker.com/linux/rhel/
-* Excalidraw/Docker\_이론.md#Code Block 1
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 가상 머신과 컨테이너의 구조 차이를 그림이나 말로 설명해 본다.
+- [ ] 볼륨이 필요한 상황을 내가 만들 서비스 하나로 예를 들어 본다.
+- [ ] `docker create`와 `docker run`의 차이는 무엇이고, 각각 언제 쓰고 싶을까?
