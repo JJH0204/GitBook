@@ -1,5 +1,4 @@
 ---
-description: 전체 문서의 공통 키워드 기반 IA(Information Architecture)와 페이지 매핑.
 ---
 
 # Cloud · DevOps

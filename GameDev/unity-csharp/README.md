@@ -72,3 +72,7 @@ Day 22–23에서 처음 두 개를 쓰고, 나머지 후보는 [troubleshooting
 
 각 Day의 면접 질문 중 아직 막히는 것에 표시해 두고, 그 Day부터 한 번 더 돈다.
 두 번째 바퀴에서는 모범 답안을 보지 않고 답한 다음 내 답을 페이지에 적는다.
+
+## 원본 레포
+
+* [JJH0204/unity-csharp-study](https://github.com/JJH0204/unity-csharp-study) (비공개, 참고용): 이 과정의 원본 레포다. 레슨은 이 GitBook에서 보고 고친다.

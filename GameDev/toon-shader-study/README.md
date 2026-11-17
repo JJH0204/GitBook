@@ -111,3 +111,7 @@ GitBook에서 이 페이지를 편집해서 체크하면 진도표가 돼요.
 - **소스**: `com.blueigloo.shader` 태그 `v0.2.0` (커밋 `6b0b466`). `.meta` 파일만 빼고 그대로 복사했어요. 원본이 바뀌어도 이 자료는 그대로라서 본문의 줄 번호 링크가 어긋나지 않아요.
 - **수정 전·후 캡처** (`images/` 중 "고치기 전/고친 뒤" 그림): v0.2.0 개선 작업(카드 A1~C8) 때 부모 프로젝트에서 Unity로 실제로 찍은 화면이에요. 본문의 "💡 이 프로젝트에서 실제로 있었던 일"이 그 이야기예요. 자세한 기록은 [source/CHANGELOG.md](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CHANGELOG.md).
 - **개념 그림** (그래프·도식): [tools/](https://github.com/JJH0204/GitBook/tree/main/GameDev/toon-shader-study/tools)의 Python(matplotlib) 스크립트로 만들었어요. matplotlib과 맑은 고딕 글꼴(Windows)이 있으면 `python tools/make_diagrams.py images`, `python tools/make_diagrams2.py images` 로 다시 만들 수 있어요.
+
+## 원본 레포
+
+* [JJH0204/toon-shader-study](https://github.com/JJH0204/toon-shader-study) (비공개, 참고용): 이 과정의 원본 레포다. 레슨과 셰이더 소스 모두 이 GitBook으로 옮겼다.

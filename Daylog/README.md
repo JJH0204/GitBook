@@ -1,5 +1,5 @@
 ---
-description: New updates and improvements
+description: 업데이트와 공부 기록
 icon: clock-rotate-left
 layout:
   width: wide

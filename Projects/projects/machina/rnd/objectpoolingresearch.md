@@ -18,8 +18,6 @@ public enum MonsterType
 }
 ```
 
-^3lAqarDv
-
 각종 몬스터의 프리팹과 풀 설정을 Editor에서 쉽게 설정할 수 있도록 구조체 생성
 
 ```csharp
@@ -31,8 +29,6 @@ public struct MonsterPoolData
     public int maxSize;
 }
 ```
-
-^4ftC6v3E
 
 풀 관리자 클래스(MonsterManager) 구현
 
@@ -52,8 +48,6 @@ public class MonsterManager : MonoBehaviour
     }
 }
 ```
-
-^dHP5TE6V
 
 Type을 매번 관리하는게 번거로운데 이것을 동적으로 관리할 수 없을까?
 

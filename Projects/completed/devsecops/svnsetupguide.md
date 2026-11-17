@@ -1,8 +1,5 @@
 # SVN 설치 가이드 (SVN)
 
-{% hint style="warning" %}
-{% endhint %}
-
 {% stepper %}
 {% step %}
 ### 각자 사용하는 PC 운영체제에 맞는 SVN GUI 툴을 설치한다.

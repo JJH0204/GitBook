@@ -60,3 +60,7 @@ AI에게 기획서 초안을 맡기면 그럴듯한 문장은 나온다. 하지�
 - **AI 검증은 초안을 다 쓴 뒤에만 한다.** AI가 찾아낸 것은 `[AI]` 태그를 붙여 따로 적는다. 규칙은 [03-documentation-habits](03-documentation-habits/README.md)에 있다.
 - **이 훈련장의 본체는 [내 훈련 기록](practice/README.md)이다.** 매일 쌓이는 페이지가 곧 훈련 기록이다.
 - **이 GitBook은 공개다.** 팀 프로젝트의 비공개 자료(내부 수치, 미공개 설정)는 적지 않거나 가린다.
+
+## 원본 레포
+
+* [JJH0204/game-design-drills](https://github.com/JJH0204/game-design-drills) (비공개, 참고용): 이 훈련장의 원본 레포다. 훈련 기록은 이 GitBook의 "내 훈련 기록"에 쌓는다.

@@ -1,8 +1,5 @@
 # Jenkins CI/CD 파이프라인
 
-{% hint style="warning" %}
-{% endhint %}
-
 ## Code Block
 
 ```etc
@@ -154,8 +151,6 @@ Build Steps
 
 > Analysis properties : sonar.projectKey=${GIT\_REPONAME} sonar.java.binaries=.
 
-^b7vmiLNq
-
 jenkins ssh-agent 컨테이너 실행
 
 키 생성
@@ -170,7 +165,7 @@ cat > <파일이름> ssh-key ctrl + C
 
 ### 참고 링크
 
-DNkOaH4y: https://github.com/WebGoat
+* https://github.com/WebGoat
 
 lCpIpwOp: Excalidraw/DevSecOps\_실습.md#Code Block
 

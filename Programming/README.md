@@ -1,5 +1,4 @@
 ---
-description: 공통 키워드 기반으로 정리한 문서 구조(IA)와 페이지 매핑
 ---
 
 # Programming
