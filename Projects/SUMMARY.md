@@ -69,6 +69,7 @@
   * [커뮤니티(디스코드)와 채널 전략](projects/dormireve-launch/community.md)
   * [홍보 영상과 UTM 측정](projects/dormireve-launch/promo-video.md)
   * [등급분류와 표시 의무](projects/dormireve-launch/rating-and-compliance.md)
+* [배교자 APOSTATE (가제)](projects/apostate/README.md)
 
 ## 보류
 
