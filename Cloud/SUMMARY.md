@@ -44,6 +44,7 @@
     * [쿠버네티스 대시보드 배포](cloud-devops/kubernetes/kubernetes/kube_webdashboard.md)
     * [Kind 클러스터 도커 이미지 배포](cloud-devops/kubernetes/kubernetes/kubernetes-on-dockerimage.md)
     * [쿠버네티스 핵심 이론 (Kubernetes)](cloud-devops/kubernetes/kubernetes/kubernetestheory.md)
+    * [보안 중심 SDLC와 SAST/DAST](cloud-devops/kubernetes/kubernetes/devsecops-sdlc.md)
 * [CI/CD 및 DevSecOps](cloud-devops/ci-cd-devsecops/README.md)
   * [DevSecOps 파이프라인 개요](cloud-devops/ci-cd-devsecops/devsecops-overview.md)
   * [Jenkins CI/CD 파이프라인](cloud-devops/ci-cd-devsecops/jenkins.md)
