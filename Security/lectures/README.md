@@ -2,11 +2,9 @@
 
 > 상위: [Security](../README.md)
 
-코리아 IT 아카데미 대구 주말반 정보보안 과정의 강의 노트 허브다. 세 과목의 강의계획서와 통합 강의계획서, 네트워크 보안 과목의 일차별 노트로 이어진다.
+주말반 정보보안 과정의 강의 노트 허브다. 세 과목의 강의계획서와 통합 강의계획서, 네트워크 보안 과목의 일차별 노트로 이어진다.
 
-{% hint style="info" %}
-NOTE: 원본은 비공개 저장소 [KoreaIT\_26\_NetworkLecture](https://github.com/JJH0204/KoreaIT_26_NetworkLecture)다(참고용 링크이며 공개되어 있지 않다). 아래 `_Attached/` 경로의 교재와 요약 자료는 그 저장소에만 있다. 이 스페이스의 페이지는 그 노트를 GitBook 형식으로 옮긴 것이다. 같은 주제의 Network 스페이스 강의는 [네트워크 강의](https://krjaeh0.gitbook.io/j-log/network/lectures)에 있다.
-{% endhint %}
+NOTE: 이 스페이스의 페이지는 강의 노트를 GitBook 형식으로 옮긴 것이다. 같은 주제의 Network 스페이스 강의는 [네트워크 강의](https://krjaeh0.gitbook.io/j-log/network/lectures)에 있다.
 
 ## 순환 구조
 
@@ -29,12 +27,7 @@ NOTE: 원본은 비공개 저장소 [KoreaIT\_26\_NetworkLecture](https://github
 ## 원칙
 
 - 모든 공격 기법은 인가된 랩 안에서 진단·방어 관점으로만 다룬다. 웹 실습은 매 회차 윤리·법 고지를 먼저 한다.
-- 회차별 노트는 네트워크 과정의 폴더형·서사형 톤(`CLAUDE.md`의 노트 작성 규칙)을 따른다.
-
-## 1차 출처 (첨부)
-
-- `_Attached/정보보안강의키워드요약/`: 보조강사 시절 일자별 실제 진행 기록(주차 설계의 뼈대)
-- `_Attached/정보보안강의자료/`: 이것이 우분투 리눅스다 20장, 정보보안개론 13장, 보안 개론 덱
+- 회차별 노트는 네트워크 과정의 폴더형·서사형 톤을 따른다.
 
 ## 문서 목록과 읽는 순서
 

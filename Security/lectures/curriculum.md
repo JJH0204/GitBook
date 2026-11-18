@@ -13,7 +13,7 @@
 | 확인 상태 | 미검증 (원본 강의계획서를 AMM 형식으로 옮긴 것이다. 일차 구성은 리허설 후 확정한다) |
 | 개정 | R1 (2026-11-18) |
 
-코리아 IT 아카데미 대구 주말반 강사용 문서다.
+주말반 강사용 문서다.
 
 ## 목적
 
@@ -107,11 +107,6 @@
 | 네트워크 보안 | Git/GitHub, 패킷트레이서, GNS3, Wireshark, firewalld/iptables, ASAv, PFSense, Zabbix |
 | 시스템 보안 | VirtualBox, Ubuntu/Rocky, Kali, Nmap, Metasploit, Snort/Suricata, OSSEC, Graylog/Wazuh |
 | 웹 보안 | DVWA, bWAPP, Juice Shop, WebGoat, Burp Suite, ZAP, sqlmap, ModSecurity |
-
-## 6. 참고 자료 (첨부)
-
-- `_Attached/정보보안강의자료/`: 이것이 우분투 리눅스다(20장), 정보보안개론(13장), 보안 개론 덱(Know the Basics/Enemy)
-- `_Attached/정보보안강의키워드요약/`: 보조강사 시절 일자별 실제 진행 기록(주차 설계의 1차 출처)
 
 과목별 세부 주차표, 실습, 평가는 각 과목 강의계획서([네트워크 보안](network-security/plan.md), [시스템 보안](system-security.md), [웹 보안](web-security.md))에 있다. 일차 구성은 리허설 후 확정한다.
 
