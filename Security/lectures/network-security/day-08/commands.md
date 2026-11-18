@@ -2,10 +2,30 @@
 
 > 상위: [8일차 DHCP와 게이트웨이 이중화](README.md)
 
-수업 흐름 순서대로 적은 대본입니다. 1~10번은 `_실습/새봄상사.pkt` 에서 새봄상사의 주소로 강사와 함께 치고(8번 가짜 DHCP 서버는 강사만), 11~14번은 개인 실습에서 `configs/network.pkt` 를 열어 같은 일을 내 회사의 설계로 합니다. 장비 화면의 출력 예시는 IOS 15 형식을 따라 적었고, 패킷트레이서 버전에 따라 조금 다를 수 있습니다.
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | LEC-SN-08-005-REF |
+| 유형 | REF (명령 표) |
+| 목적 | 8일차 실습에서 입력하는 명령과 기대 결과를 수업 흐름 순서대로 모은다 |
+| 확인 상태 | 미검증 (원본 대본을 표로 정리한 것이다. 화면 예시는 IOS 15 형식을 따른 것이며 이번에 다시 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+실습하는 동안 띄워 둔다. 1~10번은 `_실습/새봄상사.pkt`에서 새봄상사의 주소로 강사와 함께 입력하고(8번 가짜 DHCP 서버는 강사만), 11~14번은 개인 실습에서 `configs/network.pkt`를 열어 같은 일을 내 회사의 설계로 한다. 패킷트레이서 버전에 따라 출력이 조금 다를 수 있다. 단계별 절차와 결과는 다섯 실습 문서에 있다.
+
+| 문서 | Task ID | 다루는 번호 |
+|---|---|---|
+| [1-1. DHCP 풀 만들기와 PC 주소 받기 실습](lesson-1-lab.md) | LEC-SN-08-006-MP | 1~2번 |
+| [2-1. 지사 DHCP 릴레이 실습](lesson-2-lab.md) | LEC-SN-08-007-MP | 3번 |
+| [3-1. L3 스위치 설치와 HSRP 장애 시험 실습](lesson-3-lab.md) | LEC-SN-08-008-MP | 4~7번 |
+| [4-1. 가짜 DHCP 서버 시연과 스누핑·HSRP 인증 실습](lesson-4-lab.md) | LEC-SN-08-009-MP | 8~10번 |
+| [4-2. 내 회사 파일 적용과 기록 커밋 실습](lesson-4-personal-lab.md) | LEC-SN-08-010-MP | 11~14번 |
+
+## 수업 흐름
 
 | 단계 | 내용 | 언제 | 노트 |
-|------|------|------|------|
+|---|---|---|---|
 | 0 | 작업 계획서 | 14:00 (20분) | README |
 | 1 | 제외 주소와 풀 | 14:32 함께 (6분) | 1 |
 | 2 | PC를 DHCP로, 빌려준 현황 | 함께 (4분) | 1 |
@@ -29,7 +49,7 @@ cd ~/my-netsec-project
 git pull
 ```
 
-`00_작업계획/08일차.md` 를 만들고 1~5번 칸을 채워 커밋합니다.
+`00_작업계획/08일차.md`를 만들고 1~5번 칸을 채워 커밋한다.
 
 ```bash
 git add .
@@ -39,7 +59,7 @@ git push
 
 ## 1. 제외 주소와 풀
 
-HQ-R1입니다. 제외 주소를 먼저 넣고 풀을 만듭니다.
+HQ-R1이다. 제외 주소를 먼저 넣고 풀을 만든다.
 
 ```
 configure terminal
@@ -66,29 +86,29 @@ ip dhcp pool BR-SALES
  end
 ```
 
-서버 VLAN(40)과 장비 관리 VLAN(99)에는 풀을 만들지 않습니다. 두 VLAN의 장비는 고정 주소입니다.
+서버 VLAN(40)과 장비 관리 VLAN(99)에는 풀을 만들지 않는다. 두 VLAN의 장비는 고정 주소다.
 
 ## 2. PC를 DHCP로, 빌려준 현황
 
-Sales-PC1, Sales-PC2, Sales-PC3, HR-PC1, Dev-PC1의 Desktop, IP Configuration에서 DHCP를 고릅니다. "DHCP request successful" 이 뜨고 칸이 채워지면 됩니다. Server1과 Admin-PC는 고정 주소 그대로 둡니다.
+Sales-PC1, Sales-PC2, Sales-PC3, HR-PC1, Dev-PC1의 Desktop, IP Configuration에서 DHCP를 고른다. "DHCP request successful"이 뜨고 칸이 채워지면 된다. Server1과 Admin-PC는 고정 주소 그대로 둔다.
 
 | PC | 받는 주소 | 게이트웨이 |
-|----|-----------|------------|
+|---|---|---|
 | Sales-PC1~3 | 192.168.10.10부터 받는 순서대로 | 192.168.10.1 |
 | HR-PC1 | 192.168.10.42 | 192.168.10.33 |
 | Dev-PC1 | 192.168.10.74 | 192.168.10.65 |
 
-HQ-R1에서 빌려준 현황을 봅니다.
+HQ-R1에서 빌려준 현황을 본다.
 
 ```
 HQ-R1#show ip dhcp binding
 ```
 
-주소 다섯 개와 각 PC의 MAC 주소가 보이면 됩니다. Sales-PC1에서 `ping 192.168.10.98` 로 서버까지 확인합니다.
+주소 다섯 개와 각 PC의 MAC 주소가 보이면 된다. Sales-PC1에서 `ping 192.168.10.98`로 서버까지 확인한다.
 
 ## 3. 지사 릴레이
 
-먼저 BR-PC1을 DHCP로 바꿉니다. 169.254로 시작하는 주소가 붙고 실패합니다. BR-R1에 한 줄을 넣습니다.
+먼저 BR-PC1을 DHCP로 바꾼다. 169.254로 시작하는 주소가 붙고 실패한다. BR-R1에 한 줄을 넣는다.
 
 ```
 configure terminal
@@ -97,13 +117,13 @@ interface gi0/0
  end
 ```
 
-BR-PC1과 BR-PC2를 다시 DHCP로 받습니다. 192.168.20.10, .11이 붙으면 됩니다. HQ-R1의 `show ip dhcp binding` 에 지사 주소 두 줄이 더해집니다.
+BR-PC1과 BR-PC2를 다시 DHCP로 받는다. 192.168.20.10, .11이 붙으면 된다. HQ-R1의 `show ip dhcp binding`에 지사 주소 두 줄이 더해진다.
 
 ## 4. HQ-DSW1 놓기, VLAN, 트렁크
 
-3560-24PS 스위치를 HQ-SW1 옆에 놓고, HQ-DSW1의 Gi0/1과 HQ-SW1의 Fa0/23을 잇습니다.
+3560-24PS 스위치를 HQ-SW1 옆에 놓고, HQ-DSW1의 Gi0/1과 HQ-SW1의 Fa0/23을 잇는다.
 
-HQ-DSW1에 2일차의 기본 잠금을 겁니다. `hostname` 만 HQ-DSW1로 바꾸고 VTY는 `line vty 0 15` 입니다. 이어서 VLAN과 트렁크입니다.
+HQ-DSW1에 2일차의 기본 잠금을 건다. `hostname`만 HQ-DSW1로 바꾸고 VTY는 `line vty 0 15`다. 비밀번호 자리는 `<password>`다. 이어서 VLAN과 트렁크다.
 
 ```
 configure terminal
@@ -138,7 +158,7 @@ interface range fa0/1 - 24 , gi0/2
  end
 ```
 
-HQ-SW1의 Fa0/23은 3일차에 닫아 둔 포트입니다. 트렁크로 바꾸고 엽니다.
+HQ-SW1의 Fa0/23은 3일차에 닫아 둔 포트다. 트렁크로 바꾸고 연다.
 
 ```
 configure terminal
@@ -153,11 +173,11 @@ interface fa0/23
 show interfaces trunk
 ```
 
-`show interfaces trunk` 에 Fa0/23이 trunking, native 900으로 보이면 됩니다. HQ-DSW1에서도 같은 명령으로 Gi0/1을 확인합니다.
+`show interfaces trunk`에 Fa0/23이 trunking, native 900으로 보이면 된다. HQ-DSW1에서도 같은 명령으로 Gi0/1을 확인한다.
 
 ## 5. SVI와 ip routing
 
-HQ-DSW1입니다.
+HQ-DSW1이다.
 
 ```
 configure terminal
@@ -182,13 +202,13 @@ ip routing
 show ip route connected
 ```
 
-C 줄 다섯 개(192.168.10.0, .32, .64, .96, .128, 모두 /27)가 보이면 됩니다. HQ-DSW1에서 `ping 192.168.10.98` 로 서버에 닿는지 봅니다.
+C 줄 다섯 개(192.168.10.0, .32, .64, .96, .128, 모두 /27)가 보이면 된다. HQ-DSW1에서 `ping 192.168.10.98`로 서버에 닿는지 본다.
 
 ## 6. HSRP
 
-강사가 영업팀 PC에 `ping -t 192.168.10.98` 을 걸어 두고 시작합니다. HQ-R1의 주소를 바꾸는 동안 잠깐 끊깁니다.
+강사가 영업팀 PC에 `ping -t 192.168.10.98`을 걸어 두고 시작한다. HQ-R1의 주소를 바꾸는 동안 잠깐 끊긴다.
 
-HQ-R1입니다. 주소를 블록의 마지막에서 두 번째로 옮기고, 원래 주소를 가상 주소로 겁니다.
+HQ-R1이다. 주소를 블록의 마지막에서 두 번째로 옮기고, 원래 주소를 가상 주소로 건다.
 
 ```
 configure terminal
@@ -207,9 +227,9 @@ interface gi0/0.40
  end
 ```
 
-`%HSRP-5-STATECHANGE: ... state Standby -> Active` 알림이 그룹마다 뜹니다. 지금은 HQ-R1 혼자라 Active입니다.
+`%HSRP-5-STATECHANGE: ... state Standby -> Active` 알림이 그룹마다 뜬다. 지금은 HQ-R1 혼자라 Active다.
 
-HQ-DSW1입니다. 우선순위 110과 preempt를 더하고, 밖으로 가는 기본 경로는 HQ-R1의 실제 주소로 넣습니다.
+HQ-DSW1이다. 우선순위 110과 preempt를 더하고, 밖으로 가는 기본 경로는 HQ-R1의 실제 주소로 넣는다.
 
 ```
 configure terminal
@@ -234,7 +254,7 @@ ip route 0.0.0.0 0.0.0.0 192.168.10.29
  end
 ```
 
-잠시 뒤 HQ-DSW1에 `state Standby -> Active`, HQ-R1에 `state Active -> Speak` 가 뜹니다. HQ-DSW1이 preempt로 Active를 가져간 것입니다.
+잠시 뒤 HQ-DSW1에 `state Standby -> Active`, HQ-R1에 `state Active -> Speak`가 뜬다. HQ-DSW1이 preempt로 Active를 가져간 것이다.
 
 ## 7. 확인과 장애 시험
 
@@ -244,46 +264,50 @@ HQ-R1#show standby brief
 ```
 
 | 장비 | 찾을 것 |
-|------|---------|
+|---|---|
 | HQ-DSW1 | 네 그룹 모두 State Active, Standby 칸에 HQ-R1의 실제 주소 |
 | HQ-R1 | 네 그룹 모두 State Standby, Active 칸에 HQ-DSW1의 실제 주소 |
 
-Sales-PC1에서 확인합니다.
+Sales-PC1에서 확인한다.
 
 | 명령 | 보이는 것 |
-|------|-----------|
+|---|---|
 | `arp -a` | 192.168.10.1의 MAC이 0000.0c07.ac0a |
 | `tracert 192.168.20.1` | 192.168.10.30, 192.168.10.29, 192.168.20.1 세 줄. 첫 줄이 L3 스위치다 |
 | `tracert 192.168.10.98` | 192.168.10.30, 192.168.10.98 두 줄. VLAN 사이는 L3 스위치만 지난다 |
 
-장애 시험입니다. Sales-PC1에서 `ping -t 192.168.10.98` 을 걸어 둡니다.
+장애 시험이다. Sales-PC1에서 `ping -t 192.168.10.98`을 걸어 둔다.
 
 ```
 HQ-DSW1(config)#interface gi0/1
 HQ-DSW1(config-if)#shutdown
 ```
 
-`Request timed out` 이 몇 번 나온 뒤 Reply가 돌아옵니다. HQ-R1의 `show standby brief` 에서 네 그룹이 Active입니다. 끊긴 횟수를 세어 둡니다.
+`Request timed out`이 몇 번 나온 뒤 Reply가 돌아온다. HQ-R1의 `show standby brief`에서 네 그룹이 Active다. 끊긴 횟수를 세어 둔다.
 
 ```
 HQ-DSW1(config-if)#no shutdown
 ```
 
-30초쯤 지나 HQ-DSW1이 Active를 되찾습니다. 돌아올 때 끊긴 횟수도 세어 둡니다. Ctrl+C로 ping을 멈춥니다.
+30초쯤 지나 HQ-DSW1이 Active를 되찾는다. 돌아올 때 끊긴 횟수도 세어 둔다. Ctrl+C로 ping을 멈춘다.
 
 ## 8. 가짜 DHCP 서버 (강사 시연)
 
-강사의 `_실습/새봄상사.pkt` 에서만 합니다.
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템에 이 절차를 수행하는 것은 불법이다. 격리된 실습망에서만 수행한다. 강사의 `_실습/새봄상사.pkt`(패킷트레이서 가상망)에서만 하고, 실제 네트워크에는 하지 않는다.
+{% endhint %}
 
-1. Server-PT를 놓고 이름을 FAKE-DHCP로 바꿉니다. HQ-SW1의 Fa0/3(영업팀 VLAN)에 잇습니다.
-2. Desktop, IP Configuration에서 고정 주소 192.168.10.25, 마스크 255.255.255.224, 게이트웨이 192.168.10.25를 넣습니다.
-3. Services, DHCP에서 Service를 On, Default Gateway 192.168.10.25, Start IP Address 192.168.10.21, Subnet Mask 255.255.255.224로 두고 Save를 누릅니다.
-4. Sales-PC1의 IP Configuration을 Static으로 바꿨다가 DHCP로 바꿉니다. 게이트웨이가 192.168.10.25가 될 때까지 몇 번 반복합니다.
-5. Sales-PC1에서 `tracert 192.168.20.1` 을 칩니다. 첫 줄부터 답이 없습니다. 패킷이 가짜 서버로 가서 멈춥니다.
+| 순서 | 동작 |
+|---|---|
+| 1 | Server-PT를 놓고 이름을 FAKE-DHCP로 바꾼다. HQ-SW1의 Fa0/3(영업팀 VLAN)에 잇는다 |
+| 2 | Desktop, IP Configuration에서 고정 주소 192.168.10.25, 마스크 255.255.255.224, 게이트웨이 192.168.10.25를 넣는다 |
+| 3 | Services, DHCP에서 Service를 On, Default Gateway 192.168.10.25, Start IP Address 192.168.10.21, Subnet Mask 255.255.255.224로 두고 Save를 누른다 |
+| 4 | Sales-PC1의 IP Configuration을 Static으로 바꿨다가 DHCP로 바꾼다. 게이트웨이가 192.168.10.25가 될 때까지 몇 번 반복한다 |
+| 5 | Sales-PC1에서 `tracert 192.168.20.1`을 입력한다. 첫 줄부터 답이 없다. 패킷이 가짜 서버로 가서 멈춘다 |
 
 ## 9. DHCP 스누핑
 
-HQ-SW1입니다.
+HQ-SW1이다.
 
 ```
 configure terminal
@@ -296,7 +320,7 @@ interface gi0/1
 show ip dhcp snooping
 ```
 
-HQ-SW2는 같은 설정에 믿는 포트만 Gi0/1(HQ-SW1 쪽)입니다. BR-SW1은 VLAN이 10 하나입니다.
+HQ-SW2는 같은 설정에 믿는 포트만 Gi0/1(HQ-SW1 쪽)이다. BR-SW1은 VLAN이 10 하나다.
 
 ```
 configure terminal
@@ -308,30 +332,30 @@ interface gi0/1
  end
 ```
 
-강사는 Sales-PC1을 다시 DHCP로 받습니다. 몇 번을 받아도 게이트웨이가 192.168.10.1입니다. 확인한 뒤 FAKE-DHCP의 DHCP 서비스를 끄고 서버를 지웁니다.
+강사는 Sales-PC1을 다시 DHCP로 받는다. 몇 번을 받아도 게이트웨이가 192.168.10.1이다. 확인한 뒤 FAKE-DHCP의 DHCP 서비스를 끄고 서버를 지운다.
 
-학생은 모든 PC가 다시 DHCP로 주소를 받는지 확인합니다. 지사 PC도 받아야 합니다.
+학생은 모든 PC가 다시 DHCP로 주소를 받는지 확인한다. 지사 PC도 받아야 한다.
 
 ## 10. HSRP 인증
 
-HQ-DSW1과 HQ-R1에 같은 줄을 넣습니다. HQ-R1은 `interface gi0/0.10` 처럼 서브인터페이스입니다.
+HQ-DSW1과 HQ-R1에 같은 줄을 넣는다. HQ-R1은 `interface gi0/0.10`처럼 서브인터페이스다. 키 자리 `<password>`에는 실습용 값을 정해 넣는다.
 
 ```
 configure terminal
 interface vlan 10
- standby 10 authentication md5 key-string <실습용 키>
+ standby 10 authentication md5 key-string <password>
 interface vlan 20
- standby 20 authentication md5 key-string <실습용 키>
+ standby 20 authentication md5 key-string <password>
 interface vlan 30
- standby 30 authentication md5 key-string <실습용 키>
+ standby 30 authentication md5 key-string <password>
 interface vlan 40
- standby 40 authentication md5 key-string <실습용 키>
+ standby 40 authentication md5 key-string <password>
  end
 ```
 
-HQ-DSW1에만 건 상태에서 HQ-R1의 `show standby brief` 를 봅니다. 두 장비가 모두 Active가 됩니다. HQ-R1에도 걸고 다시 봅니다. Active와 Standby가 하나씩이면 됩니다.
+HQ-DSW1에만 건 상태에서 HQ-R1의 `show standby brief`를 본다. 두 장비가 모두 Active가 된다. HQ-R1에도 걸고 다시 본다. Active와 Standby가 하나씩이면 된다.
 
-여섯 장비(HQ-R1, BR-R1, HQ-DSW1, HQ-SW1, HQ-SW2, BR-SW1)를 모두 저장합니다.
+여섯 장비(HQ-R1, BR-R1, HQ-DSW1, HQ-SW1, HQ-SW2, BR-SW1)를 모두 저장한다.
 
 ```
 copy running-config startup-config
@@ -339,26 +363,30 @@ copy running-config startup-config
 
 ## 11. 내 회사 파일에 1~10번 (개인 실습)
 
-`_실습/새봄상사.pkt` 를 저장하고 닫은 뒤 `configs/network.pkt` 를 엽니다.
+`_실습/새봄상사.pkt`를 저장하고 닫은 뒤 `configs/network.pkt`를 연다.
 
-1. 1~7번과 9, 10번을 내 회사의 설계로 칩니다. 8번 시연은 하지 않습니다.
-2. 풀과 제외 주소는 내 VLAN 대역마다 계산합니다. 블록의 마지막 두 주소를 라우터와 L3 스위치에 남깁니다.
-3. 지점이 없는 학생은 3번을 건너뛰고, 기록에 "지점이 생기면 릴레이"라고 적습니다.
+| 순서 | 동작 |
+|---|---|
+| 1 | 1~7번과 9, 10번을 내 회사의 설계로 입력한다. 8번 시연은 하지 않는다 |
+| 2 | 풀과 제외 주소는 내 VLAN 대역마다 계산한다. 블록의 마지막 두 주소를 라우터와 L3 스위치에 남긴다 |
+| 3 | 지점이 없는 학생은 3번을 건너뛰고, 기록에 "지점이 생기면 릴레이"라고 적는다 |
 
 ## 12. 주소 할당과 이중화 기록
 
-1. [4번 노트](lesson-4.md) 7번 절의 양식으로 `03_구축/주소할당과_이중화.md` 를 씁니다. 장애 시험의 끊긴 횟수를 꼭 적습니다.
-2. `02_설계/IP_설계표.md` 에 VLAN마다 가상 주소, 라우터와 L3 스위치의 실제 주소, DHCP 범위를 더합니다.
-3. `02_설계/구성도.md` 의 캡처를 HQ-DSW1이 보이게 다시 붙입니다.
-4. `02_설계/스위치_보안_점검표.md` 가 있으면 4번 노트 6번 절의 세 줄을 더합니다.
+| 순서 | 동작 |
+|---|---|
+| 1 | [4번 노트](lesson-4.md) 7번 절의 양식으로 `03_구축/주소할당과_이중화.md`를 쓴다. 장애 시험의 끊긴 횟수를 꼭 적는다 |
+| 2 | `02_설계/IP_설계표.md`에 VLAN마다 가상 주소, 라우터와 L3 스위치의 실제 주소, DHCP 범위를 더한다 |
+| 3 | `02_설계/구성도.md`의 캡처를 HQ-DSW1이 보이게 다시 붙인다 |
+| 4 | `02_설계/스위치_보안_점검표.md`가 있으면 4번 노트 6번 절의 세 줄을 더한다 |
 
 ## 13. 설정 텍스트
 
-`configs/` 에 여섯 장비의 설정 텍스트를 저장합니다. HQ-DSW1은 새로 생기는 파일입니다.
+`configs/`에 여섯 장비의 설정 텍스트를 저장한다. HQ-DSW1은 새로 생기는 파일이다. 저장하기 전에 `enable secret`, `password`, `key-string`의 값을 `<password>`로 바꾼다.
 
 ## 14. 결과 기록과 커밋
 
-`00_작업계획/08일차.md` 의 결과 칸을 채우고, README 진행 현황에 한 줄을 더합니다.
+`00_작업계획/08일차.md`의 결과 칸을 채우고, README 진행 현황에 한 줄을 더한다.
 
 ```markdown
 | 8 | DHCP와 릴레이, L3 스위치와 HSRP, 스누핑과 HSRP 인증 | [작업 계획서](00_작업계획/08일차.md), [주소 할당과 이중화](03_구축/주소할당과_이중화.md), [설정](configs/) |
@@ -373,15 +401,21 @@ git push
 ## 자주 막히는 곳
 
 | 보이는 것 | 원인 | 해결 |
-|-----------|------|------|
-| PC가 169.254 주소를 받는다 | 풀의 `network` 가 그 VLAN 대역과 다르다 | `show running-config` 의 `ip dhcp pool` 부분 |
-| PC가 받은 게이트웨이가 틀리다 | `default-router` 를 다른 풀의 값으로 적었다 | 풀마다 그 VLAN의 게이트웨이 |
+|---|---|---|
+| PC가 169.254 주소를 받는다 | 풀의 `network`가 그 VLAN 대역과 다르다 | `show running-config`의 `ip dhcp pool` 부분 |
+| PC가 받은 게이트웨이가 틀리다 | `default-router`를 다른 풀의 값으로 적었다 | 풀마다 그 VLAN의 게이트웨이 |
 | 지사 PC만 못 받는다 | helper-address를 HQ-R1에 넣었거나, HQ-R1에 BR-SALES 풀이 없다 | BR-R1 Gi0/0, HQ-R1 풀 |
-| 3560에서 `switchport mode trunk` 가 거절된다 | 캡슐화를 정하지 않았다 | `switchport trunk encapsulation dot1q` 먼저 |
+| 3560에서 `switchport mode trunk`가 거절된다 | 캡슐화를 정하지 않았다 | `switchport trunk encapsulation dot1q` 먼저 |
 | SVI가 down이다 | 그 VLAN이 HQ-DSW1에 없거나 트렁크에서 허락하지 않았다 | `show vlan brief`, `show interfaces trunk` |
 | HSRP가 두 장비 모두 Active다 | 트렁크가 끊겼거나 인증 키가 다르다 | `show interfaces trunk`, key-string 비교 |
-| HQ-DSW1이 Active를 되찾지 않는다 | `standby 10 preempt` 를 빠뜨렸다 | 그룹마다 preempt |
+| HQ-DSW1이 Active를 되찾지 않는다 | `standby 10 preempt`를 빠뜨렸다 | 그룹마다 preempt |
 | 이중화 뒤 지사로만 안 간다 | HQ-DSW1의 기본 경로가 없거나 가상 주소(.1)를 가리킨다 | `ip route 0.0.0.0 0.0.0.0 192.168.10.29` |
 | 스누핑을 켜자 모든 PC가 주소를 못 받는다 | 옵션 82 줄을 빠뜨렸거나 믿는 포트를 잘못 골랐다 | `no ip dhcp snooping information option`, 서버 쪽 포트에 trust |
 | HQ-SW2의 PC만 못 받는다 | HQ-SW2의 Gi0/1을 믿는 포트로 두지 않았다 | HQ-SW2 Gi0/1에 `ip dhcp snooping trust` |
-| `standby ... authentication md5` 가 거절된다 | 패킷트레이서 버전이 지원하지 않는다 | `standby 10 authentication <실습용 키>` (평문 인증) |
+| `standby ... authentication md5`가 거절된다 | 패킷트레이서 버전이 지원하지 않는다 | `standby 10 authentication <password>` (평문 인증) |
+
+## 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 대본을 명령 표와 코드 블록으로 정리하고 절차는 다섯 MP(LEC-SN-08-006-MP ~ -010-MP)로 분리. 번호(0~14)는 다른 문서의 참조 때문에 유지. 인증 키 자리 `<password>`로 표기, 8번 앞에 격리 실습 WARNING, 설정 텍스트 저장 시 비밀번호 치환 안내 추가 |
