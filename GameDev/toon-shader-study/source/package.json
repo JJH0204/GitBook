@@ -6,7 +6,7 @@
   "unity": "6000.3",
   "author": {
     "name": "BlueIgloo",
-    "email": "admin@gitea.local"
+    "email": "author@example.com"
   },
   "keywords": ["shader", "toon", "urp"],
   "dependencies": {
