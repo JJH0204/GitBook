@@ -68,7 +68,7 @@ dirb http://192.168.56.112:8080/admin -f
 ### 추가 탐색 (gobuster)
 
 ```
-gobuster dir -u http://192.169.56.112:8080/ -w /usr/share/dirb/wordlists/common.txt/admin
+gobuster dir -u http://<target-ip>:8080/ -w /usr/share/dirb/wordlists/common.txt/admin
 ```
 
 ***
