@@ -27,6 +27,7 @@ description: 25년 SBS 대구게임아카데미 팀 프로젝트반(팀 재조�
 * [UI·사운드·이벤트·입력·Android 빌드](ui-audio-input/README.md)
 * [보스 스킬과 테스트 도구](boss-skills/README.md)
 * [비주얼 스크립팅 노드 체계](visual-scripting/README.md)
+* [R&D 해체 분석 (풀링·최적화)](teardown/README.md)
 
 개인 레포로 만든 도구도 있다.
 
