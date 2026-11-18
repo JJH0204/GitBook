@@ -5,7 +5,6 @@
 ## 완료
 
 * [데브섹옵스 (DevSecOps)](completed/devsecops/README.md)
-  * [데브섹옵스 해킹대회 (DevSecOps)](completed/devsecops/devsecopshackingcompetition.md)
   * [Aurora 앱 구조 (Aurora)](completed/devsecops/auroraappstructure.md)
   * [노바 프로젝트 (Nova)](completed/devsecops/nova/README.md)
     * [데브섹옵스 프로세스 (DevSecOps)](completed/devsecops/nova/devsecopsprocess.md)
@@ -14,7 +13,6 @@
     * [환경 구축 작업 목록 (Task)](completed/devsecops/nova/task.md)
     * [쿠버네티스 인프라 구상 (K8s)](completed/devsecops/nova/kubernetesinfraidea.md)
     * [ELK 스택 구축 구상 (ELK)](completed/devsecops/nova/elkstack.md)
-    * [팀장 회의록 2025-01-15](completed/devsecops/nova/teamleadmeeting.md)
   * [데브섹옵스 실무 세미나 (DevSecOps)](completed/devsecops/devsecopsengineerseminar.md)
   * [데브옵스 환경 구성도 (DevOps)](completed/devsecops/devopsenvsetup.md)
   * [SVN 설치 가이드 (SVN)](completed/devsecops/svnsetupguide.md)
