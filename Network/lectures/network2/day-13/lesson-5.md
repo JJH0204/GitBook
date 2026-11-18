@@ -1,19 +1,27 @@
-# 5. 서버에 배포해 보기 — `git clone` 한 줄 ⭐
+# 5. 서버에 배포해 보기 — `git clone` 한 줄
 
-> 상위: [13일차 · Git 과 GitHub](README.md) · 대본 [STEP 5](commands.md)
+> 상위: [13일차 · Git 과 GitHub](README.md) · 절차는 [nginx 배포 실습](lesson-5-lab.md), 대본은 [STEP 5](commands.md)
 
-## 🎯 학습 목표
+## 작업 식별
 
-- **배포**가 무엇인지 한 줄로 말한다
-- 서버에서 `git clone` 으로 코드를 받아 **웹으로 띄운다**
-- 코드를 고치고 **`push` → 서버에서 `pull`** 로 반영한다
-- 12일차 **여섯 단계**가 여기서 어떻게 적용되는지 확인한다
+| 항목 | 내용 |
+|---|---|
+| Task ID | LEC-N2-13-005-DO |
+| 유형 | D&O (개념) |
+| 목적 | 배포의 의미, 웹서버가 보여 주는 폴더, `git clone`과 `git pull`로 서버에 코드를 올리고 반영하는 흐름, 12일차 여섯 단계와의 연결을 설명한다 |
+| 확인 상태 | 미검증 (원본 강의 노트를 AMM 형식으로 옮긴 것이며 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 🌉 다리 놓기: "그래서 이게 서버랑 무슨 상관인가요?"
+## 학습 목표
 
-오늘 우리는 코드를 **관리**하고 **올리는** 법을 배웠다. 그런데 아직 **내 WSL 안에서만** 논 셈이다.
+- 배포가 무엇인지 한 줄로 말한다.
+- 서버에서 `git clone`으로 코드를 받아 웹으로 띄운다.
+- 코드를 고치고 `push`한 뒤 서버에서 `pull`로 반영한다.
+- 12일차 여섯 단계가 여기서 어떻게 적용되는지 확인한다.
 
-> 🗣 **"12일차에 서버 세우는 여섯 단계를 배웠죠. 오늘 배운 Git 은 그중 어디에 들어갈까요?"**
+## 1. 목적
+
+오늘은 코드를 관리하고 올리는 법을 배웠다. 그런데 아직 내 WSL 안에서만 논 셈이다. 12일차에 서버 세우는 여섯 단계를 배웠다. 오늘 배운 Git은 그중 어디에 들어가는가를 묻는다.
 
 ```
  ① 설치      ② 설정      ③ 기동      ④ 확인      ⑤ 개방      ⑥ 검증
@@ -22,159 +30,117 @@
           여기에 들어갈 "내용물" 을 Git 으로 가져온다
 ```
 
-**배포(Deploy) = 내가 만든 것을 돌아가는 서버에 올려 사람들이 쓰게 하는 일.**
+배포(Deploy)는 내가 만든 것을 돌아가는 서버에 올려 사람들이 쓰게 하는 일이다.
 
----
+## 2. 구성 요소
 
-## 📖 ① 웹서버 하나 세우기 — 그런데 80번이 이미 차 있다 ⭐
+### 웹서버와 80번 포트 충돌
 
-12일차에 **Apache** 를 세웠다. 오늘은 **nginx** 를 쓴다. 그냥 설치하면 어떻게 될까?
-
-```bash
-sudo ss -tulnp | grep ':80 '              # 지금 80 을 누가 쓰나 → apache2
-sudo apt install -y nginx                 # 1 설치 — ⚠️ 에러 없이 조용히 끝난다
-sudo systemctl is-active nginx            # failed ← 기동은 실패했다
-sudo journalctl -u nginx -n 5 --no-pager  # 이유는 여기
-```
+12일차에 Apache를 세웠다. 오늘은 nginx를 쓴다. 80번 포트를 이미 Apache가 쓰고 있으면 nginx 설치는 에러 없이 끝나지만 기동은 실패한다.
 
 ```
 nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
 ```
 
-> 🚨 **설치 화면에는 에러가 안 나온다.** 패키지 설치 스크립트가 기동 실패를 삼키기 때문이다.
-> 그래서 **설치 성공 ≠ 서비스 동작**이고, 12일차 여섯 단계에 **④ 확인**이 따로 있는 것이다.
+{% hint style="warning" %}
+CAUTION: 설치 화면에는 에러가 나오지 않는다. 패키지 설치 스크립트가 기동 실패를 삼키기 때문이다. 설치 성공은 서비스 동작이 아니다. 그래서 12일차 여섯 단계에 ④ 확인이 따로 있다. `systemctl is-active nginx`와 `journalctl -u nginx -n 5 --no-pager`로 확인한다.
+{% endhint %}
 
-> 🗣 **"또 그 에러입니다."** 10일차 `python3 -m http.server` 두 번 · 12일차 bind9 와 `systemd-resolved` — **포트 하나는 한 프로그램만.**
+10일차 `python3 -m http.server` 두 번, 12일차 bind9와 `systemd-resolved`에 이어 같은 에러를 세 번째로 만난다. 포트 하나는 한 프로그램만 쓴다.
 
-**둘 중 하나를 고른다. 오늘은 nginx 로 간다.**
+둘 중 하나를 골라야 한다. 오늘은 nginx로 간다. Apache를 내리고(삭제는 하지 않는다) nginx를 올린다. 여섯 단계를 서버 종류만 바꿔 다시 돈다. → [12일차 공통 문법](../day-12/lesson-1.md)
 
-```bash
-sudo systemctl disable --now apache2      # Apache 를 내린다 (12일차에 세운 것)
-sudo ss -tulnp | grep ':80 '              # 비었다
-sudo systemctl enable --now nginx         # 3 기동
-sudo ss -tulnp | grep ':80 '              # 4 확인 — nginx 가 LISTEN
-sudo ufw status numbered | grep 80        # 5 개방 — 12일차에 이미 열었다면 그대로
-sudo ufw allow 80/tcp                     # 없으면 연다
-```
+{% hint style="warning" %}
+CAUTION: ⑤ 개방을 빠뜨리면 `localhost`로는 되는데 밖에서만 타임아웃이 난다. 12일차 진단 그대로이다.
+{% endhint %}
 
-```
-🌐 내 Windows 브라우저 → http://localhost        6 검증
-   "Welcome to nginx!" 가 보이면 성공
-```
+### 웹서버가 보여 주는 폴더
 
-> 💡 **또 여섯 단계다.** 서버 종류만 바뀌었을 뿐이다 → [12일차 공통 문법](../day-12/lesson-1.md)
-> ⚠️ **5 를 빠뜨리면** `localhost` 로는 되는데 **밖에서만 타임아웃** — 12일차 진단 그대로
-> 📌 **Apache 를 지우지는 않았다.** 되돌리려면 `nginx` 를 내리고 `apache2` 를 올리면 된다
+| 항목 | 값 |
+|---|---|
+| 설정 파일 | `/etc/nginx/sites-available/default` |
+| 기본 `root` | `/var/www/html` |
+| 오늘의 `root` | `/var/www/mysite` |
 
----
+웹서버는 "이 폴더를 인터넷에 보여 주는 프로그램"이다. 그 폴더에 내 파일을 넣으면 내 사이트가 된다.
 
-## 📖 ② 웹서버는 어느 폴더를 보여주나
+### 서버에서 코드 받기: HTTPS clone
 
-```bash
-grep -n "root" /etc/nginx/sites-available/default | head -3
-ls /var/www/html
-```
+서버에서는 HTTPS로 clone한다. 공개 저장소를 읽기만 할 때는 키가 필요 없다. 서버에 개인키를 두지 않는 편이 더 안전하다(11일차 최소 권한).
 
-```
-root /var/www/html;          ← 이 폴더의 파일을 보여준다
-```
+| 명령 | 뜻 |
+|---|---|
+| `sudo git clone https://github.com/<아이디>/myweb.git mysite` | `/var/www`에서 실행해 `mysite` 폴더로 복제한다 |
+| `sudo nginx -t` | 설정 문법 검사(12일차 습관) |
+| `sudo systemctl reload nginx` | 재시작이 아니라 리로드 |
+| `sudo git pull` | 서버 폴더에서 최신 코드를 반영 |
 
-> 📌 **웹서버 = "이 폴더를 인터넷에 보여주는 프로그램"** 이다. 그 폴더에 **내 파일**을 넣으면 내 사이트가 된다.
+### 연 문 점검
 
----
+서버를 하나 세울 때마다 문이 하나 늘어난다. → 11일차 공격 표면
 
-## 📖 ③ `git clone` 으로 내 코드 가져오기 ⭐
+| 확인 | 명령 |
+|---|---|
+| 열린 포트 | `sudo ss -tulnp \| grep LISTEN` |
+| 방화벽 규칙 | `sudo ufw status numbered` |
 
-```bash
-cd /var/www
-sudo git clone https://github.com/hong-gildong/myweb.git  mysite
-ls /var/www/mysite                  # index.html · about.html
-```
+## 3. 동작 원리
 
-> 📌 **서버에서는 HTTPS 로 clone 한다.** 공개 저장소를 **읽기만** 할 때는 키가 필요 없다.
-> 서버에 개인키를 두지 않는 편이 **더 안전**하다 (11일차 최소 권한).
-
-**nginx 가 이 폴더를 보게 한다.**
-
-```bash
-sudo nano /etc/nginx/sites-available/default
-```
+배포의 한살이는 다음과 같다.
 
 ```
-root /var/www/mysite;        # /var/www/html 에서 변경
-```
-
-```bash
-sudo nginx -t                       # 문법 검사 (12일차 습관)
-sudo systemctl reload nginx         # 재시작이 아니라 리로드
-```
-
-```
-🌐 http://localhost  →  내가 만든 "안녕하세요" 페이지
-```
-
-> 🗣 **"방금 여러분이 만든 코드가, 여러분이 세운 서버에서, 브라우저에 떴습니다."**
-> 🙋 **mirrored 모드라면 옆자리에서도** `http://<내 Windows IP>` 로 열린다 → 모드 확인은 [README](README.md)
-> NAT 모드면 옆자리에서는 안 보인다 — **정상**이다. 공개하는 법은 16일차에서.
-
----
-
-## 📖 ④ 고치고 → 반영하기 (배포의 한살이)
-
-```
- 🐧 내 작업 폴더 ~/myweb          🌐 GitHub            🐧 서버 /var/www/mysite
+ 내 작업 폴더 ~/myweb              GitHub              서버 /var/www/mysite
      수정 → commit  ──push──▶   저장소   ──pull──▶    반영
 ```
 
-```bash
-# 내 작업 폴더에서
-cd ~/myweb
-nano index.html
-git commit -am "환영 문구 수정"
-git push
+1. 내 작업 폴더에서 파일을 고치고 커밋한다.
+2. `git push`로 GitHub에 올린다.
+3. 서버 폴더에서 `sudo git pull`로 받는다.
+4. 브라우저를 새로고침하면 바뀐 내용이 보인다.
 
-# 서버 폴더에서
-cd /var/www/mysite
-sudo git pull                       # 한 줄로 반영
-```
+이것이 배포의 가장 단순한 형태이다. 실무에서는 이 `pull`을 자동으로 돌린다(CI/CD). 그 출발점이 오늘 친 이 한 줄이다.
 
-```
-🌐 브라우저 새로고침 → 바뀌었다
-```
+{% hint style="danger" %}
+WARNING: 서버에서 직접 파일을 고치지 않는다. 고치면 다음 `pull`에서 충돌이 난다. 고치는 곳은 내 작업 폴더 하나이다. 이것이 배포의 기본 규칙이다.
+{% endhint %}
 
-> ⭐ **이것이 배포의 가장 단순한 형태**다. 실무에서는 이 `pull` 을 **자동으로** 돌린다(CI/CD) — 그 출발점이 오늘 친 이 한 줄이다.
-> ⚠️ **서버에서 직접 파일을 고치지 않는다.** 고치면 다음 `pull` 에서 **충돌**이 난다.
-> **고치는 곳은 내 작업 폴더 하나** — 이 규칙이 배포의 기본이다.
+## 4. 약어·용어
 
----
+| 용어 | 뜻 |
+|---|---|
+| 배포(Deploy) | 만든 것을 돌아가는 서버에 올려 쓰게 하는 일 |
+| `root`(nginx) | 웹서버가 보여 주는 폴더를 가리키는 설정 항목 |
+| `reload` | 연결을 끊지 않고 설정만 다시 읽는다 |
+| CI/CD | 배포를 자동으로 돌리는 방식(이후 일차에서 다룬다) |
+| NAT / mirrored | WSL 네트워크 모드. 옆자리에서 보이는지가 달라진다. → [README](README.md) |
 
-## 📖 ⑤ 오늘 연 문 점검 (11일차 습관)
+## 그림 목록
 
-```bash
-sudo ss -tulnp | grep LISTEN        # 22 · 80 … 몇 개인가
-sudo ufw status numbered            # 규칙이 의도와 맞나
-```
+| 번호 | 그림 | 설명 |
+|---|---|---|
+| 1 | 여섯 단계 표 | nginx로 한 번 더 돌며 "순서가 같다"를 확인한다. 칠판에 다시 그린다 |
+| 2 | 배포의 한살이 | 작업 폴더, GitHub, 서버 폴더 사이의 `push`와 `pull` |
 
-> 🗣 **"서버를 하나 세울 때마다 문이 하나 늘어납니다."** → 11일차 공격 표면
+## 강의 메모
 
----
+- "내 코드가 내 서버에서 브라우저에 뜨는" 순간이 13일차의 결말이다.
+- WSL 모드부터 확인한다. NAT이면 `localhost`로만, mirrored면 옆자리까지 보인다. `localhost`는 두 모드 모두 된다.
+- 80번 충돌은 오늘의 좋은 교재이다. 10일차와 12일차에서 두 번 만난 에러를 세 번째로 만난다.
+- 여섯 단계 표를 칠판에 다시 그린다. nginx로 한 번 더 돌면 "순서가 정말 같다"가 굳는다.
+- `nginx -t` 후 `reload`는 12일차 bind9 `named-checkconf`와 같은 습관이다. 짚어 준다.
+- `/var/www`는 주인이 root라 `sudo`가 필요하다. 10일차 권한 회수 지점이다.
+- 설치는 조용히 성공하고 기동만 실패한다. `is-active`와 `journalctl`로 들여다보는 장면을 꼭 보여 준다.
+- 12일차에 세운 Apache는 끄기만 한다(삭제 금지). 16일차에 되살려 비교할 수도 있다.
+- 서버에서 직접 수정 금지 규칙을 꼭 말한다. 말하지 않으면 다음 수업에 충돌로 돌아온다.
+- 시간은 20분이다. 모자라면 ④(`push`, `pull` 반영)까지는 반드시 한다. ③까지만 하면 감흥이 반이다.
+- 옆자리에서 보이게 공개하는 법은 16일차에서 다룬다.
 
-## 🧪 실습 / 질문
+## 내 말로 채우기
 
-- `sudo ufw allow 80/tcp` 를 빼먹으면 어떤 증상이 나타날까? 어떻게 확인하나?
-- 서버의 `/var/www/mysite/index.html` 을 **직접** 고치면 다음 `git pull` 에서 무슨 일이?
-- 서버에서 `clone` 할 때 SSH 가 아니라 HTTPS 를 쓴 이유는?
-- 이 과정을 **자동으로** 돌리려면 무엇이 더 필요할까?
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-## 📝 강의 메모
-
-- ⭐⭐ **"내 코드가 내 서버에서 브라우저에 뜨는" 순간**이 13일차의 결말이다
-  - 🚨 **WSL 모드부터 확인**: NAT 이면 `localhost` 로만, mirrored 면 옆자리까지. **`localhost` 는 두 모드 다 된다**
-- ⭐ **80번 충돌(①)** 은 오늘의 좋은 교재다 — 10일차 · 12일차에서 두 번 만난 그 에러를 **세 번째**로 만난다
-- 여섯 단계 표를 **다시 칠판에** — nginx 로 한 번 더 돌면 "정말 순서가 같구나"가 굳는다
-- `nginx -t` 문법 검사 → `reload` 는 12일차 bind9 `named-checkconf` 와 같은 습관. 짚어 줄 것
-- ⚠️ `/var/www` 는 주인이 root 라 `sudo` 가 필요하다 — 10일차 권한 회수 지점
-- 🚨 **설치는 조용히 성공하고 기동만 실패한다** — `is-active` · `journalctl` 로 들여다보는 장면을 꼭 보여줄 것
-- 📌 12일차에 세운 **Apache 는 끄기만** 한다(삭제 금지). 16일차에 되살려 비교할 수도 있다
-- ⚠️ **서버에서 직접 수정 금지** 규칙을 꼭 말할 것. 안 하면 다음 수업에 충돌로 온다
-- ⏱ 20분. 시간이 모자라면 **④(push → pull 반영)까지는 반드시** — ③까지만 하면 감흥이 반이다
+- [ ] `sudo ufw allow 80/tcp`를 빼먹으면 어떤 증상이 나타나는가? 어떻게 확인하는가?
+- [ ] 서버의 `/var/www/mysite/index.html`을 직접 고치면 다음 `git pull`에서 무슨 일이 생기는가?
+- [ ] 서버에서 `clone`할 때 SSH가 아니라 HTTPS를 쓴 이유는 무엇인가? 이 과정을 자동으로 돌리려면 무엇이 더 필요한가?
