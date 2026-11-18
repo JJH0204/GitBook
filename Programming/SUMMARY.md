@@ -45,7 +45,7 @@
     * [C++ 문법 및 기본 개념 (C++)](languages/c-and-c++/c++-track/c++.md)
     * [형변환 (Type Cast)](languages/c-and-c++/c++-track/type-cast.md)
 * [C# 언어 (C#)](languages/c/README.md)
-  * [C# 핵심 개념 (C#)](languages/c/csharp/README.md)
+  * [[생성형 AI] C# 핵심 개념 (C#)](languages/c/csharp/README.md)
     * [가상 메서드 (virtual)](languages/c/csharp/virtual.md)
     * [추상 클래스 (Abstract Class)](languages/c/csharp/abstractclasses.md)
 * [Python 언어 (Python)](languages/python/README.md)
@@ -76,7 +76,7 @@
     * [클래스 개념 (Class)](languages/swift-and-ios/swift-language-basics/classconcepts.md)
     * [클래스 대 구조체 비교](languages/swift-and-ios/swift-language-basics/classvsstructdifference.md)
     * [열거형 (Enumeration)](languages/swift-and-ios/swift-language-basics/enumerationtype.md)
-* [PHP 언어 (PHP)](languages/php/README.md)
+* [[생성형 AI] PHP 언어 (PHP)](languages/php/README.md)
   * [PHP 기초 문법 및 설정](languages/php/php.md)
 
 ## CS Fundamentals
@@ -214,7 +214,7 @@
 * [UML 및 모델링 (UML)](software-design/uml-and-modeling/README.md)
   * [UML 다이어그램 개요](software-design/uml-and-modeling/umldiagramoverview.md)
   * [UML 모델링 개요](software-design/uml-and-modeling/umlmodeloverview.md)
-  * [UML 관계 및 다이어그램](software-design/uml-and-modeling/uml/README.md)
+  * [[생성형 AI] UML 관계 및 다이어그램](software-design/uml-and-modeling/uml/README.md)
     * [UML 관계 개요 (Relationships)](software-design/uml-and-modeling/uml/umlrelationshipsoverview.md)
 * [SOLID 원칙 (SOLID)](software-design/solid/README.md)
   * [SOLID 원칙 개요](software-design/solid/solidprinciples.md)
@@ -247,7 +247,7 @@
 * [C 코드 조각 (C Snippets)](reference-and-snippets/c-snippets/README.md)
   * [연결 스택 헤더 (MyStack.h)](reference-and-snippets/c-snippets/mystack.h.md)
   * [연결 스택 구현 (MyStack.c)](reference-and-snippets/c-snippets/mystack.c.md)
-* [개발 메모 (Notes)](reference-and-snippets/notes/README.md)
+* [[생성형 AI] 개발 메모 (Notes)](reference-and-snippets/notes/README.md)
   * [헝가리안 표기법 (Hungarian)](reference-and-snippets/notes/hungariannotation.md)
 
 ## Product & UX
