@@ -1,272 +1,144 @@
 # 클라우드 보안 시스템 관리 실습 과제
 
-Rocky Linux에 Docker 서비스를 활용하여 Ubuntu Linux에 FTP Server를 구축하여 접속 가능한지 테스트한 뒤 Docker Hub에 이미지를 업로드 가능한지 확인하시오. (직접 또는 Dockerfile)
+## 작업 식별
 
-Vmware ESXi 서비스에서 Private Cloud 구축을 위해 2대의 VM(Ubuntu)을 생성한 후 Kubernetes Clustering을 구축하여 서비스 및 노드 연결을 확인하고 Worker 노드에 웹서버를 구축하여 접속 가능 여부를 확인하고 Master 노드로의 웹 대시보드 접속이 가능한지 확인하시오.
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-THY-002-DO |
+| 유형 | D&O (개념) |
+| 목적 | 컨테이너 기반 FTP 서버, 쿠버네티스 클러스터 구성, 네트워크 접근 제어, 모니터링의 개념과 주의점을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-***
+{% hint style="info" %}
+{% hint style="info" %}
+NOTE: 이 문서는 개념 정리다. 구체적 설치·실행 절차는 참조 절의 절차 문서를 따른다.
+{% endhint %}
+{% endhint %}
 
-## 채점 기준
+## 1. 목적
 
-* Docker Container 실행 및 이미지 업로드 시 20점(각 10점) | 미 실행 시 0점
-* Vmware ESXi 구축 및 대시보드 실행 시 10점 | 미 실행 시 0점
-* Kubernetes Clustering 구축 확인 시 30점 | 미 확인 시 0점
-* Master Node로의 웹 대시보드 접속 시 10점 | 미 접속 시 0점
+컨테이너와 쿠버네티스로 서비스를 구성하고, 접근을 제한하고, 상태를 감시할 때 알아야 할 개념을 정리한다. 다룬 주제는 네 가지다.
 
-구축된 클라우드 환경에서 보안 설정과 모니터링을 통해 클라우드 서비스를 원활하게 운영할 수 있도록 하시오.
+1. 컨테이너로 FTP 서버를 구성하고 이미지를 레지스트리에 올리는 흐름.
+2. 가상화 플랫폼 위에 VM 두 대로 쿠버네티스 클러스터를 구성하는 흐름.
+3. 특정 네트워크 대역에서만 웹서버에 접근하게 하는 접근 제어.
+4. 운영 중인 시스템의 모니터링.
 
-* 클라우드 환경에서 구축된 웹서버에 대해 192.168.0.0/16 네트워크에서만 접근이 가능하도록 보안 설정을 하시오. (Vmware ESXi)
-* 서비스되고 있는 클라우드 시스템에 대해 모니터링을 진행하여 확인하시오.
+## 2. 구성 요소
 
-추가 채점 기준:
+### 2.1 컨테이너 기반 FTP 서버
 
-* 보안 설정 시 10점 | 미 설정 시 0점
-* 모니터링 가능 시 10점 | 미 가능 시 0점
+| 번호 | 구성 요소 | 역할 |
+|---|---|---|
+| 1 | 호스트 OS(Rocky Linux) | 도커 엔진을 실행하는 서버다 |
+| 2 | Dockerfile | 베이스 이미지, 패키지 설치, 설정 파일 복사, 실행 명령을 적은 파일이다 |
+| 3 | `vsftpd` | 리눅스용 FTP 서버 데몬이다. 설정 파일은 `vsftpd.conf`다 |
+| 4 | 이미지 | Dockerfile로 빌드한 결과물이다. 레지스트리(Docker Hub)에 올려 공유한다 |
+| 5 | 호스트 방화벽(`firewalld`) | 컨테이너에 연결할 포트를 호스트에서 허용한다 |
 
-***
+### 2.2 쿠버네티스 클러스터
 
-## 환경 정보
+| 번호 | 구성 요소 | 역할 |
+|---|---|---|
+| 1 | 컨트롤 플레인 노드(master) | 클러스터를 관리한다 |
+| 2 | 워커 노드(worker) | 파드(Pod)와 웹서버 같은 워크로드를 실행한다 |
+| 3 | `containerd` | 노드에서 컨테이너를 실행하는 컨테이너 런타임이다 |
+| 4 | `kubeadm`, `kubelet`, `kubectl` | 각각 클러스터 초기화·노드 합류, 노드 에이전트, 명령행 도구다 |
+| 5 | 네트워크 플러그인(Calico) | 파드 간 통신을 제공하는 CNI(Container Network Interface) 플러그인이다 |
+| 6 | 웹 대시보드 | 클러스터 상태를 브라우저로 보는 도구다 |
 
-* 172.16.153.129 = master
-* 172.16.153.130 = worker01
+### 2.3 접근 제어와 모니터링
 
-***
+| 번호 | 구성 요소 | 역할 |
+|---|---|---|
+| 1 | 방화벽 규칙 | 출발지 네트워크 대역(CIDR)별로 접근을 허용하거나 막는다. `192.168.0.0/16`은 `192.168.0.0`~`192.168.255.255` 범위다 |
+| 2 | 모니터링 | CPU, 메모리, 디스크, 네트워크 사용량과 서비스 상태를 수집해 이상을 찾는다 |
 
-## Kubernetes 설치 / 구성 (요약)
+## 3. 동작 원리
 
-{% stepper %}
-{% step %}
-### Install Containerd
+### 3.1 FTP 활성 모드와 수동 모드
 
-(설치 및 설정 과정을 수행)
-{% endstep %}
+FTP는 명령 연결(포트 21)과 데이터 연결을 따로 쓴다. 데이터 연결을 맺는 방향에 따라 두 모드가 있다.
 
-{% step %}
-### Install Kubernetes Components
+| 모드 | 데이터 연결 방향 | 필요한 포트 | 컨테이너 환경의 주의점 |
+|---|---|---|---|
+| 활성(active) | 서버가 클라이언트로 연결한다. 서버 출발 포트는 20이다 | 서버 21, 20 | 클라이언트 방화벽이나 NAT가 서버발 연결을 막을 수 있다 |
+| 수동(passive) | 클라이언트가 서버가 알려 준 포트로 연결한다 | 서버 21과 지정한 포트 범위(예: 30000~30010) | `pasv_min_port`, `pasv_max_port`로 범위를 고정하고 그 범위를 게시·허용해야 한다. `pasv_address`에 호스트 IP를 넣어야 한다 |
 
-(예: kubeadm, kubelet, kubectl 설치)
-{% endstep %}
+* 호스트 IP가 바뀌면 이미지에 고정한 `pasv_address`가 틀어진다. 이미지에 IP를 넣지 말고 실행 시 값을 전달하는 방식을 쓴다.
+* 컨테이너 포트는 `docker run -p <호스트 포트>:<컨테이너 포트>`로 게시한다. 포트 범위는 `-p <시작>-<끝>:<시작>-<끝>/tcp` 형태로 쓴다.
+* 호스트 방화벽에서 같은 포트를 `firewall-cmd --permanent --add-port=<포트>/tcp`로 허용한 뒤 `firewall-cmd --reload`로 적용한다.
 
-{% step %}
-### Initialize the Kubernetes Cluster
+{% hint style="danger" %}
+WARNING: 교육용 예제에는 고정 비밀번호와 평문 FTP가 흔히 쓰인다. 실제 서비스에서는 이미지에 비밀번호를 넣지 않고, 암호화(FTPS 또는 SFTP)를 쓴다. 익명 접속은 `anonymous_enable=NO`로 막는다.
+{% endhint %}
 
-예시 플래그:
+`vsftpd.conf`의 주요 항목은 다음과 같다.
 
-\--discovery-token-ca-cert-hash sha256:cbefc54235df9b1f4ea822c68b017ed950f0862be025feb1b5a64db91df8104c
-{% endstep %}
+| 항목 | 뜻 |
+|---|---|
+| `listen=YES` | 독립 데몬으로 동작한다 |
+| `anonymous_enable=NO` | 익명 접속을 막는다 |
+| `local_enable=YES` | 로컬 계정 로그인을 허용한다 |
+| `write_enable=YES` | 쓰기(업로드)를 허용한다 |
+| `chroot_local_user=YES` | 사용자를 자기 홈 디렉터리 안에 가둔다 |
+| `allow_writeable_chroot=YES` | 쓰기 가능한 chroot 디렉터리를 허용한다 |
+| `pasv_enable` | 수동 모드 사용 여부다 |
+| `connect_from_port_20=YES` | 활성 모드 데이터 연결에 포트 20을 쓴다 |
 
-{% step %}
-### Join Worker Nodes
+### 3.2 이미지 빌드와 공유 흐름
 
-예시 명령 (worker에서 실행):
-
-kubeadm join k8s-control-node:6443 --token r7y2zt.v86audwr6t7ii132\
-(적절한 --discovery-token-ca-cert-hash 값과 함께)
-{% endstep %}
-
-{% step %}
-### Install Calico Network Plugin
-
-(네트워크 플러그인 설치)
-{% endstep %}
-
-{% step %}
-### Kubernetes Installation Web Service & Dashboard
-
-* Kube\_webDashboard (Kubernetes 대시보드 설치 및 접근 확인)
-{% endstep %}
-{% endstepper %}
-
-***
-
-## Docker / FTP 서버 구축 (요약 및 주요 명령)
-
-* Rocky Linux 환경에서 docker 설치
-* docker 설정 디렉터리 생성
-* Dockerfile 생성
-* vsftpd 관련 설정 파일 생성
-* ubuntu-ftp 라는 이름의 이미지 빌드 (생성한 설정 파일들 활용)
-* 21 포트로 ubuntu-ftp 이미지로 Ubuntu-FTP 서비스를 백그라운드로 구동
-* 방화벽(포트 범위) 허용 및 리로드
-* FTP 접속 및 파일 전송 확인
-
-주요 명령 예시:
-
-sudo firewall-cmd --permanent --add-port=30000-30010/tcp\
-sudo firewall-cmd --reload
-
-컨테이너 실행 예시:
-
-docker run -d --name Ubuntu-FTP -p 21:21 -p 30000-30010:30000-30010 ubuntu-ftp
-
-컨테이너 내부 접속 예시:
-
-docker exec -it Ubuntu-FTP bash
-
-FTP 디렉토리 예시:
-
-cd /home/ftpuser/ftp/files/
-
-***
-
-### vsftpd 구성 예시 (1차, 2차, 3차 수정 내역 포함)
-
-기본으로 사용된 설정 항목(예시, 원문에서 사용된 항목들을 그대로 유지):
-
-* listen=YES
-* anonymous\_enable=NO
-* local\_enable=YES
-* write\_enable=YES
-* dirmessage\_enable=YES
-* use\_localtime=YES
-* xferlog\_enable=YES
-* connect\_from\_port\_20=YES
-* chroot\_local\_user=YES
-* allow\_writeable\_chroot=YES
-* pam\_service\_name=vsftpd
-* rsa\_cert\_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
-* rsa\_private\_key\_file=/etc/ssl/private/ssl-cert-snakeoil.key
-
-Passive 모드 관련(초기 설정 예시):
-
-* pasv\_enable=YES
-* pasv\_min\_port=30000
-* pasv\_max\_port=30010
-* pasv\_address=192.168.1.100 (호스트 IP에 따라 값 변경 필요)
-
-참고: 호스트의 IP가 변경되면 빌드한 도커 이미지의 설정을 수정해야 함. 컨테이너 실행 시 호스트의 IP를 인자로 전달해 pasv\_address로 설정하도록 조정 가능.
-
-컨테이너 실행 예시(호스트 IP를 /etc/hosts로 추가):
-
-docker run -d\
-\--name Ubuntu-FTP\
--p 21:21 -p 30000-30010:30000-30010\
-\--add-host=ftp.local:$(hostname -I | awk '{print $1}')\
-ubuntu-ftp
-
-***
-
-### Dockerfile (예시)
-
-{% code title="Dockerfile" %}
-```dockerfile
-# 최신 Ubuntu 이미지 사용
-FROM ubuntu:latest
-
-# 필요한 패키지 설치
-RUN apt-get update && \
-    apt-get install -y vsftpd && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# FTP 사용자 계정 생성 및 디렉토리 설정
-RUN useradd -m ftpuser && \
-    echo "ftpuser:password123" | chpasswd && \
-    mkdir -p /home/ftpuser/ftp/files && \
-    chown -R ftpuser:ftpuser /home/ftpuser/ftp && \
-    chmod a-w /home/ftpuser/ftp
-
-# vsftpd 설정 복사
-COPY vsftpd.conf /etc/vsftpd.conf
-
-# 데이터 포트 및 명령 포트 노출
-EXPOSE 21 20
-
-# vsftpd 실행
-CMD ["/usr/sbin/vsftpd", "/etc/vsftpd.conf"]
 ```
-{% endcode %}
+Dockerfile + vsftpd.conf --docker build--> 이미지 --docker login/push--> Docker Hub
+                                            |
+                                            +--docker run--> 컨테이너 --FTP 클라이언트로 접속 확인
+```
 
-Dockerfile 최적화 예시(패시브 모드를 비활성화하고 Active 모드 중심으로 구성):
+### 3.3 쿠버네티스 클러스터 구성 흐름
 
-* pasv\_enable=NO
-* listen=YES
-* anonymous\_enable=NO
-* local\_enable=YES
-* write\_enable=YES
-* dirmessage\_enable=YES
-* use\_localtime=YES
-* xferlog\_enable=YES
-* connect\_from\_port\_20=YES
-* chroot\_local\_user=YES
-* allow\_writeable\_chroot=YES
+1. 두 노드 모두에 컨테이너 런타임(`containerd`)을 설치한다.
+2. 두 노드 모두에 `kubeadm`, `kubelet`, `kubectl`을 설치한다.
+3. 컨트롤 플레인 노드에서 `kubeadm init`으로 클러스터를 초기화한다.
+4. 워커 노드에서 `kubeadm join`으로 합류한다. 이 명령의 토큰과 인증서 해시는 초기화 결과로 생성된 값이다. 외부에 공개하지 않는다.
+5. 네트워크 플러그인(Calico)을 설치한다.
+6. `kubectl get nodes`로 두 노드가 `Ready`인지 확인한다.
+7. 워커 노드에서 웹서버 워크로드를 실행해 접속을 확인한다.
+8. 웹 대시보드를 설치해 컨트롤 플레인 노드 주소로 접속을 확인한다.
 
-컨테이너 실행(Active 모드 포트만 노출) 예시:
+### 3.4 접근 제어와 모니터링
 
-docker run -d --name Ubuntu-FTP -p 21:21 -p 20:20 ubuntu-ftp
+* 허용 대역 밖의 출발지를 차단하려면 방화벽에서 허용 대역 규칙을 먼저 두고, 나머지를 막는 기본 정책을 둔다. 가상화 플랫폼의 방화벽과 게스트 OS의 방화벽 중 어느 쪽에 규칙을 둘지 환경에 따라 정한다.
+* 모니터링 도구는 환경에 따라 다르다. 도구를 정한 뒤에는 수집 항목과 경보 기준값을 수치로 정한다.
 
-방화벽 예시:
+## 4. 약어·용어
 
-sudo firewall-cmd --permanent --add-port=21/tcp\
-sudo firewall-cmd --permanent --add-port=20/tcp\
-sudo firewall-cmd --reload
+| 용어 | 뜻 |
+|---|---|
+| FTP | File Transfer Protocol. 파일 전송 프로토콜 |
+| FTPS / SFTP | 암호화한 FTP(TLS 사용) / SSH 기반 파일 전송 |
+| CIDR | 네트워크 대역을 `주소/접두어 길이`로 쓰는 표기 |
+| 컨트롤 플레인(Control plane) | 쿠버네티스 클러스터를 관리하는 구성 요소 묶음 |
+| CNI | 쿠버네티스의 네트워크 플러그인 규격 |
+| 파드(Pod) | 쿠버네티스에서 컨테이너를 실행하는 최소 단위 |
 
-이미지 푸시 예시(로그인 후):
+## 5. 참조
 
-docker run -d --name Ubuntu-FTP -p 21:21 -p 20:20 krjaeh0/ubuntu-ftp:latest
+| 참조 문서 | 비고 |
+|---|---|
+| [도커 개요 (Docker)](../docker/docker.md) | CLD-DKR-001-DO |
+| [도커 허브 활용 가이드 (Docker Hub)](../docker/docker_hub.md) | CLD-DKR-015-MP |
+| [쿠버네티스 노드 설치 및 설정](../kubernetes/kubernetes/kube_setup.md) | 절차 |
+| [쿠버네티스 핵심 이론 (Kubernetes)](../kubernetes/kubernetes/kubernetestheory.md) | 개념 |
+| [프라이빗 클라우드 (Private Cloud)](../private-cloud/README.md) | 그룹 README |
+| [방화벽 (firewalld)](../../../Linux/guide/security/firewalld.md) | Linux 스페이스 |
 
-***
+## 내 말로 채우기
 
-## FTP 테스트 및 검증
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-* FTP 접속 확인
-* 파일 전송 확인 (예: 파일명 변경 또는 업로드 후 확인)
-* 컨테이너 내부에서 파일 확인 및 변조 예시:
-  * docker exec -it Ubuntu-FTP bash
-  * 파일 변조: docker-ftp-test.txt → ftp-server.txt
-  * 파일 변조 확인
-
-***
-
-## Docker 이미지 빌드 및 실행 요약 (단계별)
-
-{% stepper %}
-{% step %}
-### 이미지 빌드
-
-docker build -t ubuntu-ftp .
-{% endstep %}
-
-{% step %}
-### 컨테이너 실행 (호스트 IP 반영 방식 예시)
-
-docker run -d\
-\--name Ubuntu-FTP\
--p 21:21 -p 30000-30010:30000-30010\
-\--add-host=ftp.local:$(hostname -I | awk '{print $1}')\
-ubuntu-ftp
-{% endstep %}
-
-{% step %}
-### 컨테이너 실행 (Active 모드 예시)
-
-docker run -d --name Ubuntu-FTP -p 21:21 -p 20:20 ubuntu-ftp
-{% endstep %}
-{% endstepper %}
-
-***
-
-## 보안 설정 요구 사항 (예: Vmware ESXi 상에서)
-
-* 웹서버 접근 제어: 192.168.0.0/16 네트워크에서만 접근 가능하도록 보안 설정 수행 필요
-
-(구체적 방화벽 규칙 설정은 구축 환경에 따라 적용)
-
-***
-
-## 모니터링
-
-* 서비스되고 있는 클라우드 시스템에 대해 모니터링을 진행하여 확인 (세부 툴/설정은 환경에 따라 상이)
-
-***
-
-## 관련 노드 이름 (원문에 표기된 노드)
-
-* k8s-control-node
-* k8s-worker01-node
-
-***
-
-## (원본 이미지 파일은 본 문서에 임베드되어 있는 파일 참조를 유지합니다.)
-
-위 내용은 원문 Excalidraw 문서의 텍스트 요소를 가능한 한 원문 의미와 구조를 유지한 채 정리한 것입니다. 원문에 포함된 모든 명령어나 설정값, 이미지 참조는 변경 없이 유지했습니다. 필요한 경우 각 섹션을 세부 가이드(예: 실제 명령어와 단계별 절차)로 확장할 수 있습니다.
+- [ ] FTP 활성 모드와 수동 모드의 차이를 데이터 연결 방향으로 설명해 본다.
+- [ ] 쿠버네티스 노드가 `Ready`가 되기 전에 네트워크 플러그인이 왜 필요한지 내 말로 적는다.
+- [ ] 컨테이너 안에 비밀번호를 고정해 두면 어떤 위험이 있는지 적는다.

@@ -1,17 +1,42 @@
 # Day 11 · 취소, 예외, 수명
 
-> 2주차 비동기 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day11`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-012-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | `async` 메서드의 수명 문제와 취소 토큰, 예외 전달 경로를 설명한다. |
+| 적용 대상 | .NET 8 이상 콘솔(실습), Unity 6 / C# 9(Unity 예제) |
+| 소요 시간 | 60분 (2주차 비동기) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 준비물: .NET SDK (`dotnet new console -o practice/day11`)
+{% endhint %}
+
+## 1. 학습 목표
+
 - 코루틴과 달리 `async` 메서드가 오브젝트가 사라진 뒤에도 계속 도는 문제와 해결책(취소 토큰)을 설명할 수 있다.
 - `CancellationToken`을 만들고, 내려보내고, 정리하는 표준 패턴(`CancelAfter`, `finally`, `Dispose`)을 쓸 수 있다.
 - `await` 한 `Task`, 안 한 `Task`, `async void`, `Task.WhenAll`에서 예외가 어디로 가는지 설명할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| `CancellationTokenSource` (CTS) | 취소를 요청하는 쪽 | `Cancel()` 또는 `CancelAfter(ms)`로 취소를 요청한다. 다 쓰면 `Dispose()`한다 |
+| `CancellationToken` | 비동기 메서드의 매개변수 | 취소 요청 여부를 확인하는 쪽에 전달한다 |
+| `ThrowIfCancellationRequested()` | 긴 루프 중간 | 취소됐으면 `OperationCanceledException`을 던진다 |
+| `CreateLinkedTokenSource(a, b)` | 취소 원인이 여럿일 때 | 둘 중 하나만 취소돼도 취소되는 토큰을 만든다 |
+| `MonoBehaviour.destroyCancellationToken` | Unity `MonoBehaviour` | 오브젝트가 파괴되면 취소된다 (Unity 2022.2 이상) |
+| `Application.exitCancellationToken` | Unity 전역 | 플레이 종료(에디터 Play 모드 종료 포함) 때 취소된다 (Unity 2022.2 이상) |
+| `Forget()` 래퍼 | 직접 만드는 확장 메서드 | `await`하지 않는 `Task`의 예외를 로그로 남긴다 |
 
-### 1-1. 수명 문제: 코루틴은 같이 죽고, `async`는 안 죽는다
+## 3. 동작 원리
+
+### 3-1. 수명 문제: 코루틴은 같이 죽고, `async`는 안 죽는다
 
 [Day 08](day08-unity-coroutine.md)의 코루틴은 시작한 `MonoBehaviour`가 파괴되면 같이 멈춘다. `async` 메서드는 **오브젝트와 상관없이 끝까지 간다.**
 
@@ -24,10 +49,14 @@ private async void Start()        // Unity 메시지 함수는 async void가 허
 }
 ```
 
-- `await` 뒤에서 파괴된 오브젝트를 쓰면 `MissingReferenceException`이 나거나, `==` 비교로 `null` 취급되어(Day 20) 조용히 아무 일도 안 일어나는 버그가 된다.
-- **에디터에서는 Play 모드를 끝낸 뒤에도 `async` 반복이 계속 돌 수 있다.** 무한 루프 `async` 메서드는 반드시 취소 가능하게 만든다.
+{% hint style="info" %}
+NOTE: `Awaitable`은 Unity 2023.1 이상(Unity 6 포함)의 API다. 쓰는 Unity 버전에서 `Awaitable.WaitForSecondsAsync`가 있는지 버전 확인 필요.
+{% endhint %}
 
-### 1-2. `CancellationToken` 패턴
+- `await` 뒤에서 파괴된 오브젝트를 쓰면 `MissingReferenceException`이 나거나, `==` 비교로 `null` 취급되어(Day 20) 조용히 아무 일도 안 일어나는 버그가 된다.
+- **에디터에서는 Play 모드를 끝낸 뒤에도 `Task` 기반 `async` 반복이 계속 돌 수 있다.** `Task`는 플레이 종료나 앱 종료 때 자동으로 취소되지 않는다. 무한 루프 `async` 메서드는 반드시 취소 가능하게 만들고, 종료 시 취소는 `Application.exitCancellationToken`(Unity 2022.2 이상)을 연결해 처리한다.
+
+### 3-2. `CancellationToken` 패턴
 
 취소는 **협력적(cooperative)** 이다. 취소 요청을 하는 쪽(`CancellationTokenSource`)과 확인하는 쪽(`CancellationToken`)이 나뉘고, 작업이 스스로 확인해서 멈춘다.
 
@@ -53,12 +82,16 @@ catch (OperationCanceledException) { /* 취소는 오류가 아니다: 조용히
 ```csharp
 private async void Start()
 {
-    await Awaitable.WaitForSecondsAsync(5f, destroyCancellationToken);   // 파괴되면 여기서 취소 예외
-    transform.position = Vector3.zero;
+    try
+    {
+        await Awaitable.WaitForSecondsAsync(5f, destroyCancellationToken);   // 파괴되면 여기서 취소 예외
+        transform.position = Vector3.zero;
+    }
+    catch (OperationCanceledException) { }   // 취소는 오류가 아니다. async void라서 여기서 직접 처리한다 (using System; 필요)
 }
 ```
 
-### 1-3. 예외는 어디로 가나
+### 3-3. 예외는 어디로 가나
 
 | 상황 | 예외의 행방 |
 |---|---|
@@ -69,13 +102,26 @@ private async void Start()
 
 버려도 되는 작업(fire-and-forget)은 **명시적 래퍼**로 예외를 로깅한다. UniTask에는 `.Forget()`이 있고, `Task`에는 직접 만든다(실습 2).
 
-> Unity 6 = C# 9 + Mono/IL2CPP. `destroyCancellationToken`은 Unity 2022.2+ API이고, `CancellationToken`/`Task` 자체는 .NET 클래스라서 콘솔 실습과 같은 규칙이 적용된다. 위 `Start()`에서 `async void`를 쓴 것은 메시지 함수의 시그니처 때문이며, 그래서 예외는 콘솔 로그로만 남는다.
+{% hint style="info" %}
+NOTE: Unity 6 = C# 9 + Mono/IL2CPP. `destroyCancellationToken`은 Unity 2022.2 이상 API이고, `CancellationToken`/`Task` 자체는 .NET 클래스라서 콘솔 실습과 같은 규칙이 적용된다. 위 `Start()`에서 `async void`를 쓴 것은 메시지 함수의 시그니처 때문이며, 그래서 예외는 콘솔 로그로만 남는다.
+{% endhint %}
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 협력적 취소(cooperative cancellation) | 취소를 강제로 끊지 않고, 작업이 토큰을 확인해 스스로 멈추는 방식 |
+| `OperationCanceledException` | 취소를 알리는 예외. `Task.Delay`는 파생형 `TaskCanceledException`을 던진다 |
+| fire-and-forget | 결과를 `await`하지 않고 시작만 하는 호출 |
+| `UnobservedTaskException` | 아무도 관찰하지 않은 `Task`의 예외를 GC가 `Task`를 finalize할 때 알리는 이벤트 |
+| `async void` | `Task`를 돌려주지 않는 비동기 메서드. 예외를 호출자가 잡지 못한다 |
+| `AggregateException` | 여러 예외를 묶은 예외. `Task.WhenAll`의 `Exception`에 담긴다 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: 이 절은 AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 취소 가능한 다운로드 시뮬레이터 (10분)
 
@@ -239,11 +285,9 @@ await가 던진 예외: B 실패
 
 </details>
 
----
+## 6. 확인 문제
 
-## 3. 면접 대비 (10분)
-
-소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
+소리 내어 30초 안에 답해 본 뒤 펼쳐서 비교한다.
 
 **Q1. 비동기 작업 중에 오브젝트가 파괴되면 어떻게 처리하나요?**
 <details><summary>모범 답안</summary>
@@ -275,14 +319,22 @@ await가 던진 예외: B 실패
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [관리되는 스레드의 취소](https://learn.microsoft.com/ko-kr/dotnet/standard/threading/cancellation-in-managed-threads)
 - [CancellationTokenSource 클래스](https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.cancellationtokensource)
 - [TaskScheduler.UnobservedTaskException 이벤트](https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.tasks.taskscheduler.unobservedtaskexception)
 - [Unity ScriptReference — MonoBehaviour.destroyCancellationToken](https://docs.unity3d.com/ScriptReference/MonoBehaviour-destroyCancellationToken.html)
 - [Cysharp/UniTask — 취소와 예외 처리](https://github.com/Cysharp/UniTask)
+
+이전: [Day 10 · UniTask와 Awaitable 🎮](day10-unitask-awaitable.md) · 다음: [Day 12 · \[실습\] 오브젝트 풀](day12-lab-object-pool.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 적는다.
+- [ ] `async` 메서드에 취소 토큰을 넘기지 않았다가 겪은(또는 겪을 뻔한) 문제를 내 말로 설명하면?
+- [ ] 내 코드에서 `await` 없이 호출하는 `Task`는 어디이며, 그 예외를 누가 보는가?

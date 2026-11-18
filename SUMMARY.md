@@ -13,4 +13,3 @@
 * [DevTool](DevTool/README.md)
 * [GameDev](GameDev/README.md)
 * [Projects](Projects/README.md)
-* [Daylog](Daylog/README.md)

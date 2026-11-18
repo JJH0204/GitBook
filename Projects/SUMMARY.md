@@ -6,6 +6,7 @@
 
 * [데브섹옵스 (DevSecOps)](completed/devsecops/README.md)
   * [데브섹옵스 해킹대회 (DevSecOps)](completed/devsecops/devsecopshackingcompetition.md)
+  * [Aurora 앱 구조 (Aurora)](completed/devsecops/auroraappstructure.md)
   * [노바 프로젝트 (Nova)](completed/devsecops/nova/README.md)
     * [데브섹옵스 프로세스 (DevSecOps)](completed/devsecops/nova/devsecopsprocess.md)
     * [애자일 개발 방법론 (Agile)](completed/devsecops/nova/agiledevelopment.md)
@@ -63,6 +64,8 @@
     * [모바일 조작계 구현 (SimpleInput)](projects/machina/rnd/mobilecontrolwithsimpleinputsystem.md)
     * [던전 시스템 구현 (Dungeon)](projects/machina/rnd/dungeonsystemimplementation.md)
     * [모바일 최적화 연구 개발 (R&D)](projects/machina/rnd/mobileoptimizationrnd.md)
+    * [Addressables 설정과 씬 로드](projects/machina/rnd/addressablessetup.md)
+    * [모바일 최적화 적용 중 문제 기록](projects/machina/rnd/mobileoptimizationissues.md)
     * [맵 동적 로딩 시스템 설계](projects/machina/rnd/mapdynamicloadingsystemdesign.md)
     * [UI 옵서버 패턴 (Observer)](projects/machina/rnd/observerpatternforui.md)
     * [오브젝트 풀링 조사 (Object Pooling)](projects/machina/rnd/objectpoolingresearch.md)
@@ -124,11 +127,3 @@
 * [Unity 우선순위 큐 몬스터 AI 초기 실험 해체](projects/unity-priority-queue/README.md)
   * [이진 힙 우선순위 큐 해체](projects/unity-priority-queue/priority-queue.md)
   * [몬스터 AI 실험 해체](projects/unity-priority-queue/monster-ai-experiment.md)
-
-## 보류
-
-* [앱 및 자동화 (Apps & Automation)](wait/apps-and-automation/README.md)
-  * [통합 캘린더 앱 기획](wait/apps-and-automation/integratedcalendarappdevelopment.md)
-  * [인터파크 티켓팅 자동화 기획](wait/apps-and-automation/interparkticketingautomation.md)
-* [트레이딩 (Trading)](wait/trading/README.md)
-  * [가상화폐 자동매매 (Crypto)](wait/trading/cryptotrading.md)

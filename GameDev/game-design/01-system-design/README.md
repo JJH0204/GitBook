@@ -7,6 +7,20 @@
 | 역기획 1장 요약 | 시스템을 목적 → 플로우 → 데이터로 쪼개는 **구조화** | [템플릿](reverse-design-template.md) · [예시](reverse-design-example.md) · [주제](reverse-design-topics.md) · [체크리스트](spec-checklist.md) |
 | 밸런스 시트 | 의도를 공식과 그래프로 설명하는 **수치화** | [밸런스 실습 B1–B4](balance-drills.md) |
 
+## 문서 목록
+
+| Task ID | 유형 | 문서 | 용도 |
+|---|---|---|---|
+| GMD-SYS-001-REF | 템플릿 | [역기획 템플릿](reverse-design-template.md) | 역기획 1장을 쓴다 |
+| GMD-SYS-002-DO | 개념·예시 | [예시: 상점 리롤 역기획](reverse-design-example.md) | 역기획의 품질 기준을 본다 |
+| GMD-SYS-003-REF | 표 | [역기획 연습 주제](reverse-design-topics.md) | 연습할 시스템을 고른다 |
+| GMD-SYS-004-INS | 점검 | [스펙 체크리스트](spec-checklist.md) | 기획서의 빈칸을 점검한다 |
+| GMD-SYS-005-REF | 표 | [밸런스 시트 실습 B1–B4](balance-drills.md) | 실습 순서와 시트 규칙을 본다 |
+| GMD-SYS-006-MP | 절차 | [B1. 데미지 공식](balance-b1-damage.md) | 감산형·비율형 공식을 비교한다 |
+| GMD-SYS-007-MP | 절차 | [B2. 경험치 곡선](balance-b2-exp-curve.md) | 필요 경험치와 레벨업 시간을 설계한다 |
+| GMD-SYS-008-MP | 절차 | [B3. 스킬 쿨타임 대비 DPS](balance-b3-skill-dps.md) | 스킬의 실질 가치를 계산한다 |
+| GMD-SYS-009-MP | 절차 | [B4. TTK 역산](balance-b4-ttk.md) | 목표 처치 시간에서 체력을 역산한다 |
+
 ## 역기획 1장 요약
 
 ### 진행 순서

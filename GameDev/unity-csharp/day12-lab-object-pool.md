@@ -1,17 +1,67 @@
 # Day 12 · [실습] 오브젝트 풀
 
-> 2주차 비동기 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day12`), 🎮 Unity 6 (확장 과제, 선택)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-013-MP |
+| 유형 | MP (실습 절차) |
+| 목적 | 제네릭 `Pool<T>`를 직접 구현하고, 풀 없음과 풀 사용의 할당 바이트·GC 횟수를 비교해 확인한다 |
+| 적용 대상 | .NET 8 이상 콘솔(필수), Unity 6 / URP(확장 과제, 선택) |
+| 소요 시간 | 60분 (2주차 비동기). 설계 읽기 10분, 구현 45분, 회고 5분 |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 학습 목표
+
 - 오브젝트 풀링이 줄여 주는 비용과 새로 만드는 비용을 구분하고, "측정 먼저"의 이유를 사례로 설명할 수 있다.
 - 생성 함수, `Get`/`Release`, 콜백, `maxSize`, 이중 반환 감지, 통계를 갖춘 제네릭 `Pool<T>`를 구현할 수 있다.
 - 재사용 함정(초기화 누락) 체크리스트로 풀링 코드를 점검할 수 있다.
 
----
+## 1. 참조
 
-## 1. 설계 읽기 (10분)
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day03-gc-allocation.md](day03-gc-allocation.md) | GMD-UCS-004-DO | Day 03 · GC와 할당 |
+| [day08-unity-coroutine.md](day08-unity-coroutine.md) | GMD-UCS-009-DO | Day 08 · Unity 코루틴의 내부 🎮 |
+| [day11-cancellation-exceptions.md](day11-cancellation-exceptions.md) | GMD-UCS-012-DO | Day 11 · 취소, 예외, 수명 |
+| [day16-shader-variants-warmup.md](day16-shader-variants-warmup.md) | GMD-UCS-017-DO | Day 16 · 셰이더 variant와 첫 사용 스톨 🎮 |
 
-### 1-1. 풀링이 아끼는 것과 비싸게 만드는 것
+외부 참조:
+
+- [ObjectPool\<T\> (UnityEngine.Pool)](https://docs.unity3d.com/ScriptReference/Pool.ObjectPool_1.html)
+- [Game Programming Patterns — Object Pool (Robert Nystrom)](https://gameprogrammingpatterns.com/object-pool.html)
+- [ReferenceEqualityComparer 클래스](https://learn.microsoft.com/ko-kr/dotnet/api/system.collections.generic.referenceequalitycomparer)
+
+## 2. 필요 장비와 자재
+
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | .NET SDK | 8 이상 | `dotnet --version`으로 확인 |
+| 2 | 터미널과 텍스트 에디터 | AI 기능·자동완성 끔 | |
+| 3 | Unity | Unity 6, URP 프로젝트 `practice/UnityLab` | 확장 과제(선택)에서만 사용 |
+
+## 3. 안전 사항
+
+{% hint style="info" %}
+NOTE: AI 채팅, 코드 자동완성, 검색을 쓰지 않고 아래 명세만 보고 직접 작성한다. 막히면 설계 개요로 돌아간다.
+{% endhint %}
+
+{% hint style="info" %}
+NOTE: 작업 폴더 `practice/day12/` 밖의 파일을 건드리지 않는다. Unity 확장 과제는 씬을 저장하기 전에 복사본을 만든다.
+{% endhint %}
+
+## 4. 준비
+
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | 작업 폴더를 만든다: `dotnet new console -o practice/day12` | `practice/day12/Program.cs`가 생긴다 |
+| 2 | 풀 코드를 쓰기 전에 `created`, `reused`, `dropped`를 예측해 종이나 주석에 적는다 | 값 3개가 적혀 있다 |
+| 3 | 설계 개요를 읽는다 | 풀이 아끼는 것과 비용을 한 문장씩 말할 수 있다 |
+
+## 설계 개요
+
+### 설계 1-1. 풀링이 아끼는 것과 비싸게 만드는 것
 
 | | 내용 |
 |---|---|
@@ -19,17 +69,19 @@
 | 비용 | 상주 메모리(안 쓰는 객체도 계속 들고 있다), **상태 초기화 누락 버그**, 풀 관리 코드의 복잡도 |
 | 원칙 | **측정 먼저.** 프로파일러에서 원인임이 확인된 곳에만 적용한다 |
 
-> Unity 6 = Boehm GC(세대 없음, 압축 없음, 새 프로젝트는 incremental 기본). 세대가 없어서 수집은 힙 전체를 대상으로 하므로, 힙이 크고 객체가 많을수록 수집 비용이 커진다(incremental 모드는 그 작업을 여러 프레임에 나눈다). 풀링은 "수집할 거리를 만들지 않는" 방법이다.
+{% hint style="info" %}
+NOTE: Unity 6 = Boehm GC(세대 없음, 압축 없음, 새 프로젝트는 incremental 기본). 세대가 없어서 수집은 힙 전체를 대상으로 하므로, 힙이 크고 객체가 많을수록 수집 비용이 커진다(incremental 모드는 그 작업을 여러 프레임에 나눈다). 풀링은 "수집할 거리를 만들지 않는" 방법이다. GC 모드와 기본값은 Unity 버전에 따라 다르므로 버전 확인 필요.
+{% endhint %}
 
-### 1-2. 팀 프로젝트 측정 사례
+### 설계 1-2. 팀 프로젝트 측정 사례
 
-**팀 프로젝트 측정 사례.** 프레임 스파이크가 의심되어 Editor와 개발 빌드(development build)에서 프로파일러로 확인했다.
+프레임 스파이크가 의심되어 Editor와 개발 빌드(development build)에서 프로파일러로 확인했다.
 
 - `Instantiate`는 스파이크의 원인이 아니었다. 빌드에서 `Instantiate`의 최대 시간은 **12 ms**였다.
 - 스파이크 초과분의 **74–81%** 는 **첫 사용 시점의 VFX Graph 초기화**(셰이더 변형 컴파일)였다. 풀링으로는 줄어들지 않는 비용이다. (셰이더 변형과 웜업은 Day 16에서 다룬다.)
 - 교훈: **풀링부터 짜지 말고 프로파일부터 한다.** 원인이 `Instantiate`가 아니면 풀은 복잡도만 늘린다.
 
-### 1-3. 재사용 함정 체크리스트
+### 설계 1-3. 재사용 함정 체크리스트
 
 팀 프로젝트의 풀링 계획에서 정리한 항목이다. `onGet`(꺼낼 때)에서 초기화하거나, 코드를 고쳐서 없앤다.
 
@@ -40,7 +92,7 @@
 - [ ] `Rigidbody`의 **velocity/angularVelocity**가 남아 있다.
 - [ ] 오브젝트를 **`"(Clone)"` 이름으로 찾는** 코드가 있다 (풀 오브젝트는 이름이 바뀌지 않거나 다르다).
 
-### 1-4. 풀 설계 결정
+### 설계 1-4. 풀 설계 결정
 
 | 결정 | 선택 |
 |---|---|
@@ -49,13 +101,11 @@
 | 가득 찼을 때 | `maxSize`를 넘는 반환은 **버린다**(`dropped`). Unity에서는 파괴한다 |
 | 이중 반환 | 같은 객체를 두 번 반환하면 나중에 두 곳이 같은 객체를 쓰게 되므로 **개발 중에 예외로 잡는다** |
 
----
+## 5. 절차
 
-## 2. 구현 (45분)
+### A. `Pool<T>` 구현
 
-> AI, 자동완성, 검색 없이. 아래 명세만 보고 직접 작성한다.
-
-### 요구사항
+명세:
 
 1. `Pool<T> where T : class`: 생성자 `(Func<T> create, int maxSize, Action<T>? onGet = null, Action<T>? onRelease = null, bool detectDoubleRelease = false)`.
 2. `T Get()`: 보관 중이면 꺼내고(`Reused++`), 없으면 `create()`로 만든다(`Created++`). 어느 쪽이든 `onGet`을 호출한다.
@@ -63,15 +113,24 @@
 4. `detectDoubleRelease`가 `true`면 이미 풀에 있는 객체를 `Release`할 때 `InvalidOperationException`을 던진다 (`HashSet<T>`와 `ReferenceEqualityComparer.Instance` 사용).
 5. 통계 프로퍼티 `Created`, `Reused`, `Dropped`, `Idle`(현재 보관 개수).
 
-### 테스트 시나리오
+1. (5-A-01) `Pool<T>`를 위 명세 1~5를 모두 만족하게 `Program.cs`에 작성한다. → 결과: 빌드 오류 없이 `dotnet build`가 끝난다.
+2. (5-A-02) `Bullet` 클래스를 작성한다. `float[1024]` 배열(4KB)을 필드로 둔다. → 결과: 객체 하나가 약 4KB를 차지한다.
 
-`Bullet`(필드 몇 개 + `float[1024]` 부속 데이터 4KB)를 쓴다. 시나리오: **1000프레임 동안 프레임마다 10발 발사 → 총 10,000발**, 각 탄은 5프레임 뒤 반환한다(매 프레임 먼저 5프레임 지난 10발을 반환하고 나서 10발을 새로 꺼낸다). 시뮬레이션 끝에 남은 50발을 한꺼번에 반환한다. `maxSize = 32`.
+### B. 시뮬레이션 작성
+
+시나리오 조건: `Bullet`(필드 몇 개 + `float[1024]` 부속 데이터 4KB)를 쓴다. 시나리오: **1000프레임 동안 프레임마다 10발 발사 → 총 10,000발**, 각 탄은 5프레임 뒤 반환한다(매 프레임 먼저 5프레임 지난 10발을 반환하고 나서 10발을 새로 꺼낸다). 시뮬레이션 끝에 남은 50발을 한꺼번에 반환한다. `maxSize = 32`.
 
 풀 없음(`new Bullet()`)과 풀 사용 두 경우에 **할당 바이트**(`GC.GetAllocatedBytesForCurrentThread()`)와 **`GC.CollectionCount(0)`** 증가량을 출력한다. 시작 전에 `GC.Collect()`를 한 번 한다.
 
 **실행 전에 예측한다:** `created`, `reused`, `dropped`는 각각 몇인가? (힌트: 동시에 살아 있는 탄은 최대 50발.)
 
-예상 출력 (바이트와 GC 횟수는 머신/버전마다 다르다, `created`/`reused`/`dropped`/`idle`와 마지막 줄은 항상 같다):
+1. (5-B-01) 풀 없음 경로와 풀 사용 경로를 같은 `Simulate` 함수로 돌린다. 생성과 반환은 함수 인자로 받는다. → 결과: 두 경로의 코드가 한 곳에 있다.
+2. (5-B-02) 시작 전에 `GC.Collect()`를 한 번 호출하고, `GC.GetAllocatedBytesForCurrentThread()`와 `GC.CollectionCount(0)`의 증가량을 기록한다. → 결과: 경로마다 두 값이 출력된다.
+3. (5-B-03) `detectDoubleRelease: true`인 풀에서 같은 객체를 두 번 반환하는 코드를 추가한다. → 결과: `InvalidOperationException`을 잡아 메시지를 출력한다.
+
+### C. 실행과 예측 비교
+
+1. (5-C-01) Release 구성으로 실행한다: `dotnet run -c Release` → 결과: 아래와 비슷한 출력이 나온다.
 
 ```
 [풀 없음] 할당 39.7 MB, GC(0) 2회
@@ -80,16 +139,43 @@
 이중 반환 감지: 이미 풀에 있는 객체를 다시 반환했다.
 ```
 
+2. (5-C-02) 4절 2번에서 적은 예측과 `created`, `reused`, `dropped`를 비교한다. → 결과: 세 값이 일치한다.
+3. (5-C-03) 일치하지 않으면 해당 값이 나오는 코드를 다시 읽는다. 참고 구현은 부록 A에서 마지막에 본다.
+
+해설:
+
 - `created = 50`: 처음 5프레임은 반환이 없어서 10×5발을 만든다. 그 뒤로는 반환한 만큼 재사용한다. `reused = 10000 − 50`.
 - `dropped = 18`: 종료 때 50발을 반환하는데 `maxSize` 32까지만 보관한다.
 - 할당 바이트는 64비트 기준이다. 탄 하나 ≈ 4 KB 배열 + 객체이므로 10,000발이면 약 40 MB, 풀은 50발분만 만든다.
 - 이중 반환 줄은 `detectDoubleRelease: true`인 풀에서 같은 객체를 두 번 반환하는 별도 코드의 결과다. 예외 메시지 문자열은 본인이 정한 것을 쓰면 된다.
 
-### 확장 과제 (시간이 남을 때)
+### D. 확장 (선택)
 
-1. **Unity 이식 🎮**: 탄 `MonoBehaviour`를 `SetActive` 토글로 풀링하고(직접 만든 `Pool<T>` 또는 `Stack<Bullet>`), 꺼낼 때 상태를 초기화한다. 그다음 `UnityEngine.Pool.ObjectPool<T>`로 바꿔서 Profiler의 GC Alloc과 `Instantiate` 시간을 풀 없는 버전과 비교한다. (아래 `<details>`에 비교용 코드가 있다.)
+1. **Unity 이식 🎮**: 탄 `MonoBehaviour`를 `SetActive` 토글로 풀링하고(직접 만든 `Pool<T>` 또는 `Stack<Bullet>`), 꺼낼 때 상태를 초기화한다. 그다음 `UnityEngine.Pool.ObjectPool<T>`로 바꿔서 Profiler의 GC Alloc과 `Instantiate` 시간을 풀 없는 버전과 비교한다. (비교용 코드는 부록 A에 있다.)
 2. **활성 개수 한도**: 동시에 꺼내 간 개수(`Active`)를 세고, `maxActive`를 넘는 `Get`은 예외를 던지게 해 본다.
 3. **통계 출력**: 프레임별 `Idle` 최솟값을 추적해서, 풀이 실제로 필요로 한 `maxSize`를 추천하도록 해 본다.
+
+## 6. 기능 확인
+
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | 풀 통계 줄 출력 | `created=50 reused=9950 dropped=18 idle=32` | 네 값이 모두 같다 |
+| 2 | 풀 없음과 풀 사용의 할당 바이트 비교 | 풀 사용 쪽이 약 1/100 이하 | 풀 사용 할당이 풀 없음 할당보다 작다 (정확한 값은 머신마다 다르다) |
+| 3 | `GC.CollectionCount(0)` 증가량 비교 | 풀 사용 쪽이 같거나 작다 | 풀 사용 쪽이 풀 없음보다 크지 않다 |
+| 4 | 이중 반환 | 예외 메시지가 출력된다 | `InvalidOperationException`을 잡는다 |
+
+## 7. 복구
+
+1. (7-01) 작업 폴더를 지운다: `rm -r practice/day12` → 결과: 폴더가 없다.
+2. (7-02) Unity 확장 과제를 했다면 저장 전 복사본으로 씬을 되돌린다. 저장 전이면 Ctrl+Z로 되돌린다. → 결과: 씬에 풀링용 오브젝트가 없다.
+
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 페이지를 AMM 형식(MP)으로 재작성. 설계 읽기를 설계 개요로, 구현을 절차로, 회고를 부록 B로 재배치 |
+
+## 부록 A. 참고 구현과 Unity 비교 코드
 
 <details><summary>Unity 비교용 코드 (Bullet.cs, BulletSpawner.cs)</summary>
 
@@ -280,9 +366,7 @@ class Pool<T> where T : class
 
 </details>
 
----
-
-## 3. 회고 (5분)
+## 부록 B. 회고
 
 질문에 스스로 답해 본 뒤 펼친다.
 
@@ -304,12 +388,4 @@ class Pool<T> where T : class
 
 </details>
 
----
-
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
-- [ObjectPool\<T\> (UnityEngine.Pool)](https://docs.unity3d.com/ScriptReference/Pool.ObjectPool_1.html)
-- [Game Programming Patterns — Object Pool (Robert Nystrom)](https://gameprogrammingpatterns.com/object-pool.html)
-- [ReferenceEqualityComparer 클래스](https://learn.microsoft.com/ko-kr/dotnet/api/system.collections.generic.referenceequalitycomparer)
+이전: [Day 11 · 취소, 예외, 수명](day11-cancellation-exceptions.md) · 다음: [Day 13 · 렌더링 파이프라인 한 바퀴 🎮](day13-rendering-pipeline.md)

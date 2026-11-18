@@ -1,28 +1,47 @@
 # Day 03 · GC와 할당
 
-> 1주차 C# 메모리 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day03`)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-004-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | .NET GC와 Unity GC의 차이를 설명하고, 프레임마다 일어나는 GC 할당을 찾아 0바이트로 고친다. |
+| 적용 대상 | .NET 8 이상 콘솔(`dotnet new console -o practice/day03`), Unity 6(C# 9)와 다른 점은 본문에 표시 |
+| 소요 시간 | 60분 (1주차 C# 메모리, 읽기 20분 + 확인 실습 30분 + 확인 문제 10분) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
 - .NET의 세대별·압축(`compacting`) GC와 Unity의 Boehm GC가 어떻게 다른지 설명할 수 있다.
 - Unity의 점진적 GC(`Incremental GC`)가 해결하는 것과 해결하지 못하는 것을 구분할 수 있다.
 - 매 프레임 `Update`에서 흔히 일어나는 할당 원인을 찾고 0바이트 할당으로 고칠 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| 루트(root) | 스택 프레임 지역 변수·매개변수, CPU 레지스터, `static` 필드 | 살아 있는 객체 탐색의 시작점 |
+| .NET GC (CoreCLR) | 관리 힙 | 세대별(Gen 0/1/2, LOH)·압축 방식으로 수거한다 |
+| Unity GC (Boehm) | 관리 힙 | 비세대·비이동·보수적 방식. 수거 시 힙 전체를 스캔한다 |
+| 점진적 GC(Incremental GC) | Unity 설정 | 표시 단계를 여러 프레임으로 나눈다. 총 작업량은 줄이지 않는다 |
+| Profiler `GC Alloc` 열 | Unity Profiler > CPU Usage | 프레임당 할당 바이트를 보여 준다 |
+| `GC.GetAllocatedBytesForCurrentThread()` | .NET 콘솔 | 스레드 누적 할당 바이트를 잰다 |
 
-### 1-1. 가비지 컬렉터(`GC`)가 하는 일
+## 3. 동작 원리
+
+### 3-1. 가비지 컬렉터(`GC`)가 하는 일
 
 GC는 **루트(`root`)**에서 시작해 참조 사슬을 따라가며 살아 있는 객체를 표시(`mark`)하고, 도달할 수 없는 객체의 메모리를 회수(`sweep`)한다. 루트에는 현재 실행 중인 스택 프레임의 지역 변수·매개변수, CPU 레지스터, `static` 필드가 포함된다.
 
-### 1-2. .NET GC vs Unity(Mono / IL2CPP) GC
+### 3-2. .NET GC vs Unity(Mono / IL2CPP) GC
 
 | 항목 | .NET (CoreCLR) | Unity 6 (Mono / IL2CPP: Boehm–Demers–Weiser GC) |
 |---|---|---|
 | 세대 구분 | **세대별(`Generational`)**: Gen 0 / Gen 1 / Gen 2 + 대형 객체 힙(`LOH`, 85,000B 이상) | **비세대(`Non-generational`)**: 수거할 때 힙 전체를 스캔한다 |
 | 포인터 판별 | 정확(`Precise`) | **보수적(`Conservative`)**: 비트 패턴이 힙 주소처럼 보이면 참조로 간주할 수 있다 |
 | 메모리 압축 | **압축(`Compacting`)**: 살아남은 객체를 모아 빈 공간을 붙인다 | **비이동(`Non-moving`)**: 객체를 옮기지 않아 **단편화(`fragmentation`)**가 생긴다 |
-| 힙 크기 | 필요 없으면 OS에 반환하기도 함 | 한 번 늘어난 관리 힙은 거의 줄어들지 않는다 |
+| 힙 크기 | 필요 없으면 OS에 반환하기도 함 | 한 번 늘어난 관리 힙은 잘 줄어들지 않는다 |
 
 - **.NET**: 방금 만든 짧은 수명 객체는 작은 Gen 0만 빠르게 훑어 수거하고, 큰 배열(85,000바이트 이상)은 압축 비용을 피하려고 `LOH`에 따로 둔다.
 - **Unity**: Boehm GC는 세대가 없어서 GC가 한 번 돌 때 힙 전체의 객체 수와 비례해 시간이 걸린다. 또 객체를 옮기지 않으므로 작은 객체가 빠진 자리에 큰 배열이 못 들어가 힙 자체가 더 커진다.
@@ -30,7 +49,7 @@ GC는 **루트(`root`)**에서 시작해 참조 사슬을 따라가며 살아 �
 
 결론은 단순하다. 게임에서는 **프레임마다 할당하지 않는 것**이 유일한 근본 해법이다.
 
-### 1-3. 프레임마다 터지는 단골 할당 10가지와 해법
+### 3-3. 프레임마다 터지는 단골 할당 10가지와 해법
 
 | 흔한 할당 코드 | 왜 할당되는가 | 무할당(`Zero-alloc`) 해법 |
 |---|---|---|
@@ -45,16 +64,27 @@ GC는 **루트(`root`)**에서 시작해 참조 사슬을 따라가며 살아 �
 | `IEnumerable<T>` 변수에 대한 `foreach` | struct 열거자(`Enumerator`)가 인터페이스로 박싱됨 | 구체 타입(`List<T>`, `T[]`) 그대로 `foreach` 또는 `for` |
 | 잦은 `Instantiate` / `Destroy` | 관리 객체 + 네이티브 객체 생성·파괴 | 오브젝트 풀링(Day 12), 로딩 화면에서만 `GC.Collect()` 호출 |
 
-### 1-4. 측정하는 법
+### 3-4. 측정하는 법
 
 - **Unity**: `Profiler` 창 → `CPU Usage` 모듈 → 계층 목록의 **`GC Alloc` 컬럼**을 정렬해 프레임당 0B가 아닌 함수를 찾는다. 힙 전체 구조와 단편화는 **Memory Profiler 패키지**로 본다.
 - **.NET 콘솔**: `GC.GetAllocatedBytesForCurrentThread()`로 스레드 누적 할당 바이트를, `GC.CollectionCount(0)`으로 Gen 0 수집 횟수를 잰다.
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 표시·회수(mark/sweep) | 루트에서 닿는 객체에 표시하고, 표시 안 된 객체의 메모리를 회수하는 두 단계 |
+| 세대별(generational) | 객체 수명에 따라 힙을 나눠 짧은 수명 객체만 자주 수거하는 방식 |
+| 압축(compacting) / 비이동(non-moving) | 살아남은 객체를 옮겨 빈 공간을 붙이는 방식 / 옮기지 않아 단편화가 생기는 방식 |
+| 단편화(fragmentation) | 빈 공간이 조각나 큰 객체가 들어가지 못하는 상태 |
+| 무할당(zero-alloc) | 프레임 루프에서 GC 할당이 0바이트인 코드 |
+| LOH | 대형 객체 힙. 85,000바이트 이상 객체가 놓인다 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 3절 동작 원리로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 10,000프레임 가상 게임 루프 — 할당 버전 vs 무할당 버전 (20분)
 
@@ -173,9 +203,7 @@ IEnumerable<int> foreach: 400000 B (sum=100000)
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -203,13 +231,21 @@ IEnumerable<int> foreach: 400000 B (sum=100000)
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [가비지 수집 기본 사항 (.NET)](https://learn.microsoft.com/ko-kr/dotnet/standard/garbage-collection/fundamentals)
 - [Unity 매뉴얼 — 관리되는 메모리(Managed memory) 개요](https://docs.unity3d.com/Manual/performance-managed-memory.html)
 - [Unity 매뉴얼 — 점진적 가비지 컬렉션(Incremental GC)](https://docs.unity3d.com/Manual/performance-incremental-garbage-collection.html)
 - [Unity 매뉴얼 — 가비지 컬렉터 개요](https://docs.unity3d.com/Manual/performance-garbage-collector.html)
+
+이전: [Day 02 · 박싱과 언박싱](day02-boxing.md) · 다음: [Day 04 · struct 제대로 쓰기](day04-struct-in-practice.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: Day 03의 핵심을 내 말로 한 문장으로 쓴다.
+- [ ] Unity에서 "프레임마다 할당하지 않기"가 점진적 GC보다 근본 해법인 이유를 내 말로 설명하면?
+- [ ] 내 프로젝트에서 프레임마다 GC 할당을 일으킨 코드를 찾은 경험이 있는가? 무엇이 원인이었는가?

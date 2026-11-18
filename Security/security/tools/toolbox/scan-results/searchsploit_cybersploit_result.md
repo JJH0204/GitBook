@@ -1,96 +1,73 @@
 # Searchsploit 검색 로그
 
-| Exploit Title                                 | Path                         |
-| --------------------------------------------- | ---------------------------- |
-| Alienvault Open Source SIEM (OSSIM) < 4.7.    | linux/remote/33805.pl        |
-| Alienvault Open Source SIEM (OSSIM) < 4.7.    | linux/remote/42697.rb        |
-| Alienvault Open Source SIEM (OSSIM) < 4.8.    | linux/remote/42695.rb        |
-| AppArmor securityfs < 4.8 - 'aa\_fs\_seq\_has | linux/dos/40181.c            |
-| CyberArk < 10 - Memory Disclosure             | linux/remote/44829.py        |
-| CyberArk Password Vault < 9.7 / < 10 - Mem    | linux/dos/44428.txt          |
-| Dell EMC RecoverPoint < 5.1.2 - Local Root    | linux/local/44920.txt        |
-| Dell EMC RecoverPoint < 5.1.2 - Local Root    | linux/local/44920.txt        |
-| Dell EMC RecoverPoint < 5.1.2 - Remote Roo    | linux/remote/44921.txt       |
-| Dell EMC RecoverPoint < 5.1.2 - Remote Roo    | linux/remote/44921.txt       |
-| Dell EMC RecoverPoint boxmgmt CLI < 5.1.2     | linux/local/44688.txt        |
-| DenyAll WAF < 6.3.0 - Remote Code Executio    | linux/webapps/42769.rb       |
-| Exim < 4.86.2 - Local Privilege Escalation    | linux/local/39549.txt        |
-| Exim < 4.90.1 - 'base64d' Remote Code Exec    | linux/remote/44571.py        |
-| Gnome Web (Epiphany) < 3.28.2.1 - Denial o    | linux/dos/44857.html         |
-| Jfrog Artifactory < 4.16 - Arbitrary File     | linux/webapps/44543.txt      |
-| KDE libkhtml 3.5 < 4.2.0 - Unhandled HTML     | linux/dos/2954.html          |
-| LibreOffice < 6.0.1 - '=WEBSERVICE' Remote    | linux/remote/44022.md        |
-| Linux < 4.14.103 / < 4.19.25 - Out-of-Boun    | linux/dos/46477.txt          |
-| Linux < 4.16.9 / < 4.14.41 - 4-byte Infole    | linux/dos/44641.c            |
-| Linux < 4.20.14 - Virtual Address 0 is Map    | linux/dos/46502.txt          |
-| Linux Kernel (Solaris 10 / < 5.10 138888-0    | solaris/local/15962.c        |
-| Linux Kernel 2.6.19 < 5.9 - 'Netfilter Loc    | linux/local/50135.c          |
-| Linux Kernel 3.11 < 4.8 0 - 'SO\_SNDBUFFORC   | linux/local/41995.c          |
-| Linux Kernel 3.13.0 < 3.19 (Ubuntu 12.04/1    | linux/local/37292.c          |
-| Linux Kernel 3.13.0 < 3.19 (Ubuntu 12.04/1    | linux/local/37293.txt        |
-| Linux Kernel 3.14-rc1 < 3.15-rc4 (x64) - R    | linux\_x86-64/local/33516.c  |
-| Linux Kernel 3.4 < 3.13.2 (Ubuntu 13.04/13    | linux\_x86-64/local/31347.c  |
-| Linux Kernel 3.4 < 3.13.2 (Ubuntu 13.10) -    | linux/local/31346.c          |
-| Linux Kernel 3.4 < 3.13.2 - recvmmsg x32 c    | linux/dos/31305.c            |
-| Linux Kernel 4.10.5 / < 4.14.3 (Ubuntu) -     | linux/dos/43234.c            |
-| Linux Kernel 4.8.0 UDEV < 232 - Local Priv    | linux/local/41886.c          |
-| Linux Kernel < 3.16.1 - 'Remount FUSE' Loc    | linux/local/34923.c          |
-| Linux Kernel < 3.16.39 (Debian 8 x64) - 'i    | linux\_x86-64/local/44302.c  |
-| Linux Kernel < 4.10.13 - 'keyctl\_set\_reqke  | linux/dos/42136.c            |
-| Linux kernel < 4.10.15 - Race Condition Pr    | linux/local/43345.c          |
-| Linux Kernel < 4.11.8 - 'mq\_notify: double   | linux/local/45553.c          |
-| Linux Kernel < 4.13.1 - BlueTooth Buffer O    | linux/dos/42762.txt          |
-| Linux Kernel < 4.13.9 (Ubuntu 16.04 / Fedo    | linux/local/45010.c          |
-| Linux Kernel < 4.14.rc3 - Local Denial of     | linux/dos/42932.c            |
-| Linux Kernel < 4.15.4 - 'show\_floppy' KASL   | linux/local/44325.c          |
-| Linux Kernel < 4.16.11 - 'ext4\_read\_inline  | linux/dos/44832.txt          |
-| Linux Kernel < 4.17-rc1 - 'AF\_LLC' Double    | linux/dos/44579.c            |
-| Linux Kernel < 4.4.0-116 (Ubuntu 16.04.4)     | linux/local/44298.c          |
-| Linux Kernel < 4.4.0-21 (Ubuntu 16.04 x64)    | linux\_x86-64/local/44300.c  |
-| Linux Kernel < 4.4.0-83 / < 4.8.0-58 (Ubun    | linux/local/43418.c          |
-| Linux Kernel < 4.4.0/ < 4.8.0 (Ubuntu 14.0    | linux/local/47169.c          |
-| Linux Kernel < 4.5.1 - Off-By-One (PoC)       | linux/dos/44301.c            |
-| Logpoint < 5.6.4 - Root Remote Code Execut    | linux/remote/42158.py        |
-| MatrixSSL < 4.0.2 - Stack Buffer Overflow     | linux/dos/46435.txt          |
-| MatrixSSL < 4.0.2 - Stack Buffer Overflow     | linux/dos/46435.txt          |
-| MiniDVBLinux <=5.4 - Config Download Expl     | hardware/remote/51091.txt    |
-| Nagios < 4.2.2 - Arbitrary Code Execution     | linux/remote/40920.py        |
-| Nagios < 4.2.4 - Local Privilege Escalatio    | linux/local/40921.sh         |
-| NfSen < 1.3.7 / AlienVault OSSIM < 5.3.6 -    | linux/local/42305.txt        |
-| OpenSSH 2.3 < 7.7 - Username Enumeration      | linux/remote/45233.py        |
-| OpenSSH 2.3 < 7.7 - Username Enumeration (    | linux/remote/45210.py        |
-| OpenSSH < 6.6 SFTP (x64) - Command Executi    | linux\_x86-64/remote/45000.c |
-| OpenSSH < 6.6 SFTP - Command Execution        | linux/remote/45001.py        |
-| OpenSSH < 7.4 - 'UsePrivilegeSeparation Di    | linux/local/40962.txt        |
-| OpenSSH < 7.4 - agent Protocol Arbitrary L    | linux/remote/40963.txt       |
-| OpenSSH < 7.7 - User Enumeration (2)          | linux/remote/45939.py        |
-| Oracle MySQL < 5.1.49 - 'DDL' Statements D    | linux/dos/34522.txt          |
-| Oracle MySQL < 5.1.49 - Malformed 'BINLOG'    | linux/dos/34521.txt          |
-| Oracle VM VirtualBox < 5.0.32 / < 5.1.14 -    | linux/local/41196.txt        |
-| Oracle WebCenter FatWire Content Server <     | linux/webapps/44757.txt      |
-| PHP < 4.4.5/5.2.1 - 'shmop' Local Code Exe    | linux/local/3426.php         |
-| PHP < 4.4.5/5.2.1 - 'shmop' SSL RSA Privat    | linux/local/3427.php         |
-| PHP < 4.4.5/5.2.1 - '\_SESSION unset()' Loc   | linux/local/3571.php         |
-| PHP < 4.4.5/5.2.1 - '\_SESSION' Deserializa   | linux/local/3572.php         |
-| Pi-hole < 4.4 - Authenticated Remote Code     | linux/webapps/48442.py       |
-| Pi-hole < 4.4 - Authenticated Remote Code     | linux/webapps/48443.py       |
-| Redis-cli < 5.0 - Buffer Overflow (PoC)       | linux/local/44904.py         |
-| RPi Cam Control < 6.4.25 - 'preview.php' R    | linux/webapps/45361.py       |
-| runc < 1.0-rc6 (Docker < 18.09.2) - Contai    | linux/local/46359.md         |
-| runc < 1.0-rc6 (Docker < 18.09.2) - Contai    | linux/local/46369.md         |
-| Samba 3.5.0 < 4.4.14/4.5.10/4.6.4 - 'is\_kn   | linux/remote/42084.rb        |
-| SAP B2B / B2C CRM 2.x < 4.x - Local File I    | linux/webapps/44655.txt      |
-| Serv-U FTP Server < 15.1.7 - Local Privile    | linux/local/47009.c          |
-| SixApart MovableType < 5.2.12 - Storable P    | linux/webapps/41697.rb       |
-| Splunk < 7.0.1 - Information Disclosure       | linux/webapps/44865.txt      |
-| systemd (systemd-tmpfiles) < 236 - 'fs.pro    | linux/local/43935.txt        |
-| Tenable Appliance < 4.5 - Root Remote Code    | linux/remote/41892.sh        |
-| Ubuntu < 15.10 - PT Chown Arbitrary PTs Ac    | linux/local/41760.txt        |
-| UCOPIA Wireless Appliance < 5.1 (Captive P    | linux/remote/42949.txt       |
-| UCOPIA Wireless Appliance < 5.1.8 - Local     | linux/local/42936.md         |
-| UCOPIA Wireless Appliance < 5.1.8 - Restri    | linux/local/42937.md         |
-| Vim < 8.1.1365 / Neovim < 0.3.6 - Arbitrar    | linux/local/46973.md         |
-| Virtualmin < 3.703 - Multiple Local/Remote    | linux/remote/9143.txt        |
-| WordPress Core < 4.7.4 - Unauthorized Pass    | linux/webapps/41963.txt      |
+## 작업 식별
 
-Shellcodes: No Results
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-SCN-006-REF |
+| 유형 | REF (출력 읽는 법). 단편 |
+| 목적 | Searchsploit 검색 결과의 구조를 읽고, 검색 결과가 방어 관점에서 무엇을 뜻하는지 파악한다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱) |
+| 확인 상태 | 미검증 (원본 출력과 일반 지식을 정리한 것이며 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="danger" %}
+WARNING: 이 도구가 찾아 주는 코드를 허가받지 않은 시스템에 쓰는 것은 불법이다. 이 문서는 검색 결과의 읽는 법만 다루며 익스플로잇 파일 경로와 실행 방법은 싣지 않는다.
+{% endhint %}
+
+{% hint style="info" %}
+NOTE: 원본은 검색 명령과 대상이 기록되지 않은 목록이다. 검색어로 보이는 `<` 패턴이 다수의 제품 이름과 섞여 있어 실제 대상 서비스와의 대응을 확인할 수 없다. 이 문서는 단편이다.
+{% endhint %}
+
+## 1. 도구 개요
+
+Searchsploit은 Exploit-DB의 오프라인 사본에서 제품·버전 이름으로 알려진 취약점 항목을 검색하는 명령줄 도구다. 서비스 버전(예: [SEC-SCN-004-REF](nmap_cybersploit_d.md)의 `VERSION` 열)을 검색어로 넣어 해당 버전에 공개된 취약점이 있는지 확인하는 데 쓴다. 방어자는 자기 서비스 버전이 알려진 취약점 목록에 있는지 점검하는 용도로도 쓴다.
+
+## 2. 출력 구조
+
+| 열 | 뜻 |
+|---|---|
+| `Exploit Title` | 제품, 영향 받는 버전 범위, 취약점 종류. 열 너비 제한으로 제목이 잘린다 |
+| `Path` | Exploit-DB 내 항목 위치. 이 문서에는 옮기지 않는다 |
+| 마지막 줄 `Shellcodes: No Results` | 셸코드 검색 결과가 없다는 뜻이다 |
+
+제목의 `<`는 "그 버전 미만이 영향을 받는다"는 뜻이다. 제목 끝의 유형 단어로 영향 범위를 가늠한다.
+
+| 제목의 유형 표현 | 뜻 |
+|---|---|
+| Remote Code Execution, Remote | 네트워크로 코드 실행이나 접근이 가능하다 |
+| Local Privilege Escalation, Local | 계정이 있는 상태에서 권한이 올라간다 |
+| Denial of Service, dos | 서비스 중단을 일으킨다 |
+| Information Disclosure, Memory Disclosure | 정보가 노출된다 |
+| Username Enumeration | 계정 존재 여부가 노출된다 |
+
+## 3. 이 출력에서 읽을 수 있는 정보
+
+원본은 약 85개 항목이다. 제품군별로 요약한다. 항목 하나하나의 번호나 경로는 적지 않는다.
+
+| 제품군 | 대표 제목(원문 일부) | 영향 유형 |
+|---|---|---|
+| Linux Kernel | 3.x~4.x 구간 다수 (Local Privilege Escalation, DoS, 정보 노출) | 로컬 권한 상승 위주 |
+| OpenSSH | 2.3 < 7.7 사용자 이름 열거, < 6.6 SFTP 명령 실행, < 7.4 에이전트 프로토콜 | 원격·로컬 혼재 |
+| PHP | < 4.4.5/5.2.1 shmop·세션 취약점 | 로컬 코드 실행 |
+| Samba | 3.5.0 < 4.4.14/4.5.10/4.6.4 | 원격 |
+| Exim | < 4.86.2 권한 상승, < 4.90.1 base64d 원격 코드 실행 | 로컬·원격 |
+| Oracle MySQL | < 5.1.49 DDL·BINLOG | DoS |
+| WordPress Core | < 4.7.4 비인가 비밀번호 재설정 | 웹 |
+| 기타 | AlienVault OSSIM, CyberArk, Dell EMC RecoverPoint, Nagios, Pi-hole, runc(Docker), Splunk, systemd, Vim, VirtualBox 등 | 제품별 |
+
+방어 관점의 읽는 법은 다음과 같다. 서비스 버전이 "< 버전"의 범위에 들어가면 해당 취약점의 영향을 받는다. [SEC-SCN-004-REF](nmap_cybersploit_d.md)의 Cybersploit 1 대상(OpenSSH 5.9p1, Apache 2.2.22)은 이 목록의 OpenSSH 범위(예: 7.7 미만)에 들어가는 오래된 버전이다. 단, 목록의 항목과 실제 대상이 일치하는지는 이 원본만으로 확인할 수 없다.
+
+## 4. 탐지·방어
+
+| 항목 | 내용 |
+|---|---|
+| 서버 로그의 흔적 | Searchsploit은 로컬 데이터베이스 검색이라 대상 서버에 아무 흔적을 남기지 않는다. 흔적은 이후 시도되는 공격(해당 서비스에 대한 비정상 요청)에서 나타난다 |
+| 방어 | 서비스 버전이 알려진 취약점 범위에 있는지 정기적으로 점검하고 패치한다. 패키지 관리자의 보안 업데이트를 적용하고 지원 종료 소프트웨어를 교체한다. 배너의 버전 노출을 줄이면 공격자가 검색어를 얻기 어렵다 (예: Apache `ServerTokens Prod`, OpenSSH `DebianBanner no`) |
+| 모니터링 | 취약점 관리 도구(CVE 매칭)로 자산의 버전 목록과 공개 취약점을 자동 대조한다 |
+
+## 5. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | AMM 형식 REF(단편)로 재구성. 익스플로잇 파일 경로 열과 항목별 목록을 제거하고 제품군 요약으로 대체 |

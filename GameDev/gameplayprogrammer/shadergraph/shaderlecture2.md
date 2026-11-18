@@ -1,8 +1,22 @@
 # 셰이더 강의 메모 (노멀맵, 툰 셰이딩)
 
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-SGR-003-DO |
+| 유형 | D&O (강의 메모) + REF 표 |
+| 목적 | 텍스처 좌표, 노멀맵, 툰 셰이딩, 색 혼합 연산을 설명한다 |
+| 확인 상태 | 미검증 (강의 메모를 정리한 것이며 Unity에서 구현해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
 셰이더 강의 두 번을 들으며 적은 메모다. 틀렸던 부분은 바로잡았다.
 
-## 강의 1: 텍스처 좌표와 노멀맵
+{% hint style="info" %}
+NOTE: Shader Graph와 HLSL의 URP·HDRP·Built-in 지원은 Unity 버전별로 다르다. 아래 효과(MatCap, 외곽선 패스, Renderer Feature)를 구현할 때 사용 중인 렌더 파이프라인 문서로 확인해야 한다(버전 확인 필요).
+{% endhint %}
+
+## 1. 강의 1: 텍스처 좌표와 노멀맵
 
 * UV, UVW: 텍스처 좌표. U·V는 텍스처의 가로·세로(0~1)이고, W는 3D 텍스처나 큐브맵에서 쓰는 세 번째 축이다.
 * XYZ: 공간 좌표
@@ -21,13 +35,17 @@
 * 마스크: 텍스처의 한 채널을 "어디에 효과를 줄지" 정하는 값으로 쓰는 것
 * 셀 셰이딩(툰 셰이딩): 명암을 몇 단계 색으로 끊어 만화처럼 칠하는 기법
 
-## 강의 2: 툰 셰이더와 라이팅
+수식 표기: UV는 `(u, v)`, 법선 인코딩은 `색 = 법선 × 0.5 + 0.5`, 디코딩은 `법선 = 색 × 2 − 1`이다. 디코딩 식은 원본에 없던 내용이다(확인 필요).
+
+## 2. 강의 2: 툰 셰이더와 라이팅
 
 툰 셰이더의 기본 요소
 
-* Specular reflection (반짝임)
-* Two tone Shading (명암 두 단계)
-* Rim Lighting (테두리 빛)
+| 요소 | 뜻 |
+|---|---|
+| Specular reflection | 반짝임 |
+| Two tone Shading | 명암 두 단계 |
+| Rim Lighting | 테두리 빛 |
 
 메모
 
@@ -54,13 +72,15 @@
 
 필요한 기능
 
-* 셀 셰이딩
-* 하이라이트 (그려 넣을지 결정)
-* 아웃라인
-* 림 라이트
-* 포인트 라이트 적용 여부
-* SDF 얼굴 그림자
-* 섀도우 마스크
+| 기능 | 결정할 것 |
+|---|---|
+| 셀 셰이딩 | |
+| 하이라이트 | 그려 넣을지 결정 |
+| 아웃라인 | |
+| 림 라이트 | |
+| 포인트 라이트 | 적용 여부 |
+| SDF 얼굴 그림자 | |
+| 섀도우 마스크 | |
 
 수학 용어
 
@@ -71,10 +91,11 @@ Shader Graph의 한계
 
 * Shader Graph는 패스를 하나만 만든다. 인버티드 헐 외곽선처럼 두 번째 패스가 필요한 효과는 머티리얼을 하나 더 쓰거나, Renderer Feature나 HLSL로 해결해야 한다.
 
-## 참고 링크
+## 3. 참조
 
-* https://github.com/unity3d-jp/UnityChanToonShaderVer2\_Project
-* https://techartnomad.tistory.com/
+* <https://github.com/unity3d-jp/UnityChanToonShaderVer2_Project> (유니티짱 툰 셰이더. 라이선스 확인 필요)
+* <https://techartnomad.tistory.com/>
+* [GMD-SGR-005-REF Shader Graph 핵심 노드 입출력 표](shadernodes.md)
 * [툰 셰이더 실습실 Day 07 · 툰 계단](../../toon-shader-lab/day07-toon-steps.md), [Day 12 · 림 라이트](../../toon-shader-lab/day12-rim-light.md), [Day 13 · 외곽선](../../toon-shader-lab/day13-outline-pass.md), [Day 16 · MatCap](../../toon-shader-lab/day16-matcap.md)
 * [툰 셰이더 공부 노트 Day 15 · 얼굴 SDF](../../toon-shader-study/day15-face-sdf.md), [Day 16 · 노멀맵과 미분](../../toon-shader-study/day16-normal-maps-and-derivatives.md)
 

@@ -1,70 +1,100 @@
 # 리눅스 비밀번호 암호화 구조
 
-## /etc/passwd
+## 작업 식별
 
-: 계정 정보가 저장된 파일
-
-{% code title="/etc/passwd" %}
-```shell
-root:x:0:0:root:/root:/bin/bash
-
-# 계정이름:비밀번호:UserID:GroupID:사용자이름:HomeDir:지정된 shell
-```
-{% endcode %}
-
-* UID, GID는 매우 중요하다.
-* 시스템에 따라 계정 생성 시 시작하는 값은 다르다. (500\~ 또는 1000\~)
-
-{% hint style="warning" %}
-UID, GID를 임의로 조작하여 0으로 변경하면 해당 user는 관리자 권한을 얻음으로 매우 주의해야 합니다.
-{% endhint %}
-
-***
-
-## /etc/shadow
-
-: [암호화](https://krjaeh0.gitbook.io/j-log/security/security/offensive-security/pentest/brute-force/brute-force-attack)(Encrypted)된 계정 비밀번호가 저장된 파일
-
-{% code title="/etc/shadow" %}
-```shell
-root:$6$dp4zP54GVKNmwh6C$Uo0nNEP1ogBK8hMc1QDxHh/dCGuqUHv6NxqXRNBzJMphTOPHx4kiDTpi8zk5iXMLSCSAlGyQFYFwAK8frQTFy.::0:99999:7:::
-
-# 계정이름:Password:LastChanged:Min:Max:Warning:InActive:로그인 금지 기간:Reserve
-```
-{% endcode %}
-
-* 총 9개의 필드로 구성
-* Password: 해당 계정의 비밀번호가 암호화 되어 저장됨
-* LastChanged: "1970년 1월 1일"부터 패스워드 수정 횟수를 기록하는 필드
-* Min/Max: 패스워드가 변경되기 전 최소 또는 최대 사용 가능한 기간(day)
-* Warning: 패스워드 기간 만료 전 경고 메시지를 출력하는 기간(day)
-* InActive: 접속 차단 기간 (day)
-* 로그인 금지 기간: Month/day/year 형태로 값을 입력, 해당 기간 동안 접속 불가능
-* Reserve: 예약된 필드
-
-***
-
-## salt
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-ACC-005-DO |
+| 유형 | D&O (개념·원리) |
+| 목적 | 리눅스가 비밀번호를 저장하는 방식(해시, salt, 알고리즘 식별자)을 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 직접 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="info" %}
-/etc/shadow 파일에 저장된 패스워드에 적용된 암호화([해싱](https://krjaeh0.gitbook.io/j-log/programming/cs_basics/data_representation/hashing-and-checksums/hashing)) 알고리즘 결과에 임의의 문자열을 추가해 같은 비밀번호를 사용하더라도 다른 암호화 결과가 나오도록 하는 기법
+NOTE: 이 문서는 개념 설명이다. 필드 표는 LNX-ACC-001-REF를, 정책 설정 절차는 LNX-ACC-011-MP를 따른다.
 {% endhint %}
 
-{% code title="예시 (/etc/shadow 일부)" %}
-```shell
-test:$6$3qbYuf1Yd.5HptnY$xAirZpuUJzS9ftdrWxjBJOK7xaEQp0xPCDNkPGPqhgvJxIVDQ8ZPioTjhf0jXJ13c3Q0nJp8oS5VHtzBHy5q51:19986:0:99999:7:::
-test1:$6$IjZ5ZEIVe1qvJi9G$k2W4sr9OkioC.KXNQbpxG8.QCa.pDiylXkYrAqhfYlYa04yPPTH2PF3u4jaal50fw.0LyAVB65n6I1xodZ3uX/:19986:0:99999:7:::
+## 1. 목적
 
-# test와 test1은 같은 비밀번호를 사용하지만 암호화된 패스워드는 달라진 이유
+리눅스는 비밀번호 원문을 저장하지 않고 **해시(hash)**를 `/etc/shadow`에 저장한다. 파일이 유출돼도 원문을 바로 알 수 없게 하기 위해서다. 이 문서는 저장 형식과 salt의 역할을 설명한다.
+
+## 2. 구성 요소
+
+| 번호 | 이름 | 위치 | 역할 |
+|---|---|---|---|
+| 1 | `/etc/passwd` | `/etc` | 계정 정보를 저장한다. 비밀번호 필드는 `x`이며 실제 값은 `/etc/shadow`에 있다는 표시다 |
+| 2 | `/etc/shadow` | `/etc` | 해시와 만료 정보를 저장한다. 일반 사용자는 읽을 수 없다 |
+| 3 | 해시 | shadow 2번째 필드 | 비밀번호와 salt로 계산한 값이다 |
+| 4 | salt | 해시 필드 안 | 비밀번호마다 붙이는 임의 문자열이다 |
+| 5 | `passwd`, `chpasswd` | `/usr/bin` | 새 비밀번호를 해시해 `/etc/shadow`에 기록한다 |
+| 6 | `ENCRYPT_METHOD` | `/etc/login.defs` | 해시 알고리즘을 정한다. RHEL 계열 기본값은 `SHA512`다 |
+
+## 3. 동작 원리
+
 ```
-{% endcode %}
+비밀번호 입력 > 임의 salt 생성 > (salt + 비밀번호)를 해시 > $6$<salt>$<해시> 형태로 shadow에 저장
+로그인 시: 입력값에 저장된 salt를 붙여 해시 > 저장된 해시와 비교
+```
 
-* $6$: 사이 값을 통해 사용된 해싱 알고리즘을 알 수 있다.
+shadow의 비밀번호 필드는 `$`로 세 부분을 나눈다.
 
-***
+```
+$6$<salt>$<해시>
+```
 
-## Permission
+| 부분 | 뜻 |
+|---|---|
+| `$6$` | 알고리즘 식별자. `6`은 SHA-512다 |
+| `<salt>` | 비밀번호마다 새로 만든 임의 문자열 |
+| `<해시>` | 계산 결과 |
 
-> \[!Note] 권한 관리는 시스템 보안에서 매우 중요한 사항이다. 시스템 해킹의 주요 목적은 관리자 권한을 빼앗아 시스템을 장악하는 것이 목적이기 때문이다. 그래서 이러한 권한을 어떻게 관리하고 운영 하는지 개념을 익히는 것이 필수이다.
+| 식별자 | 알고리즘 |
+|---|---|
+| `$1$` | MD5 |
+| `$5$` | SHA-256 |
+| `$6$` | SHA-512 |
+| `$y$` | yescrypt (Debian 12 이상, Ubuntu 22.04 이상 기본) |
 
-참고: Permission 관련 자세한 내용은 Permission.md를 참조하세요.
+### salt가 필요한 이유
+
+두 계정이 같은 비밀번호를 써도 salt가 다르면 해시가 다르다. 그래서 해시가 같은지 비교해 같은 비밀번호를 쓰는 계정을 찾을 수 없다. 미리 계산한 해시 표(레인보 테이블)로 한 번에 풀어내는 공격도 어려워진다.
+
+예: 계정 `<사용자명1>`과 `<사용자명2>`가 같은 비밀번호를 써도 두 줄의 `$6$` 뒤 salt와 해시는 서로 다르다.
+
+```shell
+<사용자명1>:$6$<salt1>$<해시1>:<LastChanged>:0:99999:7:::
+<사용자명2>:$6$<salt2>$<해시2>:<LastChanged>:0:99999:7:::
+```
+
+{% hint style="info" %}
+NOTE: `!` 또는 `!!`로 시작하는 필드는 잠긴 계정이나 비밀번호가 없는 계정이다. 해시가 아니다.
+{% endhint %}
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| 해시(hash) | 입력을 고정 길이 값으로 바꾸는 일방향 계산. 결과에서 원문을 되돌릴 수 없다. [해싱](../../../Programming/cs_basics/data_representation/hashing-and-checksums/hashing.md) 참조 |
+| salt | 같은 입력이 같은 해시가 되지 않게 섞는 임의 값 |
+| SHA-512 | 512비트 해시 알고리즘 |
+| 레인보 테이블 | 미리 계산해 둔 해시 조회 표 |
+| 무차별 대입 | 가능한 값을 모두 시도하는 공격. [무차별 대입 공격](../../../Security/security/offensive-security/pentest/brute-force/brute-force-attack.md) 참조 |
+
+권한 관리는 이 문서와 별개 주제다. LNX-ACC-008-DO를 따른다.
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [사용자 계정 관리 설정 파일](account-management.md) | LNX-ACC-001-REF | passwd, shadow 필드 표 |
+| [파일 및 디렉터리 접근 권한](permission.md) | LNX-ACC-008-DO | 권한 개념 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 비밀번호를 원문이 아니라 해시로 저장하면 어떤 점이 안전해질까?
+- [ ] 두 사용자가 같은 비밀번호를 써도 shadow의 해시가 다른 이유를 salt로 설명해 보자.
+- [ ] `$6$`을 보고 알 수 있는 것은 무엇이고, 이 정보가 공개돼도 괜찮을까?

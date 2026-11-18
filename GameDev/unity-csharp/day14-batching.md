@@ -1,17 +1,43 @@
 # Day 14 · 배칭 🎮
 
-> 3주차 렌더링과 측정 · 60분 · 준비물: 🎮 Unity 6 (`practice/UnityLab`, URP)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-015-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | Static Batching, Dynamic Batching, SRP Batcher, GPU Instancing이 줄이는 대상과 대가를 비교한다. |
+| 적용 대상 | Unity 6 (URP), `practice/UnityLab` |
+| 소요 시간 | 60분 (3주차 렌더링과 측정) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="info" %}
+NOTE: 준비물: 🎮 Unity 6 (`practice/UnityLab`, URP)
+{% endhint %}
+
+## 1. 학습 목표
+
 - 정적 배칭(`Static Batching`), 동적 배칭(`Dynamic Batching`), `SRP Batcher`, `GPU Instancing`이 각각 무엇을 줄이고 어떤 비용을 치르는지 비교할 수 있다.
 - 왜 URP에서 `MaterialPropertyBlock`을 쓰면 오히려 느려질 수 있는지 `SRP Batcher`의 원리로 설명할 수 있다.
 - Frame Debugger의 배칭 실패 사유(`Why this draw call can't be batched with the previous one`)를 읽고 원인을 고칠 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| Static Batching | `Batching Static` 체크한 오브젝트 | 정적 메시를 월드 좌표로 합쳐 드로우 콜을 줄인다. 메모리가 늘어난다 |
+| Dynamic Batching | 작은 메시 | 매 프레임 CPU가 합쳐 드로우 콜을 줄인다. URP 기본 꺼짐 |
+| SRP Batcher | URP 기본 기능, URP Asset | 같은 셰이더 variant의 머티리얼 데이터를 GPU 상수 버퍼에 유지해 `SetPass` 비용을 줄인다 |
+| GPU Instancing | 머티리얼의 `Enable GPU Instancing`, `Graphics.RenderMeshInstanced` | 같은 메시·같은 머티리얼을 한 드로우로 그린다 |
+| `GPU Resident Drawer` | Unity 6, `Forward+` 경로 | `BatchRendererGroup` 기반으로 `MeshRenderer`를 자동 인스턴싱한다 |
+| `MaterialPropertyBlock` | `Renderer.SetPropertyBlock` | 인스턴스별 값을 주지만 SRP Batcher에서 빠지게 만든다 |
+| `Sprite Atlas` / `Canvas` 분리 | UI·2D | 텍스처를 한 장으로 묶고 동적 UI와 정적 UI의 리빌드 범위를 나눈다 |
+| Frame Debugger | `Window > Analysis > Frame Debugger` | 배칭이 끊긴 사유를 보여 준다 |
 
-### 1-1. 배칭의 진짜 목적: 드로우당 CPU 비용 줄이기
+## 3. 동작 원리
+
+### 3-1. 배칭의 진짜 목적: 드로우당 CPU 비용 줄이기
 
 Day 13에서 봤듯이 드로우가 많을 때의 병목은 GPU가 아니라 **CPU가 상태를 바꾸고(`SetPass call`) 드로우를 제출하는 비용**이다. 배칭 기법들은 모두 이 CPU 비용을 줄이려 하지만, 줄이는 대상이 서로 다르다.
 
@@ -22,12 +48,12 @@ Day 13에서 봤듯이 드로우가 많을 때의 병목은 GPU가 아니라 **C
 | **SRP Batcher** | **`SetPass` 상태 전환 비용** (드로우 콜 수는 안 줄임) | 호환 셰이더(`UnityPerMaterial` 상수 버퍼 규격), **같은 셰이더 variant** | 메시/머티리얼이 달라도 되지만 `MaterialPropertyBlock` 사용 시 깨짐 |
 | **GPU Instancing** | 드로우 콜 수 | **같은 메시 + 같은 머티리얼**(인스턴스별 프로퍼티 가능) | 메시 종류가 다양하면 효과가 작음. SRP Batcher 대상이면 SRP Batcher가 우선됨 |
 
-### 1-2. Static Batching과 Dynamic Batching
+### 3-2. Static Batching과 Dynamic Batching
 
 - **Static Batching**: 빌드 시점(또는 런타임 초기화 시점)에 움직이지 않는 오브젝트들의 메시를 월드 좌표로 변환해 큰 공유 정점·인덱스 버퍼로 합친다. 같은 머티리얼을 쓰는 정적 오브젝트들을 한 번(또는 적은 횟수)의 드로우로 그린다. 단, 똑같은 나무 프리팹 100개를 배치하면 나무 정점 데이터가 100벌 복사되어 **메모리를 크게 먹는다**.
 - **Dynamic Batching**: 움직이는 작은 메시들을 매 프레임 CPU에서 합쳐 그린다. 정점 수 제한(보통 정점 속성 900개 이하, 즉 일반 셰이더 기준 정점 300개 이하)이 빡빡하고, 현대 그래픽스 API에서는 합치는 CPU 비용이 드로우 제출 비용보다 클 때가 많아 URP에서는 기본으로 꺼져 있으며 거의 권장하지 않는다.
 
-### 1-3. SRP Batcher: 드로우 수는 그대로, 상태 전환만 공짜에 가깝게
+### 3-3. SRP Batcher: 드로우 수는 그대로, 상태 전환만 공짜에 가깝게
 
 URP의 기본이자 가장 중요한 최적화다. `SRP Batcher`는 메시를 합치지 않아서 **드로우 콜 자체의 개수는 줄이지 않는다.** 대신 머티리얼 프로퍼티를 GPU의 영속 상수 버퍼(`persistent CBUFFER`, `UnityPerMaterial`)에 미리 올려 두고, 오브젝트별 행렬도 큰 GPU 버퍼(`UnityPerDraw`)에 모아 둔다.
 
@@ -36,7 +62,7 @@ URP의 기본이자 가장 중요한 최적화다. `SRP Batcher`는 메시를 �
 **함정 — `MaterialPropertyBlock`과의 충돌**:
 과거 Built-in 파이프라인에서는 머티리얼 인스턴스를 늘리지 않고 색상을 바꾸려고 `Renderer.SetPropertyBlock(mpb)`을 즐겨 썼다. 하지만 URP에서 렌더러에 `MaterialPropertyBlock`을 붙이면 그 오브젝트는 영속 CBUFFER 경로를 탈 수 없어 **`SRP Batcher`에서 즉시 탈락**한다. 오브젝트마다 색이 조금씩 다르다면 차라리 같은 셰이더를 쓰는 별도 머티리얼 에셋(또는 인스턴스)을 쓰거나, 대량 복제라면 GPU Instancing을 쓰는 편이 낫다.
 
-### 1-4. GPU Instancing과 Unity 6의 GPU Resident Drawer
+### 3-4. GPU Instancing과 Unity 6의 GPU Resident Drawer
 
 `GPU Instancing`은 **같은 메시와 같은 머티리얼**을 쓰는 오브젝트 수백~수천 개를 단 한 번의 드로우 콜로 그린다. 위치·회전·색상 같은 인스턴스별 데이터는 배열 버퍼로 묶어 보낸다.
 
@@ -45,13 +71,17 @@ URP의 기본이자 가장 중요한 최적화다. `SRP Batcher`는 메시를 �
 2. 셰이더를 SRP Batcher 비호환으로 만들거나(비권장),
 3. Unity 6의 **`GPU Resident Drawer`**를 사용한다.
 
+{% hint style="info" %}
+NOTE: `GPU Resident Drawer`는 Unity 6에서 도입된 기능이다. 사용 조건(`Forward+`, 프로젝트 설정)과 지원 플랫폼은 버전마다 다를 수 있어 버전 확인 필요.
+{% endhint %}
+
 **Unity 6 `GPU Resident Drawer`**: `BatchRendererGroup(BRG)` 위에 구축된 기능으로, `Forward+` 렌더링 경로에서 씬의 정적·동적 `MeshRenderer`를 자동으로 인스턴싱해 GPU 주도(`GPU-driven`)로 그린다. 수동으로 API를 호출하거나 메시를 합치지 않아도 같은 메시를 공유하는 오브젝트들의 드로우 콜과 CPU 제출 비용을 크게 줄여 준다.
 
-### 1-5. UI와 2D 스프라이트 배칭
+### 3-5. UI와 2D 스프라이트 배칭
 
 2D와 `uGUI`는 메커니즘이 조금 다르다. UI는 `Canvas` 단위로 하위 요소들의 메시를 매번 합쳐서(리빌드, `Canvas rebuild`) 배칭한다. 이때 서로 다른 텍스처를 쓰거나 그리기 순서상 다른 텍스처가 사이에 끼면 배칭이 깨진다. 그래서 UI 아이콘과 2D 스프라이트는 **`Sprite Atlas`**로 한 장의 텍스처에 묶어야 `SetPass`와 드로우가 줄어든다. 또한 매 프레임 바뀌는 텍스트·체력바와 가만히 있는 배경 UI를 한 `Canvas`에 두면 전체 메시를 다시 합치느라 CPU가 낭비되므로 **동적 UI와 정적 UI의 `Canvas`를 분리**한다.
 
-### 1-6. Frame Debugger에서 배칭이 깨진 이유 읽기
+### 3-6. Frame Debugger에서 배칭이 깨진 이유 읽기
 
 Frame Debugger에서 `SRP Batch`나 `Dynamic Batch`, `Draw Mesh (Instanced)` 항목을 누르면 오른쪽 상단에 **`Why this draw call can't be batched with the previous one`** 문구가 나온다. 자주 나오는 사유는 다음과 같다(정확한 문구는 Unity 버전마다 조금 다르다).
 
@@ -60,11 +90,22 @@ Frame Debugger에서 `SRP Batch`나 `Dynamic Batch`, `Draw Mesh (Instanced)` 항
 - `Objects have different Materials / Meshes`: 정적·동적 배칭이나 인스턴싱에서 머티리얼 또는 메시가 달라 묶이지 못했다.
 - `Lightmapped objects use different lightmaps`: 라이트맵 텍스처 인덱스가 달라 배칭이 나뉘었다.
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 배칭(batching) | 드로우 제출 비용을 줄이려고 드로우를 묶는 기법 |
+| `UnityPerMaterial` / `UnityPerDraw` | SRP Batcher가 쓰는 상수 버퍼 구조 이름 |
+| `CBUFFER` | GPU 상수 버퍼(constant buffer) |
+| `BatchRendererGroup` (BRG) | 사용자 데이터로 배치를 직접 구성하는 Unity API. `GPU Resident Drawer`의 기반 |
+| variant | 키워드 조합에 따라 컴파일되는 셰이더 변형 (Day 16) |
+| `Sprite Atlas` | 여러 스프라이트를 한 텍스처로 묶은 에셋 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: 이 절은 AI, 자동완성, 검색 없이 진행한다. 막히면 3절로 돌아간다.
+{% endhint %}
 
 ### 실습 1: 배칭 방식별 수치 비교와 MaterialPropertyBlock 함정 확인 (20분)
 
@@ -163,11 +204,9 @@ public class BatchingLab : MonoBehaviour
 1. `SharedMaterial`일 때 `SRP Batcher`를 끄면 대신 어떤 배칭이 동작하는가? (`Enable GPU Instancing`이 켜져 있을 때)
 2. `SeparateMaterialInstances`일 때 `SRP Batcher`를 끄면 `Batches`와 `SetPass calls`가 어떻게 폭증하는가?
 
----
+## 6. 확인 문제
 
-## 3. 면접 대비 (10분)
-
-소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
+소리 내어 30초 안에 답해 본 뒤 펼쳐서 비교한다.
 
 **Q1. SRP Batcher와 GPU Instancing의 차이를 설명해 주세요.**
 <details><summary>모범 답안</summary>
@@ -193,13 +232,21 @@ uGUI는 같은 `Canvas` 안에서 머티리얼과 텍스처가 같고 깊이 순
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [SRP Batcher (Unity 공식 문서)](https://docs.unity3d.com/Manual/SRPBatcher.html)
 - [GPU Instancing (Unity 공식 문서)](https://docs.unity3d.com/Manual/GPUInstancing.html)
 - [GPU Resident Drawer (Unity 6 공식 문서)](https://docs.unity3d.com/Manual/urp/gpu-resident-drawer.html)
 - [정적 배칭과 동적 배칭 (Unity 공식 문서)](https://docs.unity3d.com/Manual/DrawCallBatching.html)
+
+이전: [Day 13 · 렌더링 파이프라인 한 바퀴 🎮](day13-rendering-pipeline.md) · 다음: [Day 15 · 오버드로우, 투명, 컬링 🎮](day15-overdraw-culling.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장으로 적는다.
+- [ ] 같은 색만 다른 오브젝트 200개를 URP에서 그릴 때 어떤 방식을 고르고 왜 그렇게 고르는지 내 말로 설명하면?
+- [ ] 내 프로젝트에서 배칭이 끊긴 사유를 Frame Debugger로 본 적이 있다면, 무엇이었는가?

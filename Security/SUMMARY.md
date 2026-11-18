@@ -51,6 +51,7 @@
     * [정적 분석 (Static Analysis)](security/malware-and-reversing/overview/staticanalysis.md)
     * [코드 난독화 (Obfuscation)](security/malware-and-reversing/overview/obfuscation.md)
     * [FLARE VM 분석 환경 구축](security/malware-and-reversing/overview/flare.md)
+    * [PE 구조와 분석 도구](security/malware-and-reversing/overview/petools.md)
     * [동적 분석 (Dynamic Analysis)](security/malware-and-reversing/overview/dynamicanalysis.md)
     * [소프트웨어 분석 방법 (Analysis)](security/malware-and-reversing/overview/analysis.md)
 * [보안 도구 (Tools)](security/tools/README.md)
@@ -120,19 +121,20 @@
 * [Kali Linux 버추얼박스 설정](setup-and-environments/kalilinuxsetupforvirtualbox.md)
 * [Metasploitable3 Windows 2008](setup-and-environments/metasploitable3-win2k8.md)
 * [PMM 모니터링 서버 구축](setup-and-environments/pmmserver.md)
+* [PMM 에이전트 설정](setup-and-environments/pmmagent.md)
 
 ## Archive
 
-* [Webhacking.kr: old 1](archive/old-1.md)
-* [Webhacking.kr: old 2](archive/old-2.md)
-* [Webhacking.kr: old 4](archive/old-4.md)
-* [Webhacking.kr: old 5](archive/old-5.md)
-* [Webhacking.kr: old 6](archive/old-6.md)
-* [Webhacking.kr: old 15](archive/old-15.md)
-* [Webhacking.kr: old 16](archive/old-16.md)
-* [Webhacking.kr: old 26](archive/old-26.md)
-* [Webhacking.kr: old 31](archive/old-31.md)
-* [Webhacking.kr: old 39](archive/old-39.md)
+* [Webhacking.kr old 1: 쿠키 값 검사 분석](archive/old-1.md)
+* [Webhacking.kr old 2: 쿠키와 블라인드 SQL 인젝션](archive/old-2.md)
+* [Webhacking.kr old 4: 반복 해시와 사전 계산 표](archive/old-4.md)
+* [Webhacking.kr old 5: 난독화된 클라이언트 검사 우회](archive/old-5.md)
+* [Webhacking.kr old 6: 반복 Base64 쿠키 조작](archive/old-6.md)
+* [Webhacking.kr old 15: 자바스크립트 비활성화로 소스 확인](archive/old-15.md)
+* [Webhacking.kr old 16: 키 입력 이벤트 분석](archive/old-16.md)
+* [Webhacking.kr old 26: 이중 URL 인코딩 우회](archive/old-26.md)
+* [Webhacking.kr old 31: 포트포워딩 필요](archive/old-31.md)
+* [Webhacking.kr old 39: 문자열 길이 제한과 SQL 이스케이프](archive/old-39.md)
 
 ## OWASP Top10
 

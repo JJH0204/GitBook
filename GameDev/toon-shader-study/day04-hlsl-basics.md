@@ -1,130 +1,142 @@
 # Day 04. HLSL 문법 기초 — GPU의 말 배우기
 
-> ⏱ **약 1시간** — 읽기 30분 · 코드 따라 읽기 15분 · 해보기 15분
-> 🧸 **오늘의 비유**: `struct`는 **택배 상자**, 시맨틱은 **상자 칸의 이름표**예요.
+## 작업 식별
 
-## 오늘 배울 것
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSS-005-DO |
+| 유형 | D&O (개념) + 코드 읽기 |
+| 목적 | HLSL 자료형, 스위즐, 입출력 구조체와 시맨틱, 전처리기, `CBUFFER`, 자주 쓰는 내장 함수를 설명한다 |
+| 소요 시간 | 약 1시간 (읽기 30분, 코드 읽기 15분, 실습 15분) |
+| 선수 지식 | [Day 02](day02-coordinate-spaces.md), [Day 03](day03-shaderlab-skeleton.md) |
+| 확인 상태 | 미검증 (소스를 읽고 작성했으며 Unity에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-- [ ] `float` / `half` / `float3` / `half4` 같은 자료형을 읽을 수 있다
+비유: `struct`는 택배 상자이고, 시맨틱은 상자 칸의 이름표다.
+
+## 학습 목표
+
+- [ ] `float`, `half`, `float3`, `half4` 같은 자료형을 읽을 수 있다
 - [ ] 스위즐(`.xyz`, `.rgb`, `.xz`)로 값을 꺼낼 수 있다
-- [ ] `Attributes` / `Varyings` 구조체와 시맨틱의 역할을 안다
+- [ ] `Attributes`, `Varyings` 구조체와 시맨틱의 역할을 안다
 - [ ] `#include`, `#ifndef`, `#define`, `#if defined()`를 읽을 수 있다
 - [ ] 자주 나오는 내장 함수 10개를 안다
 
----
+## 1. 정의
 
-## 1. 숫자 상자: 자료형
+{% hint style="info" %}
+NOTE: HLSL(High-Level Shading Language)은 GPU 코드를 작성하는 C 계열 언어다. 데이터는 메시 → 버텍스 셰이더 → 프래그먼트 셰이더 순서로 구조체에 담겨 전달되고, 구조체 멤버에 붙은 시맨틱이 각 칸의 용도를 GPU에 알려 준다.
+{% endhint %}
 
-| 자료형 | 비유 | 쓰는 곳 |
+## 2. 구성 요소
+
+### 2.1 자료형
+
+| 자료형 | 의미 | 쓰는 곳 |
 |---|---|---|
-| `float` | 눈금이 아주 촘촘한 **정밀한 자** (32비트) | 위치, 깊이, UV처럼 정확해야 하는 값 |
-| `half` | 눈금이 듬성한 **대충 자** (16비트) | 색, 노멀, 밝기처럼 0~1 근처 값. 모바일에서 더 빠름 |
-| `float3`, `half3` | 숫자 **3개 묶음** | 위치 `xyz`, 색 `rgb`, 방향 |
-| `float4`, `half4` | 숫자 **4개 묶음** | 색+투명도 `rgba`, 클립 좌표 `xyzw` |
-| `float2` | 숫자 2개 | UV 좌표 |
-| `float3x3`, `float4x4` | 숫자 표(행렬) | 좌표 변환 기계 (Day 02) |
+| `float` | 32비트 부동소수점 | 위치, 깊이, UV처럼 정밀도가 필요한 값 |
+| `half` | 16비트 부동소수점 | 색, 노멀, 밝기처럼 0~1 근처 값 |
+| `float2` | 숫자 2개 | UV |
+| `float3`, `half3` | 숫자 3개 | 위치 `xyz`, 색 `rgb`, 방향 |
+| `float4`, `half4` | 숫자 4개 | 색+투명도 `rgba`, 클립 좌표 `xyzw` |
+| `float3x3`, `float4x4` | 행렬 | 좌표 변환 (Day 02) |
 
-이 셰이더 패키지는 **위치는 `float`, 색과 빛은 `half`** 규칙을 지켜요. 숫자 뒤의 `h`(예: `1.0h`, `0.5h`)는 "이건 `half` 숫자예요"라는 표시예요.
+이 패키지는 위치는 `float`, 색과 빛은 `half`를 쓴다. 숫자 뒤의 `h`(`1.0h`, `0.5h`)는 half 리터럴 표시다.
 
-## 2. 레고 블록 꺼내기: 스위즐(Swizzle)
+{% hint style="info" %}
+NOTE: `half`의 실제 정밀도는 플랫폼에 따라 다르다. 모바일 GPU는 16비트로 처리해 빠르지만 많은 데스크톱 GPU는 `half`를 32비트로 처리한다. 이 경우 정밀도와 속도 차이가 없다.
+{% endhint %}
 
-`float4 v = (1, 2, 3, 4);`가 있으면 점(`.`) 뒤에 글자를 붙여서 원하는 칸만 꺼낼 수 있어요.
-
-```hlsl
-v.x      // 1
-v.xyz    // (1, 2, 3)
-v.xz     // (1, 3)       ← 높이(y) 빼고 바닥 평면만!
-v.zyx    // (3, 2, 1)    ← 순서도 바꿀 수 있어요
-v.xxx    // (1, 1, 1)    ← 같은 칸을 여러 번
-v.rgb    // xyz와 같아요. 색을 다룰 땐 rgba라고 쓰는 게 읽기 좋아요
-```
-
-실제 예: 얼굴 그림자는 빛을 **바닥 평면(XZ)** 에 눌러서 써요. [CharacterToon.shader L372](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L372)
-
-```hlsl
-float2 lightXZ = SafeNormalizeXZ(L.xz, float2(0.0, 1.0));   // 빛 방향에서 x와 z만 꺼냄
-```
-
-## 3. 택배 상자: Attributes와 Varyings
-
-데이터는 **메시 → 버텍스 셰이더 → 프래그먼트 셰이더**로 택배처럼 전달돼요. 상자가 두 개 있어요.
+### 2.2 구조체와 시맨틱
 
 [CharacterToon.shader L256–270](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L256-L270)
 
 ```hlsl
-struct Attributes                      // 📦 상자 1: 메시 창고 → 버텍스 셰이더
+struct Attributes                      // 상자 1: 메시 → 버텍스 셰이더
 {
-    float4 positionOS : POSITION;      //   칸 이름표 POSITION = "정점 위치를 여기 넣어 주세요"
-    float3 normalOS   : NORMAL;        //   NORMAL = "노멀"
-    float2 uv         : TEXCOORD0;     //   TEXCOORD0 = "첫 번째 UV"
+    float4 positionOS : POSITION;      //   POSITION = 정점 위치
+    float3 normalOS   : NORMAL;        //   NORMAL = 노멀
+    float2 uv         : TEXCOORD0;     //   TEXCOORD0 = 첫 번째 UV
 };
 
-struct Varyings                        // 📦 상자 2: 버텍스 셰이더 → 프래그먼트 셰이더
+struct Varyings                        // 상자 2: 버텍스 셰이더 → 프래그먼트 셰이더
 {
-    float4 positionCS : SV_POSITION;   //   SV_ = 시스템이 쓰는 특별 칸. 화면 위치 (필수!)
-    float2 uv         : TEXCOORD0;     //   여기부터는 우리 마음대로 쓰는 칸
+    float4 positionCS : SV_POSITION;   //   SV_ = 시스템 값. 화면 위치 (필수)
+    float2 uv         : TEXCOORD0;     //   여기부터는 임의 데이터 칸
     float3 normalWS   : TEXCOORD1;
     float3 positionWS : TEXCOORD2;
     half   fogFactor  : TEXCOORD3;
 };
 ```
 
-**콜론(`:`) 뒤의 대문자가 시맨틱(이름표)** 이에요.
+| 구조체 | 시맨틱 | 의미 |
+|---|---|---|
+| `Attributes` | `POSITION`, `NORMAL`, `TANGENT`, `COLOR`, `TEXCOORD0~7` | 메시의 어느 데이터를 이 멤버에 넣을지 지정 |
+| `Varyings` | `SV_POSITION` | 클립 공간 위치. 버텍스 셰이더의 필수 출력 |
+| `Varyings` | `TEXCOORD1, 2, 3...` | 보간할 임의 데이터 칸. 이름과 달리 UV가 아니어도 된다 |
+| 프래그먼트 함수 | `: SV_TARGET` | 반환값이 최종 렌더 타깃 색 |
 
-- `Attributes`의 이름표는 "메시의 **어떤 데이터**를 이 칸에 넣을지" 알려 줘요. `POSITION`, `NORMAL`, `TANGENT`, `COLOR`, `TEXCOORD0~7`.
-- `Varyings`의 `TEXCOORD1, 2, 3…`은 그냥 **칸 번호**예요. 이름은 TEXCOORD지만 UV가 아니어도 돼요.
-- 프래그먼트 함수 끝의 `: SV_TARGET`은 "이 함수가 돌려주는 값이 **최종 색**이에요"라는 뜻이에요.
+{% hint style="info" %}
+NOTE: 프래그먼트 셰이더에서 `SV_POSITION` 입력은 클립 좌표가 아니라 화면 픽셀 좌표(`xy`는 픽셀 위치)다. 버텍스 단계의 출력은 클립 공간 값이고, 래스터라이저를 거치면서 값의 의미가 바뀐다.
+{% endhint %}
 
-### 상자 2는 "섞여서" 도착해요
+## 3. 동작 원리
 
-버텍스 셰이더는 삼각형의 **꼭짓점 3개**에서만 실행돼요. 그런데 프래그먼트 셰이더는 그 안의 **수많은 픽셀**에서 실행되죠. 픽셀에 도착하는 `Varyings` 값은 GPU가 세 꼭짓점 값을 **거리에 따라 섞어서** 만들어 줘요. 이걸 **보간**(interpolation)이라고 해요.
+### 3.1 스위즐
+
+`float4 v = (1, 2, 3, 4);`에서 점 뒤에 성분 이름을 붙여 원하는 칸만 꺼낸다.
+
+| 식 | 결과 | 설명 |
+|---|---|---|
+| `v.x` | 1 | 한 성분 |
+| `v.xyz` | (1, 2, 3) | 앞 세 성분 |
+| `v.xz` | (1, 3) | 높이(y)를 빼고 바닥 평면 성분만 |
+| `v.zyx` | (3, 2, 1) | 순서 변경 |
+| `v.xxx` | (1, 1, 1) | 같은 성분 반복 |
+| `v.rgb` | (1, 2, 3) | `xyz`와 같다. 색에는 `rgba` 표기가 읽기 좋다 |
+
+{% hint style="warning" %}
+CAUTION: 한 스위즐에서 `xyzw` 계열과 `rgba` 계열을 섞어 쓰면 컴파일 오류가 난다(`v.xg` 불가).
+{% endhint %}
+
+실제 예: 얼굴 그림자는 빛 방향을 바닥 평면(XZ)에 투영해 쓴다. [CharacterToon.shader L372](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L372)
+
+```hlsl
+float2 lightXZ = SafeNormalizeXZ(L.xz, float2(0.0, 1.0));   // 빛 방향에서 x와 z만 꺼냄
+```
+
+### 3.2 보간
+
+버텍스 셰이더는 삼각형 꼭짓점에서만 실행되지만 프래그먼트 셰이더는 삼각형 안의 모든 픽셀에서 실행된다. `Varyings` 값은 래스터라이저가 세 꼭짓점 값을 무게중심 좌표로 섞어 픽셀마다 만든다(원근 보정 보간). 이것을 보간(interpolation)이라 한다.
 
 ![정점 보간](../.gitbook/assets/concept-interpolation.png)
 
 {% hint style="warning" %}
-길이가 1인 노멀 두 개를 섞으면 **길이가 1보다 짧아져요**. 그래서 프래그먼트 셰이더 첫머리에서 노멀을 꼭 다시 `normalize` 해요. [L302](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L302): `half3 N = normalize(input.normalWS);`
+CAUTION: 길이가 1인 노멀 두 개를 섞으면 길이가 1보다 짧아진다. 프래그먼트 셰이더 첫머리에서 노멀을 다시 `normalize`한다. [L302](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L302): `half3 N = normalize(input.normalWS);`
 {% endhint %}
 
-## 4. 전처리기: 코드를 붙이고 고르는 가위풀
+### 3.3 전처리기
 
-`#`으로 시작하는 줄은 **컴파일 전에** 처리돼요. 코드를 자르고 붙이는 가위풀이에요.
+`#`로 시작하는 줄은 컴파일 전에 처리된다.
 
-| 명령 | 비유 | 예 |
+| 명령 | 의미 | 예 |
 |---|---|---|
-| `#include "파일"` | **공구함 가져오기**. 그 파일 내용을 여기에 통째로 붙여 넣음 | `#include "../ShaderLibrary/ToonInput.hlsl"` |
-| `#ifndef X` … `#define X` … `#endif` | **중복 방지 스티커**. "이미 가져왔으면 또 가져오지 마" | 모든 `.hlsl` 파일의 첫 두 줄과 끝 |
-| `#define 이름 값` | 이름 붙인 상수 | `#define CHARACTER_EXTRA_LIGHT_MAX 3` |
-| `#if defined(키워드)` … `#endif` | **스위치**. 키워드가 꺼져 있으면 이 코드는 아예 없는 것 | `#if defined(_USE_RIM)` |
-| `#pragma` | 컴파일러에게 하는 부탁 | `#pragma vertex vert` |
+| `#include "파일"` | 그 파일 내용을 그 자리에 붙여 넣는다 | `#include "../ShaderLibrary/ToonInput.hlsl"` |
+| `#ifndef X` / `#define X` / `#endif` | 중복 포함 방지 (include guard) | 모든 `.hlsl` 파일의 첫 두 줄과 끝 |
+| `#define 이름 값` | 상수 매크로 | `#define CHARACTER_EXTRA_LIGHT_MAX 3` |
+| `#if defined(키워드)` / `#endif` | 키워드가 꺼져 있으면 그 코드는 컴파일되지 않는다 | `#if defined(_USE_RIM)` |
+| `#pragma` | 컴파일러 지시 | `#pragma vertex vert` |
 
-[ToonRim.hlsl](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/ToonShared/ShaderLibrary/ToonRim.hlsl)의 처음과 끝을 보면 중복 방지 스티커가 보여요.
+[ToonRim.hlsl](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/ToonShared/ShaderLibrary/ToonRim.hlsl)의 중복 방지 구조다.
 
 ```hlsl
-#ifndef TOONSHARED_RIM_INCLUDED     // 아직 스티커가 없으면
-#define TOONSHARED_RIM_INCLUDED     //   스티커를 붙이고
+#ifndef TOONSHARED_RIM_INCLUDED     // 아직 정의돼 있지 않으면
+#define TOONSHARED_RIM_INCLUDED     //   정의하고
 ...                                 //   내용을 넣는다
-#endif                              // 이미 있었으면 통째로 건너뜀
+#endif                              // 이미 정의돼 있었으면 통째로 건너뛴다
 ```
 
-## 5. 함수 하나 통째로 읽기
-
-[ToonRim.hlsl L10–15](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/ToonShared/ShaderLibrary/ToonRim.hlsl#L10-L15) — 17줄짜리 파일의 전부예요.
-
-```hlsl
-half3 ToonRim(half3 N, half3 V, half threshold, half softness, half3 rimColor, half intensity)
-{
-    half fresnel = 1.0h - saturate(dot(N, V));
-    half rim = smoothstep(threshold, threshold + max(softness, 1e-4h), fresnel);
-    return rim * rimColor * intensity;
-}
-```
-
-- 첫 줄: `돌려줄 자료형  함수이름(재료1, 재료2, ...)`
-- `dot`, `saturate`, `smoothstep`, `max`는 HLSL **내장 함수**예요. (의미는 Day 06, 07, 11에서 배워요.)
-- `1e-4h` = 0.0001 (half). "0이 되지 않게 아주 작은 바닥을 깔아 둔다"는 뜻이에요. 0으로 나누면 결과가 망가지거든요.
-- `half3 * half3`은 **칸끼리 곱하기**예요. `(r1, g1, b1) * (r2, g2, b2) = (r1·r2, g1·g2, b1·b2)`. 색에 색을 곱하면 "필터를 씌운" 색이 돼요.
-
-## 6. 머티리얼 값 상자: CBUFFER
+### 3.4 머티리얼 값 상자: CBUFFER
 
 [ToonInput.hlsl L34–178](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L34-L178)
 
@@ -136,44 +148,79 @@ CBUFFER_START(UnityPerMaterial)
 CBUFFER_END
 ```
 
-머티리얼의 숫자·색 값을 **한 상자에 모아** GPU에 넘겨요. 텍스처는 상자에 못 넣어서 위쪽에 따로 선언해요([L13–31](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L13-L31)).
+머티리얼의 숫자·색 값을 한 상수 버퍼(`UnityPerMaterial`)에 모아 GPU에 넘긴다. 텍스처와 샘플러는 상수 버퍼에 넣을 수 없어 별도로 선언한다([L13–31](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L13-L31)).
 
 {% hint style="warning" %}
-[L4–5 주석](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L4-L5)에 "모든 패스가 이 파일 하나만 include 한다"고 적혀 있어요. **모든 패스의 상자 모양이 똑같아야** Unity의 SRP Batcher라는 속도 장치가 작동하거든요. 그래서 상자 내용은 이 파일 한 곳에서만 정해요. (Day 20에서 자세히)
+CAUTION: [L4–5 주석](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L4-L5)대로 모든 패스가 이 파일 하나만 include한다. SRP Batcher는 같은 셰이더의 모든 패스에서 `UnityPerMaterial` 상수 버퍼의 구성이 동일하고 Properties의 모든 값이 그 안에 있어야 호환된다. 상자 내용은 이 한 곳에서만 정의한다(Day 20).
 {% endhint %}
 
-## 7. 자주 나오는 내장 함수 10개
+## 4. 코드 읽기
 
-| 함수 | 비유 / 뜻 | 예 |
+[ToonRim.hlsl L10–15](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/ToonShared/ShaderLibrary/ToonRim.hlsl#L10-L15)
+
+```hlsl
+half3 ToonRim(half3 N, half3 V, half threshold, half softness, half3 rimColor, half intensity)
+{
+    half fresnel = 1.0h - saturate(dot(N, V));
+    half rim = smoothstep(threshold, threshold + max(softness, 1e-4h), fresnel);
+    return rim * rimColor * intensity;
+}
+```
+
+| 대상 | 설명 |
+|---|---|
+| 함수 선언 | `반환형 이름(인자...)` |
+| `dot`, `saturate`, `smoothstep`, `max` | HLSL 내장 함수 (Day 06, 07, 11) |
+| `1e-4h` | 0.0001 (half). `softness`가 0일 때 `smoothstep`의 두 경계가 같아져 결과가 정의되지 않는 것을 막는 하한 |
+| `half3 * half3` | 성분별 곱. `(r1·r2, g1·g2, b1·b2)` |
+
+### 내장 함수 10개
+
+| 함수 | 의미 | 예 |
 |---|---|---|
-| `saturate(x)` | 0~1 울타리 | `saturate(1.5) = 1` |
-| `lerp(a, b, t)` | 물감 섞기 | `lerp(a, b, 0.5)` = 반반 |
-| `min(a,b)`, `max(a,b)` | 작은 쪽, 큰 쪽 | `max(x, 1e-4)` = 바닥 깔기 |
-| `normalize(v)` | 화살표 길이를 1로 | Day 06 |
-| `dot(a, b)` | 두 화살표가 같은 쪽을 보는 정도 | Day 06 |
-| `cross(a, b)` | 두 화살표에 모두 수직인 화살표 | Day 16 |
-| `pow(x, n)` | x를 n번 곱하기 | Day 03, 17 |
-| `step(a, x)` | x가 a 이상이면 1, 아니면 0 (딱딱한 문턱) | Day 07 |
-| `smoothstep(a, b, x)` | a~b 사이에서 부드럽게 0→1 (부드러운 문턱) | Day 07 |
-| `clip(x)` | x가 0보다 작으면 **이 픽셀 버리기** | Day 05 |
+| `saturate(x)` | 0~1로 자른다 | `saturate(1.5) = 1` |
+| `lerp(a, b, t)` | 선형 보간 | `lerp(a, b, 0.5)` = 중간 값 |
+| `min(a,b)`, `max(a,b)` | 작은 쪽, 큰 쪽 | `max(x, 1e-4)` = 하한 |
+| `normalize(v)` | 벡터 길이를 1로 | Day 06 |
+| `dot(a, b)` | 내적. 두 벡터가 같은 방향인 정도 | Day 06 |
+| `cross(a, b)` | 외적. 두 벡터에 수직인 벡터 | Day 16 |
+| `pow(x, n)` | x의 n제곱 | Day 03, 17 |
+| `step(a, x)` | x가 a 이상이면 1, 아니면 0 | Day 07 |
+| `smoothstep(a, b, x)` | a~b 구간에서 부드럽게 0→1 | Day 07 |
+| `clip(x)` | x가 0보다 작으면 이 픽셀을 버린다 | Day 05 |
 
-## 8. 해보기 (15분)
+## 5. 주의
 
-1. **손으로 림 계산** — `dot(N, V) = 0.3`, `threshold = 0.6`, `softness = 0.05`이면 `fresnel = 0.7`이에요. 0.7은 0.6~0.65 범위를 넘으니까 `rim = 1`. 그럼 `dot(N, V) = 0.38`이면? (`fresnel = 0.62` → 0.6~0.65 사이 → 0과 1 사이의 값)
-2. **상자 세기** — [ToonInput.hlsl CBUFFER](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L34-L178) 안에 `half4`가 몇 개 있는지 세어 보세요.
-3. **스위즐 퀴즈** — `float4 c = (0.2, 0.4, 0.6, 1.0);`일 때 `c.bgr`은? (`(0.6, 0.4, 0.2)`) `c.ww`는? (`(1.0, 1.0)`)
-4. **Varyings 칸 따라가기** — `fogFactor`는 버텍스 셰이더 [L281](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L281)에서 넣고, 프래그먼트 셰이더 어디에서 꺼내 쓰나요? (힌트: [L664](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L664))
+{% hint style="info" %}
+NOTE: `half` 처리, `SV_POSITION`의 프래그먼트 단계 의미, `UnityPerMaterial` 선언 매크로(`CBUFFER_START`)는 URP/SRP 기준이다. Built-in 파이프라인은 `UnityPerMaterial` 상수 버퍼를 쓰지 않으며 SRP Batcher도 없다.
+{% endhint %}
 
-## 9. 오늘의 액기스
+## 6. 실습 (15분)
 
-👉 [ESSENCE.md — Day 04](essence.md#day-04)
+1. `ToonRim`을 손으로 계산한다. `threshold = 0.6`, `softness = 0.05`일 때 `dot(N, V) = 0.3`이면 `fresnel = 0.7`이다. → 결과: 0.7은 0.65 이상이므로 `rim = 1`.
+2. 같은 조건에서 `dot(N, V) = 0.38`이면 `fresnel = 0.62`다. → 결과: 0.6~0.65 구간 안이다. `smoothstep` 입력 `t = (0.62 - 0.6) / 0.05 = 0.4`이고 `t²(3 - 2t) = 0.352`이다.
+3. [ToonInput.hlsl CBUFFER](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/ShaderLibrary/ToonInput.hlsl#L34-L178) 안의 `half4` 선언 개수를 센다. → 결과: 개수를 기록한다.
+4. `float4 c = (0.2, 0.4, 0.6, 1.0);`일 때 `c.bgr`와 `c.ww`를 쓴다. → 결과: `(0.6, 0.4, 0.2)`, `(1.0, 1.0)`.
+5. `fogFactor`를 버텍스 셰이더 [L281](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L281)에서 넣고 프래그먼트 셰이더에서 꺼내는 곳을 찾는다. → 결과: [L664](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L664) 부근에서 사용된다.
 
-## 더 읽을거리
+오늘의 요약: [essence.md — Day 04](essence.md#day-04)
 
-- Microsoft HLSL 문서: [언어 레퍼런스](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reference) · [자료형](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-data-types) · [시맨틱](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics) · [saturate](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-saturate) · [lerp](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-lerp)
-- [LearnOpenGL — Shaders](https://learnopengl.com/Getting-started/Shaders) — GLSL이지만 개념(입력·출력·보간)이 같아요. (영어)
-- [Catlike Coding — Rendering 2: Shader Fundamentals](https://catlikecoding.com/unity/tutorials/rendering/part-2/) — Unity 셰이더의 입력·출력 구조 (영어)
-- 수학: [Wikipedia — Barycentric coordinates](https://en.wikipedia.org/wiki/Barycentric_coordinate_system) (보간이 쓰는 "무게중심 좌표") · [Half-precision float](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) · [Swizzling](https://en.wikipedia.org/wiki/Swizzling_(computer_graphics))
+## 7. 참조
+
+- Microsoft HLSL 문서: [언어 레퍼런스](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reference), [자료형](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-data-types), [시맨틱](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics), [saturate](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-saturate), [lerp](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-lerp)
+- [LearnOpenGL — Shaders](https://learnopengl.com/Getting-started/Shaders): GLSL이지만 입력·출력·보간 개념이 같다 (영어)
+- [Catlike Coding — Rendering 2: Shader Fundamentals](https://catlikecoding.com/unity/tutorials/rendering/part-2/) (영어)
+- [Wikipedia — Barycentric coordinates](https://en.wikipedia.org/wiki/Barycentric_coordinate_system), [Half-precision float](https://en.wikipedia.org/wiki/Half-precision_floating-point_format), [Swizzling](https://en.wikipedia.org/wiki/Swizzling_(computer_graphics))
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] `Attributes`와 `Varyings`가 각각 어디서 어디로 데이터를 전달하는지 내 말로 적는다
+- [ ] 프래그먼트 셰이더에서 노멀을 다시 `normalize`해야 하는 이유를 적는다
+- [ ] `float`과 `half`를 나눠 쓴 경험이 있으면 어떤 값에 무엇을 썼는지 적는다
 
 ---
 

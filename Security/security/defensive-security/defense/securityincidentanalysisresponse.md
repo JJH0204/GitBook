@@ -1,58 +1,65 @@
 # 침해사고 분석 및 대응 절차
 
-{% stepper %}
-{% step %}
-### 윈도우 설치
+## 작업 식별
 
-* 악성코드 분석을 위한 사전 준비
-{% endstep %}
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-DEF-015-DO |
+| 유형 | D&O (개념) |
+| 목적 | 침해사고 분석과 대응을 익히기 위한 학습 구성(분석 환경, 실습 대상, 로그 관제, 악성코드 분석, 참고 사이트)을 설명한다 |
+| 확인 상태 | 미검증 (원본은 단계 이름과 링크만 있는 학습 목록이었다. 설명은 일반 지식으로 보충했으며 출처를 다시 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-{% step %}
-### 센드박스
+{% hint style="info" %}
+NOTE: 원본은 9개 항목의 이름과 링크만 있었고 설명이 없었다. 구성 요소 표의 "하는 일"과 안전 주의는 보충한 내용이다. "악성코드분석" 항목은 본문이 없어 관련 문서 링크로 대체했다.
+{% endhint %}
 
-* 악성 코드를 분석하기 위한 툴
-* 플레어
-{% endstep %}
+## 1. 목적
 
-{% step %}
-### WebGoat
+침해사고 분석과 대응은 침해 징후를 발견하고(탐지), 수집한 아티팩트를 분석하고, 확산을 막고 복구하는 일련의 활동이다. 이 문서는 그 활동을 연습하는 데 필요한 환경과 자료를 순서대로 보여 준다. 실제 수집 명령은 [Windows](intrusioneventanalysis.md) (SEC-DEF-014-MP)와 [Linux](linuxintrusionanalysis.md) (SEC-DEF-013-REF) 문서를 따른다.
 
-[WebGoat](../../../notes/webgoat.md)
-{% endstep %}
+## 2. 구성 요소
 
-{% step %}
-### Webhacking.kr
+| 순서 | 구성 요소 | 하는 일 | 관련 문서·링크 |
+|---|---|---|---|
+| 1 | 윈도우 설치 | 악성코드 분석을 위한 사전 준비로 분석용 Windows를 가상 머신에 설치한다 | [FLARE VM 분석 환경 구축](../../malware-and-reversing/overview/flare.md) |
+| 2 | 샌드박스 | 악성코드를 격리해 동작을 관찰하는 도구와 환경. 원본은 "플레어(FLARE)"를 적었다 | 위와 같다 |
+| 3 | WebGoat | 의도적으로 취약하게 만든 실습용 웹 앱 | [WebGoat 취약점 실습](../../../notes/webgoat.md) |
+| 4 | Webhacking.kr | 웹 취약점 실습 워게임 사이트 | [Webhacking.kr 워게임](../../../ctf-and-wargame/webhacking.kr.md) |
+| 5 | SIEM | 여러 로그를 한곳에 모아 경고를 찾는다 | [보안 정보 이벤트 관리 (SIEM)](siem.md) (SEC-DEF-003-DO) |
+| 6 | 악성코드 분석 | 샘플을 정적·동적으로 분석한다 | [악성코드 분석 개요](../../malware-and-reversing/overview/malwareanalysis.md) |
+| 7 | 분석 정보 사이트 | 악성코드 정보 공유와 온라인 분석 | MalwareBazaar(https://bazaar.abuse.ch/), Hybrid Analysis(https://www.hybrid-analysis.com/) |
+| 8 | 샘플 저장소 | 실습용 악성코드 샘플 모음. 원본은 TheZoo(GitHub)를 적었다 | 위험이 크므로 3절 WARNING을 먼저 읽는다 |
 
-[Webhacking.kr](../../../ctf-and-wargame/webhacking.kr.md)
-{% endstep %}
+## 3. 안전 사항과 동작 원리
 
-{% step %}
-### SIEM
+{% hint style="danger" %}
+WARNING: 악성코드 샘플은 실행하는 순간 실제 피해를 낼 수 있다. 분석은 스냅샷을 만들 수 있는 가상 머신에서 하고, 분석 머신의 네트워크는 차단하거나 격리된 가상 네트워크로 제한한다. 호스트와 공유 폴더, 클립보드, USB 연결을 끈다. 샘플의 해시와 C2 주소는 이 저장소 문서에 적지 않는다(`<해시>`, `<C2 주소>`로 표기한다). 허가받지 않은 대상에는 분석 결과를 이용한 어떤 행위도 하지 않는다.
+{% endhint %}
 
-[SIEM](siem.md)
-{% endstep %}
+대응 흐름은 다음과 같다.
 
-{% step %}
-### 악성코드분석
+1. 탐지: IDS, HIDS, SIEM 경고로 징후를 발견한다([IDS](ids.md), SEC-DEF-001-DO).
+2. 수집: 로그, 메모리, 디스크 이미지 같은 아티팩트를 모은다.
+3. 분석: 수집물을 해석해 침입 경로와 영향 범위를 정한다.
+4. 보고: 분석 보고서를 쓴다.
+5. 대응: 차단, 제거, 복구와 재발 방지를 실행한다.
 
-악성코드분석
-{% endstep %}
+## 4. 약어와 용어
 
-{% step %}
-### malwarebazaar
+| 용어 | 뜻 |
+|---|---|
+| 아티팩트 | 시스템에 남은 침해 흔적(로그, 파일, 레지스트리 등) |
+| 샌드박스 | 격리된 환경에서 프로그램 동작을 관찰하는 장치 |
+| C2 | Command and Control. 악성코드가 명령을 받는 서버 |
+| FLARE VM | Windows 기반 악성코드 분석용 도구 모음 환경 |
 
-https://bazaar.abuse.ch/
-{% endstep %}
+## 내 말로 채우기
 
-{% step %}
-### HybridAnalysis
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
 
-https://www.hybrid-analysis.com/
-{% endstep %}
-
-{% step %}
-### TheZoo (GitHub)
-
-https://github.com/ytisf/theZoo
-{% endstep %}
-{% endstepper %}
+- [ ] 침해사고를 처음 발견했을 때 가장 먼저 해야 할 일과 그 이유를 적어 보자.
+- [ ] 악성코드 분석 환경을 격리하지 않으면 어떤 일이 생길 수 있는지 적어 보자.
+- [ ] 내가 직접 해 본 침해사고 분석 실습이 있다면 무엇을 확인했는지 적어 보자.

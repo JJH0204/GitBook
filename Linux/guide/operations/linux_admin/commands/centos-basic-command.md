@@ -1,173 +1,102 @@
 # CentOS 기본 명령어 모음
 
-### 전원 끄기
+## 작업 식별
 
-* `halt`: 리눅스만 끄기
-* `halt -p`: 리눅스와 PC 모두 끄기
-* `shutdown -h now`: 지금 당장 컴퓨터를 끄도록 하는 명령어
-* `shutdown -P +n`: n 분 뒤 시스템이 종료되도록 스케줄 등록
-* `shutdown -c`: 방금 스케줄로 등록한 종료 명령 취소
-* `reboot`: 재부팅
-* `shutdown -r now`: 즉시 재부팅
-* `shutdown -r +n`: n분 뒤 재부팅 스케줄 등록
-* `shutdown -r h:m`: h시 m분에 재부팅 스케줄 등록
-* `shutdown -k +n`: 종료 메시지를 접속 중인 사용자들에게 전달
-
-***
-
-### 화면 청소
-
-```
-clear
-```
-
-### 가상 콘솔
-
-* 키 조합: `Ctrl + Alt + F1` \~ `Ctrl + Alt + F6` — 가상 콘솔을 최대 6개 사용할 수 있음
-* 특정 가상 콘솔로 이동:
-
-```
-chvt n
-```
-
-### Run-level (런 레벨)
-
-```
-init n
-```
-
-* 사용 가능한 값: 0\~6 (일반적으로 2, 4는 사용하지 않음)
-
-{% stepper %}
-{% step %}
-### init 0
-
-power off (종료 모드)
-{% endstep %}
-
-{% step %}
-### init 1
-
-Rescue (복구 모드)\
-주의: 비밀번호를 잊었을 때 재설정할 수 있도록 사용
-{% endstep %}
-
-{% step %}
-### init 3
-
-TextMode (텍스트 모드)
-{% endstep %}
-
-{% step %}
-### init 5
-
-GUIMode (그래픽 모드)\
-※ 최소 버전에서는 동작하지 않을 수 있음
-{% endstep %}
-
-{% step %}
-### init 6
-
-reboot (재부팅)
-{% endstep %}
-{% endstepper %}
-
-현재 런레벨 확인:
-
-```
-ls -al /etc/systemd/system/default.target
-systemctl get-default
-```
-
-런레벨 변경:
-
-```
-ln -sf /usr/lib/systemd/system/multi-user.target
-systemctl set-default multi-user.target
-systemctl isolate multi-user.target
-```
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-LAC-005-REF |
+| 유형 | REF (명령 표) |
+| 목적 | RHEL 계열(CentOS 포함) 서버에서 자동 업데이트 끄기, IP 설정 변경, 경로 표기, 텍스트 편집기 명령을 참조한다 |
+| 적용 대상 | RHEL 계열 리눅스(CentOS Stream, Rocky Linux, AlmaLinux 등) |
+| 확인 상태 | 미검증 (원본 페이지와 systemd, NetworkManager 문서 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
 {% hint style="info" %}
-런레벨 변경은 시스템 동작 모드에 직접 영향을 줍니다. 특히 GUI/텍스트 모드 전환이나 기본 타겟 변경 시 주의하세요.
+NOTE: CentOS Linux는 지원이 끝난 배포판이다. CentOS Linux 8은 2021-12-31에, CentOS Linux 7은 2024-06-30에 지원이 끝났다. 이후에는 CentOS Stream, Rocky Linux, AlmaLinux 같은 RHEL 계열 배포판을 쓴다. 이 문서의 명령은 RHEL 계열 공통 명령이다. 버전에 따라 설정 파일 위치가 다르며 해당 항목에 표시했다.
 {% endhint %}
 
-### 디렉토리 이동
+## 1. 다른 문서에 있는 명령
 
-```
-cd '디렉토리'
-```
+원본에 있던 아래 항목은 같은 스페이스의 [리눅스 기본 필수 명령어](../../../commands/linuxcommand.md)(LNX-CMD-002-REF)에 정리돼 있다. 중복을 피하려고 이 문서에서는 위치만 안내한다.
 
-* `cd` 만 입력하면 사용자 계정의 홈 디렉토리로 이동
+| 항목 | 명령 | 상세 |
+|---|---|---|
+| 전원 끄기와 재부팅 | `halt`, `shutdown`, `reboot` | LNX-CMD-002-REF 1절 |
+| 런레벨 확인과 변경 | `init`, `systemctl get-default`, `systemctl set-default` | LNX-CMD-002-REF 2절 |
+| 화면 지우기, 가상 콘솔 | `clear`, `Ctrl + Alt + F1`~`F6`, `chvt` | LNX-CMD-002-REF 3절 |
+| 이동·목록·출력·기록 | `cd`, `ls`, `cat`, `history` | LNX-CMD-002-REF 3절 |
 
-### 디렉토리 정보 출력
+{% hint style="info" %}
+NOTE: 원본의 `init 1` 설명("비밀번호를 잊었을 때 재설정")과 `ln -sf /usr/lib/systemd/system/multi-user.target` 명령의 정정 내용은 LNX-CMD-002-REF에 있다. `init 2`, `init 4`는 systemd에서 `multi-user.target`에 대응하며 별도 구분하지 않는다. 미검증이다.
+{% endhint %}
 
-```
-ls '옵션'
-```
-
-* `-a`: 숨김 파일 포함 출력
-
-### 파일 정보 출력
-
-```
-cat '옵션' '파일이름'
-```
-
-### 명령어 사용 기록 확인
-
-```
-history '옵션'
-```
-
-* `-c`: 사용 기록 삭제(메모리)
-* 참고: `.bash_history`는 로그아웃할 때 메모리에 저장된 히스토리 정보를 자동으로 저장
+## 2. 자동 업데이트 끄기
 
 {% hint style="warning" %}
-`history -c`로 메모리에서만 지우며, 이미 `.bash_history`에 저장된 기록은 별도로 삭제해야 합니다.
+CAUTION: 자동 업데이트를 끄면 보안 패치가 자동으로 내려오지 않는다. 운영 서버에서는 끄지 않고, 끈 경우 정기적으로 수동 갱신한다([패키지 관리 도구](../../linuxpackagemanagementtool.md)).
 {% endhint %}
 
-## 리눅스 자동 업데이트 끄기
+| 목적 | 명령 | 권한 |
+|---|---|---|
+| GNOME 소프트웨어의 업데이트 다운로드 끄기 | `gsettings set org.gnome.software download-updates false` | 해당 사용자 (GUI 세션) |
+| 메타데이터 캐시 갱신 서비스 비활성화 | `systemctl disable dnf-makecache.service` | root |
+| 메타데이터 캐시 갱신 타이머 비활성화 | `systemctl disable dnf-makecache.timer` | root |
 
-```
-gsettings set org.gnome.software download-updates false
-systemctl disable dnf-makecache.service
-systemctl disable dnf-makecache.timer
-```
+{% hint style="info" %}
+NOTE: `dnf-makecache`는 DNF 계열(CentOS 8 이상)의 서비스다. CentOS 7은 `yum`을 쓰므로 해당 서비스가 없을 수 있다. 미검증이다.
+{% endhint %}
 
-## IP 변경
+## 3. IP 설정 변경
 
-#### 설정 파일 경로
+| 항목 | 값 |
+|---|---|
+| 설정 파일 (NetworkManager keyfile 방식) | `/etc/NetworkManager/system-connections/<인터페이스 이름>.nmconnection` |
+| 인터페이스 이름 예 | `enp0s3` (VirtualBox 가상 머신의 기본 이름이며 환경마다 다르다) |
 
-```
-/etc/NetworkManager/system-connections/enp0s3.nmconnection
-```
+{% hint style="warning" %}
+CAUTION: 원격(SSH)으로 접속한 상태에서 랜카드를 끄면 접속이 끊긴다. 이 상태에서는 다시 켜는 명령을 실행할 수 없다. 서버 콘솔에서 작업한다.
+{% endhint %}
 
-#### 랜카드 끄기
+| 목적 | 명령 | 권한 |
+|---|---|---|
+| 인터페이스 이름 확인 | `nmcli device status` | 일반 사용자 |
+| 랜카드 끄기 | `nmcli connection down <인터페이스 이름>` | root |
+| 랜카드 켜기 | `nmcli connection up <인터페이스 이름>` | root |
+| 수정한 설정 파일 다시 읽기 | `nmcli connection reload` | root |
 
-```
-nmcli connection down enp0s3
-```
+{% hint style="info" %}
+NOTE: 설정 파일 경로는 NetworkManager keyfile 방식(RHEL 9 계열 기본) 기준이다. RHEL 8 이하는 `/etc/sysconfig/network-scripts/ifcfg-<인터페이스 이름>`을 쓸 수 있다. `nmcli device status`와 `nmcli connection reload`는 원본에 없던 보충이며 미검증이다.
+{% endhint %}
 
-#### 랜카드 켜기
+## 4. 절대 경로와 상대 경로
 
-```
-nmcli connection up enp0s3
-```
+| 종류 | 설명 | 예 |
+|---|---|---|
+| 절대 경로 | `/`부터 대상까지 전체를 쓴다 | `cd /etc` |
+| 상대 경로 | 현재 디렉터리를 기준으로 쓴다 | `cd ../etc` (현재 위치가 `/home`이면 `/etc`로 이동한다) |
 
-## 절대 경로와 상대 경로
+{% hint style="info" %}
+NOTE: 원본 예 `cd /etc/passwd`, `cd ../passwd`는 `passwd`가 파일이라 `cd`가 실패한다. 디렉터리 `/etc`로 바꿔 정정했다. 파일 내용을 보려면 `cat /etc/passwd`를 쓴다. 미검증이다.
+{% endhint %}
 
-* 절대 경로: 디렉토리(폴더) 경로를 처음부터 끝까지 모두 작성
+## 5. 텍스트 편집기
 
-```
-cd /etc/passwd
-```
+| 편집기 | 종류 | 비고 |
+|---|---|---|
+| `vi` | 터미널 | 대부분의 배포판에 설치돼 있다 |
+| `nano` | 터미널 | 설치돼 있지 않을 수 있다 |
+| `gedit` | GUI | 그래픽 환경에서만 쓴다 |
 
-* 상대 경로: 현재 디렉토리 기준으로 목표까지의 경로 표현
+## 6. 참조
 
-```
-cd ../passwd
-```
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [linuxcommand.md](../../../commands/linuxcommand.md) | LNX-CMD-002-REF | 리눅스 기본 필수 명령어 |
+| [linuxpackagemanagementtool.md](../../linuxpackagemanagementtool.md) | | 패키지 관리 도구 (RPM, DNF) |
+| [directorycommands.md](directorycommands.md) | LNX-LAC-003-REF | 디렉터리 조작 명령어 |
 
-## 텍스트 편집기
+## 7. 개정 이력
 
-* vi, nano, gedit
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | REF 형식으로 재작성. CentOS 지원 종료 NOTE를 추가하고 LNX-CMD-002-REF와 겹치는 명령은 링크로 대체했다. `cd /etc/passwd` 예를 정정하고 자동 업데이트와 네트워크 명령에 CAUTION을 추가했다 |

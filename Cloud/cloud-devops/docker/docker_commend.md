@@ -1,278 +1,129 @@
 # 도커 필수 명령어 (Docker Command)
 
-자주 사용하는 도커 명령어를 소개합니다.\
-더 많은 명령어와 옵션에 대한 자세한 설명은 [도커 공식 문서](https://docs.docker.com/engine/reference/commandline/docker/)에서 확인할 수 있습니다.
+## 작업 식별
 
-### [`docker build`](docker_build.md)
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-DKR-007-REF |
+| 유형 | REF (명령 표) |
+| 목적 | 자주 쓰는 도커 명령과 옵션을 찾는다 |
+| 확인 상태 | 미검증 (원본 페이지와 도커 문서 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-Dockerfile을 이용하여 이미지를 생성합니다.
+## 1. 이미지 명령
 
-* 사용 예시
-  * `docker build [옵션] <경로>`
-  * `docker build -t <이미지명:태그> <경로>`
+| 명령어 | 설명 | 형식 | 주요 옵션 |
+|---|---|---|---|
+| `docker build` | Dockerfile로 이미지를 만든다 | `docker build [옵션] <경로>` | `-t <이름:태그>`: 이미지 이름과 태그를 지정한다. 태그를 생략하면 `latest`가 붙는다<br>`-f <파일>`: 기본 `Dockerfile` 대신 지정한 파일을 쓴다 |
+| `docker images` | 이미지 목록을 출력한다 | `docker images` | |
+| `docker pull` | 레지스트리(Docker Hub)에서 이미지를 내려받는다 | `docker pull [옵션] <이미지명[:태그]>` | |
+| `docker push` | 이미지를 레지스트리에 올린다 | `docker push <사용자명>/<이름>:<태그>` | |
+| `docker tag` | 이미지에 이름과 태그를 추가한다 | `docker tag <원본 이미지> <사용자명>/<이름>:<태그>` | |
+| `docker commit` | 컨테이너의 현재 상태를 이미지로 저장한다 | `docker commit <컨테이너 ID> <이름>:<태그>` | |
+| `docker rmi` | 이미지를 삭제한다 | `docker rmi [옵션] <이미지명\|ID>` | 같은 동작: `docker image rm` |
+| `docker image prune` | 사용하지 않는 이미지를 삭제한다 | `docker image prune` | |
+| `docker login` | 레지스트리에 로그인한다 | `docker login -u <사용자명>` | 성공하면 인증 정보가 설정 파일(`~/.docker/config.json`)에 저장된다 |
 
-`-t` 옵션으로 이미지의 이름과 태그를 지정할 수 있습니다. 태그를 작성하지 않을 경우 ‘latest’로 지정됩니다.
+## 2. 컨테이너 명령
 
-예시:
+| 명령어 | 설명 | 형식 | 주요 옵션 |
+|---|---|---|---|
+| `docker run` | 컨테이너를 만들고 실행한다 | `docker run [옵션] <이미지명\|ID> [명령어]` | `-d`: 백그라운드로 실행한다<br>`-it`: 입력(`-i`)과 가상 터미널(`-t`)을 켜 셸을 쓴다<br>`-p <호스트 포트>:<컨테이너 포트>`: 포트를 연결한다<br>`--name <이름>`: 컨테이너 이름을 지정한다<br>`--rm`: 컨테이너가 종료되면 자동 삭제한다<br>`-v <볼륨 또는 경로>:<컨테이너 경로>`: 볼륨을 연결한다 |
+| `docker create` | 컨테이너를 만들기만 한다. 실행하지 않는다 | `docker create [옵션] <이미지명\|ID> [명령어]` | `docker run`과 같은 옵션을 쓴다 |
+| `docker start` | 중지된 컨테이너를 시작한다 | `docker start [옵션] <컨테이너명\|ID>` | |
+| `docker stop` | 실행 중인 컨테이너를 중지한다 | `docker stop [옵션] <컨테이너명\|ID>` | |
+| `docker kill` | 컨테이너를 강제 종료한다 | `docker kill <컨테이너 ID>` | |
+| `docker ps` | 실행 중인 컨테이너 목록을 출력한다 | `docker ps [옵션]` | `-a`: 종료된 컨테이너까지 출력한다<br>`-q`: ID만 출력한다 |
+| `docker exec` | 실행 중인 컨테이너에서 명령을 실행한다 | `docker exec [옵션] <컨테이너명\|ID> [명령어]` | `-it`: 셸을 연다 |
+| `docker rm` | 컨테이너를 삭제한다 | `docker rm [옵션] <컨테이너명\|ID>` | `-f`: 실행 중이어도 강제 삭제한다 |
+| `docker top` | 컨테이너 안의 프로세스를 출력한다 | `docker top <컨테이너 ID>` | |
+| `docker stats` | 컨테이너의 자원 사용량을 출력한다 | `docker stats [<컨테이너명\|ID>]` | |
+| `docker logs` | 컨테이너 로그를 출력한다 | `docker logs <컨테이너명\|ID>` | |
+| `docker inspect` | 이미지나 컨테이너의 상세 정보를 JSON으로 출력한다 | `docker inspect [옵션] <이미지 또는 컨테이너명\|ID>` | |
+| `docker container prune` | 중지된 모든 컨테이너를 삭제한다 | `docker container prune` | |
 
-* `docker build .` : 현재 디렉토리에 있는 Dockerfile로 이미지 생성
-* `docker build -t my-image .` : 현재 디렉토리에 있는 Dockerfile로 ‘my-image:latest’ 이미지 생성
+## 3. 볼륨·시스템 명령
 
-### `docker images`
+| 명령어 | 설명 | 형식 |
+|---|---|---|
+| `docker volume ls` | 볼륨 목록을 출력한다 | `docker volume ls` |
+| `docker volume create` | 볼륨을 만든다 | `docker volume create <볼륨명>` |
+| `docker volume inspect` | 볼륨의 상세 정보(마운트 위치 등)를 출력한다 | `docker volume inspect <볼륨명>` |
+| `docker system df` | 도커가 쓰는 디스크 용량을 출력한다 | `docker system df` |
+| `docker system prune` | 사용하지 않는 컨테이너, 네트워크, 이미지(dangling)를 삭제한다 | `docker system prune` |
 
-도커 이미지 목록을 출력합니다.
+## 4. 위험 명령
 
-아래는 미리 준비된 Dockerfile을 이용해서 `docker build` 명령어로 이미지를 빌드한 후, `docker images` 명령어로 출력하는 모습입니다.
+{% hint style="danger" %}
+WARNING: 다음 명령은 데이터를 삭제하며 되돌릴 수 없다. 실행 전에 대상 목록(`docker ps -a`, `docker images`, `docker volume ls`)을 확인한다.
+{% endhint %}
 
-```shell
-user@user-VirtualBox:~/Desktop/ex-docker$ docker build .
-[+] Building 27.1s (17/17) FINISHED                                             
- => [internal] load build definition from Dockerfile                       0.0s                                         
- => ...생략...
- => exporting to image                                                     0.0s
- => => exporting layers                                                    0.0s
- => => writing image sha256:08a83756c396b9ca5d83735153cf0176056fb23c3eb3c  0.0s
-user@user-VirtualBox:~/Desktop/ex-docker$ docker images
-REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
-<none>       <none>    9d201c4de2b6   2 minutes ago   122MB
-user@user-VirtualBox:~/Desktop/ex-docker$ docker build -t my-image:1 .
-[+] Building 0.8s (17/17) FINISHED                                              
- => ...생략...
- => exporting to image                                                     0.0s
- => => exporting layers                                                    0.0s
- => => writing image sha256:9d201c4de2b62519383058265e31669b167c422502643  0.0s
- => => naming to docker.io/library/my-image:1                              0.0s
-user@user-VirtualBox:~/Desktop/ex-docker$ docker images
-REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
-my-image     1         9d201c4de2b6   4 minutes ago   122MB
-```
+| 명령어 | 영향 |
+|---|---|
+| `docker rm -f <컨테이너명\|ID>` | 실행 중인 컨테이너를 강제 삭제한다. 컨테이너 안의 데이터는 볼륨에 없으면 사라진다 |
+| `docker container rm -f $(docker container ls -a -q)` | 실행 중인 컨테이너를 포함한 모든 컨테이너를 강제 삭제한다. `docker container prune`은 중지된 컨테이너만 지운다 |
+| `docker system prune` | 중지된 컨테이너, 사용하지 않는 네트워크, 매달린(dangling) 이미지를 삭제한다. `--volumes`를 붙이면 사용하지 않는 볼륨도 삭제한다 |
+| `docker volume rm <볼륨명>` | 볼륨과 그 안의 데이터를 삭제한다 |
+| `docker run --privileged` | 컨테이너에 호스트 장치 접근 권한을 거의 모두 준다. 호스트 보안 경계가 약해진다 |
+| `docker run -p <호스트 포트>:<컨테이너 포트>` | 호스트 포트를 연다. 기본은 모든 네트워크 인터페이스(`0.0.0.0`)에 연결된다. 내부 전용이면 `127.0.0.1:<호스트 포트>:<컨테이너 포트>`로 쓴다 |
 
-### `docker run`
+## 5. 사용 예
 
-도커 이미지로 컨테이너를 생성하고 실행합니다.
+| 목적 | 명령 | 기대 결과 |
+|---|---|---|
+| 현재 디렉터리의 Dockerfile로 빌드 | `docker build .` | 이름 없는 이미지(`<none>:<none>`)가 생긴다 |
+| 이름과 태그를 붙여 빌드 | `docker build -t my-image:1 .` | `my-image:1` 이미지가 생긴다 |
+| 태그 없이 빌드 | `docker build -t my-image .` | `my-image:latest` 이미지가 생긴다 |
+| 이미지 목록 확인 | `docker images` | `REPOSITORY`, `TAG`, `IMAGE ID`, `CREATED`, `SIZE` 열이 출력된다 |
+| 컨테이너 실행과 포트 연결 | `docker run -p <호스트 포트>:<컨테이너 포트> <이미지명>` | 호스트 포트로 접속하면 컨테이너 서비스에 연결된다 |
+| 셸로 컨테이너 실행 | `docker run -it my-image:1 /bin/bash` | 컨테이너 셸 프롬프트가 열린다 |
+| 컨테이너 만들기와 시작 분리 | `docker create my-image:1` 후 `docker start <컨테이너 ID>` | `create`는 컨테이너 ID를 출력하고, `start` 후 `docker ps`에 `Up` 상태로 나타난다 |
+| 실행 중인 컨테이너에 접속 | `docker exec -it <컨테이너명\|ID> /bin/bash` | 컨테이너 셸이 열린다 |
+| 이미지 내려받기 | `docker pull ubuntu:18.04` | `Status: Downloaded newer image for ubuntu:18.04`가 출력된다 |
+| 시작과 동시에 명령 실행 | `docker run -it --name web nginx df -h` | 명령 결과가 출력된다 |
+| nginx 컨테이너 10개 생성 | `for i in $(seq 1 10); do docker container create nginx; done` | 10개 컨테이너가 `Created` 상태로 생긴다 |
 
-* 기본 사용법
-  * `docker run [옵션] <이미지명|ID> [명령어]`
-  * `docker run -p <호스트 PORT>:<컨테이너 PORT> <이미지명|ID>`
+원본의 10개 생성 예시는 `docker.sh` 파일에 `#!/bin/bash`와 같은 반복문을 적어 실행하는 방식이었다. 위 표의 한 줄 명령으로 같은 결과를 얻는다.
 
-`-p` 옵션은 도커 컨테이너의 포트와 호스트의 포트를 매핑합니다. 컨테이너에서 리슨하고 있는 포트를 호스트의 특정 포트로 접속할 수 있도록 합니다.
+### 5.1 `docker ps` 출력 예
 
-* 인터랙티브 셸
-  * `docker run -it <이미지명|ID> <명령어>`
+컨테이너를 실행한 상태에서 다른 터미널에서 `docker ps`를 입력하면 실행 중인 컨테이너가 나온다.
 
-`-it` 옵션으로 컨테이너에서 bash 셸을 사용할 수 있습니다. `-i (--interactive)`는 표준 입력을 활성화하고, `-t (--tty)`는 가상 터미널(tty)을 사용할 수 있도록 합니다.
+![docker ps 실행 결과](../../.gitbook/assets/f7d361dd3cc0390e75fec2fc65b0e1f986376b478013289f9389d80eaf62a536.png)
 
-예:
+컨테이너 안에서 `exit`로 종료하면 `docker ps`에는 나오지 않고, `docker ps -a`에는 종료된 컨테이너가 나온다.
 
-* `docker run -it my-image:1 /bin/bash` : `my-image:1` 이미지로 컨테이너를 생성하고 실행하여 bash 셸 열기
+![docker ps -a 실행 결과](../../.gitbook/assets/b2812d82aed386cfd28029ac818a183e6c819075180d245ae58999b6413e07c4.png)
 
-```shell
-user@user-VirtualBox:~/Desktop/ex-docker$ docker run -it my-image:1 /bin/bash
-chall@852bb2be037c:~$ 
-```
+### 5.2 `docker inspect` 출력 예
 
-### `docker ps`
+`docker inspect ubuntu:18.04`는 JSON 배열을 출력한다. 주요 항목은 다음과 같다.
 
-실행 중인 컨테이너 목록을 출력합니다.
+| 항목 | 의미 |
+|---|---|
+| `Id` | 이미지 ID(sha256) |
+| `RepoTags` | 이미지 이름과 태그 |
+| `Config.Cmd` | 컨테이너 시작 시 실행하는 기본 명령 (예: `/bin/bash`) |
+| `Config.Env` | 환경 변수 |
+| `Architecture`, `Os` | 이미지의 CPU 구조와 운영체제 (예: `amd64`, `linux`) |
+| `Size` | 이미지 크기(바이트) |
+| `GraphDriver` | 저장 드라이버와 경로 (예: `overlay2`) |
+| `RootFS.Layers` | 이미지 레이어 목록 |
 
-* `docker ps -a`\
-  `-a` 옵션은 종료된 컨테이너까지 모두 출력합니다.
+{% hint style="info" %}
+NOTE: 원본에는 약 100줄의 `docker inspect` 출력 전문이 있었다. 읽기 쉽도록 주요 항목 표로 줄였다.
+{% endhint %}
 
-컨테이너를 실행한 상태로 다른 터미널 창을 열어 `docker ps`를 입력하면 아래와 같이 실행 중인 컨테이너 목록이 출력됩니다.
+## 6. 참조
 
-![](../../.gitbook/assets/f7d361dd3cc0390e75fec2fc65b0e1f986376b478013289f9389d80eaf62a536.png)
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [도커 이미지 빌드](docker_build.md) | CLD-DKR-009-MP | `docker build` 절차 |
+| [도커 컨테이너 실행과 관리](docker-container-run.md) | CLD-DKR-008-MP | 실행·중지·삭제 절차 |
+| [Docker CLI 공식 문서](https://docs.docker.com/engine/reference/commandline/docker/) | - | 외부 문서 |
 
-컨테이너 안에서 `exit` 명령어를 실행하여 컨테이너를 종료한 후 `docker ps`를 입력하면 컨테이너가 출력되지 않고, `docker ps -a`를 입력하면 종료된 컨테이너까지 출력됩니다.
+## 7. 개정 이력
 
-![](../../.gitbook/assets/b2812d82aed386cfd28029ac818a183e6c819075180d245ae58999b6413e07c4.png)
-
-`docker run` 대신, 컨테이너 생성과 실행을 따로 명령할 수도 있습니다.
-
-### `docker create`
-
-도커 이미지로 컨테이너를 생성합니다.
-
-* `docker create [옵션] <이미지명|ID> [명령어]`
-
-### `docker start`
-
-중단된 컨테이너를 시작합니다.
-
-* `docker start [옵션] <컨테이너명|ID>`
-
-예:
-
-```shell
-user@user-VirtualBox:~$ docker images
-REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
-my-image     1         9d201c4de2b6   2 hours ago   122MB
-user@user-VirtualBox:~$ docker create my-image:1
-eb01688504dc201d9f3a03bf3a27d84cdeafca4b2110766d52fc7551a7d9d05a
-user@user-VirtualBox:~$ docker ps -a
-CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS    PORTS     NAMES
-eb01688504dc   my-image:1   "/bin/sh -c 'socat -…"   4 seconds ago   Created             priceless_meninsky
-user@user-VirtualBox:~$ docker start eb01688504dc
-eb01688504dc
-user@user-VirtualBox:~$ docker ps
-CONTAINER ID   IMAGE        COMMAND                  CREATED          STATUS         PORTS      NAMES
-eb01688504dc   my-image:1   "/bin/sh -c 'socat -…"   19 seconds ago   Up 4 seconds   2222/tcp   priceless_meninsky
-```
-
-### `docker exec`
-
-실행 중인 컨테이너에 접속하여 명령을 수행합니다.
-
-* `docker exec [옵션] <컨테이너명|ID> [명령어]`
-
-`docker run`과 유사하게 `-it` 옵션으로 bash 셸을 실행할 수 있습니다.
-
-예:
-
-* `docker exec -it <컨테이너명|ID> /bin/bash` : 실행 중인 컨테이너에서 bash 셸 열기
-
-```shell
-user@user-VirtualBox:~$ docker exec -it eb01688504dc /bin/bash
-chall@eb01688504dc:~$ 
-```
-
-### `docker stop`
-
-실행 중인 컨테이너를 중단합니다.
-
-* `docker stop [옵션] <컨테이너명|ID>`
-
-### `docker pull`
-
-레지스트리(Docker Hub)에 존재하는 도커 이미지를 다운받습니다.
-
-* `docker pull [옵션] <이미지명>`
-
-예:
-
-* `docker pull ubuntu:18.04` : Docker hub에서 ubuntu:18.04 이미지를 다운받습니다.
-
-```shell
-user@user-VirtualBox:~$ docker pull ubuntu:18.04
-18.04: Pulling from library/ubuntu
-0c5227665c11: Pull complete 
-Digest: sha256:8aa9c2798215f99544d1ce7439ea9c3a6dfd82de607da1cec3a8a2fae005931b
-Status: Downloaded newer image for ubuntu:18.04
-docker.io/library/ubuntu:18.04
-```
-
-### `docker rm`
-
-도커 컨테이너를 삭제합니다.
-
-* `docker rm [옵션] <컨테이너명|ID>`
-
-### `docker rmi`
-
-도커 이미지를 삭제합니다.
-
-* `docker rmi [옵션] <이미지명|ID>`
-
-### `docker inspect`
-
-도커 이미지 혹은 컨테이너의 자세한 정보를 출력합니다.
-
-* `docker inspect [옵션] <이미지 혹은 컨테이너명|ID>`
-
-예 (ubuntu:18.04에 대한 출력):
-
-```json
-user@user-VirtualBox:~$ docker inspect ubuntu:18.04
-[
-    {
-        "Id": "sha256:3941d3b032a8168d53508410a67baad120a563df67a7959565a30a1cb2114731",
-        "RepoTags": [
-            "ubuntu:18.04"
-        ],
-        "RepoDigests": [
-            "ubuntu@sha256:8aa9c2798215f99544d1ce7439ea9c3a6dfd82de607da1cec3a8a2fae005931b"
-        ],
-        "Parent": "",
-        "Comment": "",
-        "Created": "2023-03-08T03:22:44.73196058Z",
-        "Container": "ee3fcc8c88d3f3129f1236850de28a7eba0da7c548a7b23a6495905ebcf255ea",
-        "ContainerConfig": {
-            "Hostname": "ee3fcc8c88d3",
-            "Domainname": "",
-            "User": "",
-            "AttachStdin": false,
-            "AttachStdout": false,
-            "AttachStderr": false,
-            "Tty": false,
-            "OpenStdin": false,
-            "StdinOnce": false,
-            "Env": [
-                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-            ],
-            "Cmd": [
-                "/bin/sh",
-                "-c",
-                "#(nop) ",
-                "CMD [\"/bin/bash\"]"
-            ],
-            "Image": "sha256:b64649bc9d1a48300ec5a929146aa3c5ca80046f74c33aa5de65a7046f5177a6",
-            "Volumes": null,
-            "WorkingDir": "",
-            "Entrypoint": null,
-            "OnBuild": null,
-            "Labels": {
-                "org.opencontainers.image.ref.name": "ubuntu",
-                "org.opencontainers.image.version": "18.04"
-            }
-        },
-        "DockerVersion": "20.10.12",
-        "Author": "",
-        "Config": {
-            "Hostname": "",
-            "Domainname": "",
-            "User": "",
-            "AttachStdin": false,
-            "AttachStdout": false,
-            "AttachStderr": false,
-            "Tty": false,
-            "OpenStdin": false,
-            "StdinOnce": false,
-            "Env": [
-                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-            ],
-            "Cmd": [
-                "/bin/bash"
-            ],
-            "Image": "sha256:b64649bc9d1a48300ec5a929146aa3c5ca80046f74c33aa5de65a7046f5177a6",
-            "Volumes": null,
-            "WorkingDir": "",
-            "Entrypoint": null,
-            "OnBuild": null,
-            "Labels": {
-                "org.opencontainers.image.ref.name": "ubuntu",
-                "org.opencontainers.image.version": "18.04"
-            }
-        },
-        "Architecture": "amd64",
-        "Os": "linux",
-        "Size": 63146040,
-        "VirtualSize": 63146040,
-        "GraphDriver": {
-            "Data": {
-                "MergedDir": "/var/lib/docker/overlay2/0fe24c66cfaad338ccd55946d7734702a3575513fb2e697b409d3194c95c7e62/merged",
-                "UpperDir": "/var/lib/docker/overlay2/0fe24c66cfaad338ccd55946d7734702a3575513fb2e697b409d3194c95c7e62/diff",
-                "WorkDir": "/var/lib/docker/overlay2/0fe24c66cfaad338ccd55946d7734702a3575513fb2e697b409d3194c95c7e62/work"
-            },
-            "Name": "overlay2"
-        },
-        "RootFS": {
-            "Type": "layers",
-            "Layers": [
-                "sha256:b7e0fa7bfe7f9796f1268cca2e65a8bfb1e010277652cee9a9c9d077a83db3c4"
-            ]
-        },
-        "Metadata": {
-            "LastTagTime": "0001-01-01T00:00:00Z"
-        }
-    }
-]
-```
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 명령별 절을 표로 재구성. `dockertheory.md`의 명령 메모(`commit`, `tag`, `kill`, `top`, 볼륨, `prune`)를 합치고 위험 명령 표를 추가. `inspect` 출력 전문은 항목 표로 줄였다 |

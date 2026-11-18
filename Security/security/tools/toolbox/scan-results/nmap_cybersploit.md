@@ -1,13 +1,67 @@
 # Nmap 스캔: Cybersploit 1
 
-{% code title="nmap-output.txt" %}
-```
-Nmap scan report for 192.168.56.105
-Host is up (0.00017s latency).
-Not shown: 998 closed tcp ports (reset)
-PORT   STATE SERVICE
-22/tcp open  ssh
-80/tcp open  http
-MAC Address: 08:00:27:2A:8F:05 (Oracle VirtualBox virtual NIC)
-```
-{% endcode %}
+## 작업 식별
+
+| 항목 | 내용 |
+|---|---|
+| Task ID | SEC-SCN-003-REF |
+| 유형 | REF (출력 읽는 법) |
+| 목적 | Nmap 기본 TCP 스캔 출력의 열과 상태 값을 읽는다 |
+| 적용 대상 | 허가받은 격리 실습 환경(자신이 소유·관리하는 VM 또는 의도적 취약 앱) |
+| 확인 상태 | 미검증 (원본 출력과 일반 지식을 정리한 것이며 스캔을 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+{% hint style="danger" %}
+WARNING: 허가받지 않은 시스템을 스캔하는 것은 불법이다. 격리된 실습망의 소유·관리 대상에서만 수행한다.
+{% endhint %}
+
+## 1. 도구 개요
+
+Nmap은 대상 호스트의 열린 포트와 서비스를 확인하는 네트워크 스캐너다. 이 출력은 포트 열거만 한 기본 스캔 결과이며 서비스 버전 정보(`VERSION` 열)는 없다. 버전까지 보는 스캔은 [SEC-SCN-004-REF](nmap_cybersploit_d.md)에 있다.
+
+## 2. 출력 구조
+
+| 줄·열 | 뜻 |
+|---|---|
+| `Nmap scan report for <대상 IP>` | 스캔 대상 호스트 |
+| `Host is up (0.00017s latency)` | 호스트가 응답했고 왕복 지연이 약 0.17ms이다 (같은 호스트 전용망 안의 VM) |
+| `Not shown: 998 closed tcp ports (reset)` | 나머지 998개 포트는 닫힘이며 RST 응답을 받았다 |
+| `PORT` | `포트/프로토콜` |
+| `STATE` | 포트 상태 (아래 표) |
+| `SERVICE` | 포트 번호에 대응하는 일반 서비스 이름 (실제 서비스 확인이 아니다) |
+| `MAC Address` | 같은 L2 망일 때만 나온다. 제조사 이름이 괄호로 붙는다 |
+
+| STATE 값 | 뜻 |
+|---|---|
+| `open` | 연결을 받는 서비스가 있다 |
+| `closed` | 접근은 되나 서비스가 없다 (RST 응답) |
+| `filtered` | 방화벽 등이 패킷을 막아 상태를 알 수 없다 |
+
+## 3. 이 출력에서 읽을 수 있는 정보
+
+| 항목 | 값 | 해석 |
+|---|---|---|
+| 열린 포트 | 22/tcp (ssh), 80/tcp (http) | 원격 로그인과 웹 서비스가 노출되어 있다 |
+| 닫힌 포트 | 998개 (reset) | 방화벽 없이 RST로 응답하므로 호스트에 필터링이 없다 |
+| MAC 제조사 | Oracle VirtualBox virtual NIC | 대상이 VirtualBox VM이다 |
+
+## 4. 탐지·방어
+
+| 항목 | 내용 |
+|---|---|
+| 서버 로그의 흔적 | 포트 스캔은 짧은 시간에 한 출발지에서 수많은 포트로 연결 시도를 만든다. 방화벽 로그와 `ss`·conntrack에 SYN만 오가고 끝나는 연결이 다수 남는다. 열린 포트(22, 80)에는 sshd·Apache 로그에 불완전한 연결 기록이 남을 수 있다 |
+| 탐지 | Snort·Suricata의 포트 스캔 규칙이나 SIEM에서 "한 출발지가 N초 안에 M개 이상의 목적지 포트에 접속"하는 상관 규칙으로 탐지한다 |
+| 노출 축소 | 필요하지 않은 서비스는 끈다. 방화벽 기본 정책을 DROP으로 두고 필요한 출발지에만 22·80을 허용한다. SSH는 관리망에서만 접근하게 제한한다 |
+
+## 5. 참조
+
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [nmap_cybersploit_d.md](nmap_cybersploit_d.md) | SEC-SCN-004-REF | Nmap 네트워크 스캔 로그 |
+| [README.md](README.md) | - | 스캔 결과 모음 |
+
+## 6. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | AMM 형식 REF로 재구성. 출력 원문을 요약 표로 대체하고 IP·MAC을 가림 |

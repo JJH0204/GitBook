@@ -1,30 +1,73 @@
 # 도커 개요 (Docker)
 
-컨테이너를 만들고, 실행하고, 배포할 수 있는 가상화 플랫폼입니다.\
-관련 문서:
+## 작업 식별
 
-* [도커 이미지(Docker Image)](docker_image.md)
-* [도커 컨테이너(Docker Container)](docker_container.md)
-* [도커 레지스트리(Docker Registry)](docker_hub.md)
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-DKR-001-DO |
+| 유형 | D&O (개념) |
+| 목적 | 도커가 무엇이고, 왜 쓰며, 어떤 구성 요소로 이뤄지는지 설명한다 |
+| 확인 상태 | 미검증 (원본 페이지와 일반 지식을 정리한 것이며 이 환경에서 실행해 확인하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 도커를 사용하는 이유
+## 1. 목적
 
-* 가상 머신을 설치하여 직접 문제 환경을 구축할 필요 없이 도커 이미지를 선택해 컨테이너를 구축하는 것으로 한번에 해결이 가능합니다.
-* 직접 환경을 구축하다 보면 의도와 다른 환경 설정이 포함될 수도 있기 때문에 [변인통제](https://ko.wikipedia.org/wiki/%EB%B3%80%EC%9D%B8%ED%86%B5%EC%A0%9C)가 불가능합니다.
+도커(Docker)는 컨테이너(container)를 만들고, 실행하고, 배포하는 플랫폼이다. 애플리케이션과 실행 환경을 이미지(image) 하나로 묶어, 어느 호스트에서나 같은 환경을 다시 만들 수 있게 한다. 이 문서는 도커의 구성 요소와 사용 이유를 정리한다.
 
-## 도커 설치 (리눅스)
+## 2. 구성 요소
 
-* 자세한 내용: 도커 설치 at 리눅스
+| 번호 | 구성 요소 | 역할 | 상세 문서 |
+|---|---|---|---|
+| 1 | 이미지(Image) | 컨테이너를 만드는 데 필요한 파일, 환경 변수, 명령을 담은 읽기 전용 묶음이다 | [도커 이미지 개념](docker_image.md) (CLD-DKR-003-DO) |
+| 2 | 컨테이너(Container) | 이미지로 만든 실행 인스턴스다 | [도커 컨테이너](docker_container.md) (CLD-DKR-004-DO) |
+| 3 | 레지스트리(Registry) | 이미지를 저장하고 배포하는 서버다. 기본 레지스트리는 Docker Hub다 | [도커 허브 활용 가이드](docker_hub.md) (CLD-DKR-015-MP) |
+| 4 | Dockerfile | 이미지를 만드는 단계를 적은 파일이다 | [Dockerfile 작성법 및 실습](dockerfile.md) (CLD-DKR-010-REF) |
+| 5 | 도커 엔진(Docker Engine) | 호스트에서 컨테이너를 만들고 실행하는 데몬(daemon)이다 | [Ubuntu 환경 도커 설치](docker_install.md) (CLD-DKR-005-MP) |
 
-## 도커 명령어
+## 3. 동작 원리
 
-* 자세한 내용: 도커 명령어
+도커를 쓰는 이유는 다음과 같다.
 
-## Docker Hub
+1. 가상 머신(VM)을 설치해 환경을 직접 구축하지 않고, 이미지를 골라 컨테이너를 만든다.
+2. 직접 구축한 환경에는 의도하지 않은 설정이 섞일 수 있다. 이미지는 같은 내용으로 반복 생성되므로 실험 조건을 통제하기 쉽다(변인 통제).
+3. 만든 이미지를 레지스트리에 올려 다른 사람과 공유한다.
 
-* 자세한 내용: [Docker Hub](docker_hub.md)
+전체 흐름은 다음과 같다.
 
-## Docker 이미지 분석 툴
+```
+Dockerfile --build--> 이미지 --push--> 레지스트리(Docker Hub)
+                         |                    |
+                         +--run--> 컨테이너 <--pull--+
+```
 
-* 도구: dive — https://github.com/wagoodman/dive#installation
-* 사용 방법 참고: https://blog.naver.com/adamdoha/223214745826
+이미지 분석 도구로 `dive`가 있다. 이미지 레이어(layer)별 내용과 낭비된 공간을 확인할 때 쓴다.
+
+## 4. 약어·용어
+
+| 용어 | 뜻 |
+|---|---|
+| 이미지(Image) | 컨테이너 생성에 필요한 파일 시스템과 설정의 묶음 |
+| 컨테이너(Container) | 이미지로 만든 격리된 실행 환경 |
+| 레지스트리(Registry) | 이미지를 저장·배포하는 서버. Docker Hub가 대표적이다 |
+| 레이어(Layer) | 이미지를 구성하는 변경 단위 |
+| `dive` | 이미지 레이어를 분석하는 외부 도구 |
+
+## 5. 참조
+
+| 참조 문서 | 비고 |
+|---|---|
+| [도커 핵심 이론](dockertheory.md) | CLD-DKR-002-DO |
+| [도커 필수 명령어](docker_commend.md) | CLD-DKR-007-REF |
+| [dive (GitHub)](https://github.com/wagoodman/dive#installation) | 외부 문서 |
+| [변인 통제 (Wikipedia)](https://ko.wikipedia.org/wiki/%EB%B3%80%EC%9D%B8%ED%86%B5%EC%A0%9C) | 외부 문서 |
+| [Docker 공식 문서](https://docs.docker.com/) | 외부 문서 |
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 이미지와 컨테이너의 관계를 내 말로 설명해 본다.
+- [ ] 환경을 직접 구축할 때 겪은 "내 컴퓨터에서는 되는데" 같은 경험이 있다면, 도커가 어떻게 줄여 줄지 적어 본다.
+- [ ] 이미지를 레지스트리에 올려 공유하는 것이 필요했던 상황을 하나 떠올려 적는다.

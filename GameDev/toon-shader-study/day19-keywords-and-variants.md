@@ -1,30 +1,108 @@
 # Day 19. 키워드와 배리언트 — 옵션마다 따로 굽는 빵집
 
-> ⏱ **약 1시간** — 읽기 25분 · 코드 따라 읽기 25분 · 해보기 10분
-> 🧸 **오늘의 비유**: 셰이더는 **옵션별 완성품을 미리 구워 두는 빵집**이에요. 옵션(키워드)이 하나 늘 때마다 빵 종류가 **두 배**가 돼요.
+## 작업 식별
 
-## 오늘 배울 것
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSS-020-DO |
+| 유형 | D&O (개념) + 코드 읽기 + 실습 |
+| 목적 | 셰이더 키워드와 배리언트의 관계, `multi_compile`과 `shader_feature`의 차이, 배리언트 폭발을 줄이는 방법을 설명한다 |
+| 소요 시간 | 약 1시간 (읽기 25분, 코드 읽기 25분, 실습 10분) |
+| 선수 지식 | Day 04(`#if`, 전처리), Day 12(외곽선 패스) |
+| 확인 상태 | 미검증 (소스를 읽고 작성했으며 Unity에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 학습 목표
 
 - [ ] 키워드와 배리언트(셰이더 사본)의 관계를 안다
 - [ ] `shader_feature`와 `multi_compile`의 차이를 안다
 - [ ] `_local`, `_fragment` 꼬리말의 뜻을 안다
-- [ ] 키워드 대신 "머티리얼 값 분기"를 쓰는 경우를 안다
-- [ ] 스트리퍼가 무엇을 하고, 왜 정리기(Sanitizer)가 먼저 돌아야 하는지 안다
+- [ ] 키워드 대신 머티리얼 값 분기를 쓰는 경우를 안다
+- [ ] 스트리퍼가 무엇을 하고 왜 정리기(Sanitizer)가 먼저 돌아야 하는지 안다
 
----
+## 1. 정의
 
-## 1. `#if`로 갈린 코드 = 다른 셰이더
+키워드(keyword)는 `#if defined(...)`로 코드를 켜고 끄는 컴파일 시점 스위치다. 키워드 조합 하나마다 컴파일된 셰이더 프로그램이 하나 생기며, 이를 배리언트(variant, 변형)라고 한다. 꺼진 키워드의 코드는 그 배리언트에 존재하지 않는다.
 
-Day 04에서 `#if defined(_USE_RIM)`은 "키워드가 꺼져 있으면 이 코드는 **아예 없는 것**"이라고 했어요. 그러니까 림을 켠 셰이더와 끈 셰이더는 **다른 프로그램**이에요. 이 각각을 **배리언트**(variant, 변형)라고 해요.
+| 항목 | 내용 |
+|---|---|
+| 장점 | 꺼진 기능의 실행 비용이 0이다. 런타임 `if`보다 빠르다 |
+| 단점 | 배리언트 수가 늘어 빌드 시간, 메모리, 빌드 크기가 늘어난다 |
 
-- 장점: 꺼진 기능은 **비용 0**. `if`로 건너뛰는 것보다 빨라요.
-- 단점: 키워드 하나에 사본 2배. 10개면 1,024개, 20개면 약 100만 개.
+비유: 옵션별 완성품을 미리 구워 두는 빵집이다. 옵션이 하나 늘 때마다 빵 종류가 두 배가 된다.
+
+## 2. 구성 요소
+
+### 2.1 배리언트 수
+
+| 항목 | 값 |
+|---|---|
+| 총 배리언트 수 | 각 키워드 그룹의 선택지 수의 곱 |
+| 키워드 10개(각 on/off) | 2^10 = 1,024 |
+| 키워드 20개(각 on/off) | 2^20 ≈ 1,048,576 |
 
 ![배리언트 폭발](../.gitbook/assets/concept-variant-explosion.png)
 
-빵 종류가 너무 많으면 굽는 데(빌드 시간) 오래 걸리고 진열대(메모리, 앱 크기)가 모자라요. 그래서 **안 팔리는 빵은 굽지 않는** 장치들이 필요해요.
+### 2.2 `#pragma` 종류
 
-## 2. 두 종류의 주문서
+| 종류 | 빌드에 포함되는 조합 | 쓰는 곳 | 런타임 키워드 전환 |
+|---|---|---|---|
+| `multi_compile` | 모든 조합 | 엔진이 런타임에 켜고 끄는 키워드(그림자 방식, 추가광 등) | 가능 |
+| `shader_feature` | 빌드에 포함된 머티리얼이 실제로 쓰는 조합만 | 머티리얼 체크박스 | 부적합. 빌드에 없는 조합은 런타임에 만들 수 없다 |
+
+비유: `multi_compile`은 매일 굽는 기본 빵, `shader_feature`는 주문 들어온 것만 굽는 빵이다.
+
+### 2.3 꼬리말
+
+| 꼬리말 | 뜻 |
+|---|---|
+| `_local` | 이 셰이더 전용 키워드. 프로젝트 전체(전역) 키워드 수 한도를 아낀다 |
+| `_fragment` | 프래그먼트 스테이지에서만 갈리는 키워드. 버텍스 스테이지의 사본이 늘지 않아 컴파일 수를 줄인다 |
+| `_vertex` | 버텍스 스테이지에서만 갈리는 키워드(`_CASTING_PUNCTUAL_LIGHT_SHADOW`, L765) |
+
+## 3. 동작 원리
+
+### 3.1 선택지 목록의 맨 앞 `_`
+
+`#pragma shader_feature_local _ _USE_RIM`에서 맨 앞 `_`는 "키워드 없음"이다. 그래서 선택지가 끔/켬 두 개가 된다. `_ _A _B _C`처럼 여러 개를 쓰면 그중 하나만 켜지는 묶음이 된다(파트 선택 `_PART_FACE/HAIR/SKIN`).
+
+### 3.2 체크박스와 키워드 연결
+
+[Properties](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L5-L184)의 속성 꾸밈말이 키워드를 켜고 끈다.
+
+| 꾸밈말 | 동작 |
+|---|---|
+| `[Toggle(_USE_RIM)]` | 체크하면 `_USE_RIM` 키워드를 켠다 |
+| `[KeywordEnum(None, Face, Hair, Skin, Cloth)]` | 선택에 따라 `_PART_FACE` 등을 켠다 |
+| `[ToggleUI]` | 숫자만 0/1로 바꾸고 키워드는 만들지 않는다 |
+
+{% hint style="info" %}
+NOTE: 이 프로젝트에서 실제로 있었던 일(B5, C8)이다. `KeywordEnum`은 `_PART_NONE`, `_PART_CLOTH`도 만들지만 코드에서 갈리는 것은 Face/Hair/Skin뿐이었다. 그래서 None과 Cloth가 같은 셰이더를 두 번 굽고 있었다. `#pragma`에서 둘을 빼 기본(`_`) 배리언트를 쓰게 했다(L225–227 주석). 또 숫자로만 쓰는 토글에 `[Toggle]`을 붙였더니 셰이더에 없는 `_USEMATCAPMASK_ON` 같은 키워드가 머티리얼에 붙었다. `[ToggleUI]`로 바꿨다.
+{% endhint %}
+
+### 3.3 키워드 대신 숫자 분기
+
+가벼운 옵션은 머티리얼 숫자 하나로 `if` 분기한다. 한 물체를 그리는 동안 모든 픽셀이 같은 값을 읽으므로 GPU의 스레드 묶음이 모두 같은 쪽으로 간다. 이런 균일한(uniform) 분기는 비용이 작고 배리언트도 늘지 않는다. 픽셀마다 답이 다른 `if`는 양쪽을 모두 실행할 수 있어 비싸다.
+
+| 방식 | 배리언트 | 꺼진 기능의 비용 | 적합한 경우 |
+|---|---|---|---|
+| 키워드 | 증가 | 0 | 코드 양이 크거나 텍스처·연산이 많은 기능 |
+| 머티리얼 값 분기 | 증가 없음 | 분기 비용(작음) | 텍스처 1회 읽기 정도의 가벼운 기능 |
+
+### 3.4 스트리핑과 정리기
+
+빌드 전에 Unity는 배리언트 목록을 스트리퍼(`IPreprocessShaders`)에 넘기고, 스트리퍼가 쓰지 않는 조합을 목록에서 뺀다.
+
+| 단계 | 하는 일 | 시점 |
+|---|---|---|
+| 정리기(Sanitizer) | 파트와 안 맞는 키워드를 머티리얼에서 끈다. 불필요한 패스도 끈다 | 빌드 전, 머티리얼 검증 시 |
+| 스트리퍼 | 의미 없는 조합의 배리언트를 목록에서 제거한다 | 셰이더 컴파일 직전 |
+
+정리기가 스트리퍼보다 먼저 돌아야 하는 이유는 5장 주의에 있다.
+
+## 4. 코드 읽기
+
+### 4.1 `#pragma` 선언
 
 [CharacterToon.shader L215–249](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L215-L249)
 
@@ -37,44 +115,11 @@ Day 04에서 `#if defined(_USE_RIM)`은 "키워드가 꺼져 있으면 이 코�
 #pragma shader_feature_local_fragment _ _ALPHATEST_ON
 ```
 
-| 종류 | 비유 | 누가 켜나 | 빌드에 포함 |
-|---|---|---|---|
-| `multi_compile` | **매일 굽는 기본 빵** | 엔진이 실행 중에 (그림자 켬/끔, 추가광 유무…) | **전부** |
-| `shader_feature` | **주문 들어온 것만 굽는 빵** | 머티리얼 체크박스 | 머티리얼이 **실제로 쓰는 조합만** |
+`_ALPHATEST_ON`이 `_fragment`인 이유: 알파 클립은 프래그먼트의 `clip()`에서만 쓰인다.
 
-엔진 설정(그림자 품질 등)은 게임 중에 바뀔 수 있으니 다 구워 둬야 해요(`multi_compile`). 머티리얼 옵션은 빌드할 때 이미 정해져 있으니 쓰는 것만 구워요(`shader_feature`).
+### 4.2 숫자 분기
 
-`_ _USE_RIM`의 맨 앞 `_`는 **"아무 키워드도 없음"** 이라는 선택지예요. 그래서 "끔 / 켬" 두 가지가 돼요. `_ _A _B _C`처럼 여러 개를 쓰면 **그중 하나만** 켜지는 묶음이에요(파트 선택 `_PART_FACE/HAIR/SKIN`이 그래요).
-
-### 꼬리말
-
-| 꼬리말 | 뜻 |
-|---|---|
-| `_local` | 이 셰이더 전용 키워드. 프로젝트 전체 키워드 한도(수백 개)를 아껴요 |
-| `_fragment` | **프래그먼트에서만** 코드가 갈림. 버텍스 셰이더는 사본을 안 만들어서 절반을 아껴요 |
-| `_vertex` | 반대로 버텍스에서만 (`_CASTING_PUNCTUAL_LIGHT_SHADOW`, L765) |
-
-`_ALPHATEST_ON`이 `_fragment`인 이유: 알파 클립은 프래그먼트의 `clip()`에만 쓰이니까요.
-
-## 3. 체크박스와 키워드 연결
-
-[Properties](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L5-L184)의 꾸밈말이 키워드를 켜고 꺼요.
-
-```shaderlab
-[Toggle(_USE_RIM)] _UseRim ("Use Rim Light", Float) = 1                    // 체크 → _USE_RIM 켬
-[KeywordEnum(None, Face, Hair, Skin, Cloth)] _Part ("Part Type", Float) = 0  // 선택 → _PART_FACE 등
-[ToggleUI] _UseShadowMask ("Use Shadow Suppress Mask", Float) = 0          // 체크 → 숫자만 1 (키워드 없음)
-```
-
-{% hint style="info" %}
-**💡 실제로 있었던 일 (B5, C8)**
-- `KeywordEnum`은 `_PART_NONE`, `_PART_CLOTH`도 만들지만, 코드에서 갈리는 건 Face/Hair/Skin뿐이었어요. 그래서 None과 Cloth가 **똑같은 셰이더를 두 번** 굽고 있었어요. `#pragma`에서 둘을 빼서 기본(`_`) 빵을 쓰게 했어요(L225–227 주석).
-- 숫자로만 쓰는 토글에 `[Toggle]`을 붙였더니 셰이더에 없는 `_USEMATCAPMASK_ON` 같은 키워드가 머티리얼에 **쓸데없이** 붙었어요. `[ToggleUI]`로 바꿨어요.
-{% endhint %}
-
-## 4. 키워드 대신 숫자로 갈라도 될 때
-
-모든 옵션을 키워드로 만들면 빵이 너무 많아요. 그래서 **가벼운 옵션은 숫자 하나로** `if`를 해요. [L415–420](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L415-L420)
+[L415–420](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L415-L420)
 
 ```hlsl
 if (_UseShadowMask > 0.5h)      // 머티리얼 값 — 한 물체의 모든 픽셀이 같은 답
@@ -84,11 +129,9 @@ if (_UseShadowMask > 0.5h)      // 머티리얼 값 — 한 물체의 모든 픽
 }
 ```
 
-GPU는 수천 명이 **같은 줄을 동시에** 읽어요. 한 물체를 그리는 동안 `_UseShadowMask`는 모두에게 같은 값이라 **다 같이 건너뛰거나 다 같이 들어가요.** 이런 `if`는 거의 공짜예요. 사본도 안 늘어요. (반대로 픽셀마다 답이 다른 `if`는 양쪽을 다 실행하게 될 수 있어서 비싸요.)
+### 4.3 스트리퍼
 
-## 5. 안 팔리는 빵 버리기: 스트리퍼
-
-빌드할 때 Unity는 굽기 전에 **"이 빵 진짜 구울까?"** 하고 물어봐요. 그 질문에 답하는 게 **스트리퍼**예요. [CharacterToonShaderStripper.cs L31–58](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonShaderStripper.cs#L31-L58)
+[CharacterToonShaderStripper.cs L31–58](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonShaderStripper.cs#L31-L58)
 
 ```csharp
 public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
@@ -107,18 +150,18 @@ public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<Shad
 }
 ```
 
-"얼굴이 아닌데 앞머리 그림자 켬" 같은 조합은 코드상 아무 효과가 없어요(`#if defined(_PART_FACE)` 안에 있으니까). 그러니 안 구워도 돼요.
+| 제거 조건 | 이유 |
+|---|---|
+| 디버그 키워드 켬 | 릴리스 빌드에 불필요 |
+| 앞머리 그림자 켬 + 얼굴 아님 | 코드가 `#if defined(_PART_FACE)` 안에 있어 효과가 없다 |
+| 천사 고리 켬 + 헤어 아님 | 동일 |
+| SSS 켬 + 피부 아님 | 동일 |
 
-{% hint style="warning" %}
-**💡 실제로 있었던 일 (A1 → Sanitizer)**
-1. 셰이더 이름을 `com.blueigloo/...`로 바꿨는데 스트리퍼는 **옛 이름**을 찾고 있었어요. 그래서 아무것도 안 버리고 있었어요(A1). 이름을 고치고, 점검 도구 [CompileCheck.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CompileCheck.cs)에 "C#이 찾는 셰이더 이름이 실제로 있나" 검사를 추가했어요.
-2. 그런데 스트리퍼가 **살아나자** 새 문제가 생겼어요. `_UseAngelRing`의 기본값이 1이라 헤어가 아닌 머티리얼 대부분이 "헤어 아님 + 천사 고리 켬" 상태였어요. 스트리퍼가 그 조합을 버리면 그 머티리얼은 **구울 빵이 하나도 없어서** 빌드에서 깨져요.
-3. 그래서 빌드 **전에** 머티리얼을 정리하는 [CharacterToonKeywordSanitizer.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonKeywordSanitizer.cs)를 만들었어요. 파트와 안 맞는 키워드를 머티리얼에서 먼저 꺼요. 그다음 스트리퍼가 돌아요.
-{% endhint %}
+리스트를 역순으로 순회하며 `RemoveAt`해야 인덱스가 어긋나지 않는다.
 
-## 6. 패스 통째로 끄기
+### 4.4 패스 통째로 끄기
 
-외곽선을 끈 머티리얼은 키워드가 꺼져도 Outline 패스가 **여전히 실행**돼요(Day 12의 "화면 밖 한 점" 트릭). 그래서 정리기가 **패스 자체를** 꺼요. [CharacterToonKeywordSanitizer.cs L59–62](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonKeywordSanitizer.cs#L59-L62)
+외곽선을 끈 머티리얼도 키워드만 꺼서는 Outline 패스가 실행된다(Day 12의 "화면 밖 한 점" 방식). 정리기가 패스 자체를 끈다. [CharacterToonKeywordSanitizer.cs L59–62](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonKeywordSanitizer.cs#L59-L62)
 
 ```csharp
 bool outlineOn = m.IsKeywordEnabled("_USE_OUTLINE");
@@ -128,32 +171,55 @@ m.SetShaderPassEnabled(OutlinePassTag, outlineOn);   // "SRPDefaultUnlit" 패스
 
 ![Outline 패스 켬/끔](../.gitbook/assets/day19-outline-pass-toggle.png)
 
-화면은 같지만, 끈 쪽은 드로우콜과 (스키닝된) 정점 계산이 사라져요(B4).
+화면은 같지만 끈 쪽은 드로우콜과 스키닝된 정점 계산이 사라진다(B4).
 
-## 7. 인스펙터 꾸미기: ShaderGUI
+### 4.5 ShaderGUI
 
-[CharacterToon.shader L943](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L943)의 `CustomEditor "CharacterToon.Editor.CharacterToonShaderGUI"`가 머티리얼 인스펙터를 C#으로 그려요. [CharacterToonShaderGUI.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonShaderGUI.cs)
+[CharacterToon.shader L943](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Shaders/CharacterToon.shader#L943)의 `CustomEditor "CharacterToon.Editor.CharacterToonShaderGUI"`가 머티리얼 인스펙터를 C#으로 그린다. [CharacterToonShaderGUI.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonShaderGUI.cs)
 
-- 섹션 접기, 파트에 맞는 옵션만 보여 주기
-- Surface 모드에 맞춰 Blend/ZWrite/큐 설정 (Day 18)
-- `ValidateMaterial`에서 정리기 실행, Depth Priming 경고(Day 13)
+| 기능 | 설명 |
+|---|---|
+| 섹션 접기, 파트별 옵션 표시 | 현재 파트에 맞는 옵션만 보여 준다 |
+| Surface 모드 | Blend/ZWrite/큐를 설정한다(Day 18) |
+| `ValidateMaterial` | 정리기 실행, Depth Priming 경고(Day 13) |
 
-## 8. 해보기 (10분)
+## 5. 주의
 
-1. **사본 세기** — `shader_feature_local _ _A`가 3줄, `multi_compile _ _B _C`가 1줄이면 이론상 최대 몇 가지? (`2 × 2 × 2 × 3 = 24`)
-2. **꼬리말 고르기** — 새 옵션 `_USE_GLITTER`가 프래그먼트에서만 반짝이를 더하고, 머티리얼 체크박스로 켠다면? (`#pragma shader_feature_local_fragment _ _USE_GLITTER`)
-3. **키워드 vs 숫자** — "마스크 텍스처를 쓸까 말까"처럼 텍스처 한 번 읽기만 아끼는 옵션은 무엇이 좋을까요? (숫자 분기 — 사본이 안 늘어요)
-4. **(Unity가 있다면)** 머티리얼 인스펙터 우측 상단 ⋮ → Debug 모드로 바꾸면 **Valid Keywords**와 **Invalid Keywords**가 보여요. 체크박스를 켜고 끄며 키워드 목록이 바뀌는 걸 확인하세요.
+{% hint style="warning" %}
+CAUTION: 이 프로젝트에서 실제로 있었던 일(A1, Sanitizer)이다. (1) 셰이더 이름을 `com.blueigloo/...`로 바꿨는데 스트리퍼는 옛 이름을 찾고 있어 아무것도 버리지 못했다(A1). 이름을 고치고 [CompileCheck.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CompileCheck.cs)에 C#이 찾는 셰이더 이름이 실제로 있는지 검사하는 기능을 추가했다. (2) 스트리퍼가 동작하자 `_UseAngelRing` 기본값이 1이라 헤어가 아닌 머티리얼 대부분이 "헤어 아님 + 천사 고리 켬" 조합이 됐고, 그 조합이 제거되어 머티리얼에 쓸 배리언트가 하나도 없어졌다. (3) 그래서 빌드 전에 머티리얼을 정리하는 [CharacterToonKeywordSanitizer.cs](https://github.com/JJH0204/GitBook/blob/main/GameDev/toon-shader-study/source/CharacterToon/Editor/CharacterToonKeywordSanitizer.cs)를 만들었다.
+{% endhint %}
 
-## 9. 오늘의 액기스
+{% hint style="warning" %}
+CAUTION: `shader_feature` 키워드를 스크립트에서 런타임에 `Material.EnableKeyword`로 켜는 용도로 쓰면 빌드에서 해당 배리언트가 없을 수 있다. 런타임에 바뀌는 키워드는 `multi_compile`로 선언한다.
+{% endhint %}
 
-👉 [ESSENCE.md — Day 19](essence.md#day-19)
+{% hint style="info" %}
+NOTE: 전역 키워드 수 한도와 `_local` 키워드 수 한도는 Unity 버전마다 다르다. 사용하는 버전의 문서에서 확인한다.
+{% endhint %}
 
-## 더 읽을거리
+## 6. 실습 (10분)
 
-- [Unity — 셰이더 배리언트와 키워드](https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html) · [배리언트 스트리핑](https://docs.unity3d.com/Manual/shader-variant-stripping.html) · [pragma 지시어](https://docs.unity3d.com/Manual/SL-PragmaDirectives.html)
-- [Unity — Material.SetShaderPassEnabled](https://docs.unity3d.com/ScriptReference/Material.SetShaderPassEnabled.html) · [MaterialPropertyDrawer (Toggle, KeywordEnum…)](https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html)
-- 수학: 2의 거듭제곱 — 스위치 n개로 만들 수 있는 조합은 2ⁿ개 (경우의 수)
+1. `shader_feature_local _ _A`가 3줄, `multi_compile _ _B _C`가 1줄일 때 이론상 최대 배리언트 수를 계산한다. → 결과: 2 × 2 × 2 × 3 = 24.
+2. 프래그먼트에서만 반짝이를 더하고 머티리얼 체크박스로 켜는 새 옵션 `_USE_GLITTER`의 선언을 쓴다. → 결과: `#pragma shader_feature_local_fragment _ _USE_GLITTER`.
+3. "마스크 텍스처를 읽을까 말까"처럼 텍스처 1회 읽기만 아끼는 옵션에 키워드와 숫자 분기 중 무엇이 적합한지 판단한다. → 결과: 숫자 분기. 배리언트가 늘지 않는다.
+4. (Unity 사용 시) 머티리얼 인스펙터 우측 상단 메뉴에서 Debug 모드를 연다. → 결과: Valid Keywords와 Invalid Keywords 목록이 보인다. 체크박스를 켜고 끄면 목록이 바뀐다. 되돌리려면 같은 메뉴에서 Normal 모드로 바꾼다.
+
+## 7. 참조
+
+- 오늘의 액기스: [ESSENCE.md — Day 19](essence.md#day-19)
+- [Unity — 셰이더 배리언트와 키워드](https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html), [배리언트 스트리핑](https://docs.unity3d.com/Manual/shader-variant-stripping.html), [pragma 지시어](https://docs.unity3d.com/Manual/SL-PragmaDirectives.html)
+- [Material.SetShaderPassEnabled](https://docs.unity3d.com/ScriptReference/Material.SetShaderPassEnabled.html), [MaterialPropertyDrawer (Toggle, KeywordEnum 등)](https://docs.unity3d.com/ScriptReference/MaterialPropertyDrawer.html)
+- 수학: 스위치 n개로 만들 수 있는 조합은 2^n개(경우의 수)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] `multi_compile`과 `shader_feature`를 언제 각각 쓰는지 내 프로젝트의 옵션 하나로 예를 든다.
+- [ ] 키워드로 만들 옵션과 숫자 분기로 둘 옵션을 가르는 내 기준을 적는다.
+- [ ] 스트리퍼가 조합을 제거해 머티리얼이 깨질 수 있는 상황을 내 말로 설명한다.
 
 ---
 

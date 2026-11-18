@@ -1,121 +1,135 @@
 # 정규 표현식 상세 (Regex)
 
-{% hint style="info" %}
-특정한 패턴으로 문자열을 표현하는 식
+## 작업 식별
 
-* 일반적으로 문자열 내에서 원하는 패턴의 문자열을 찾거나 치환할 때 사용한다.
-* 정규 표현식에 부합하는 문자열의 경우, 정규 표현식 혹은 패턴에 '매치한다'고 표현
-{% endhint %}
+| 항목 | 내용 |
+|---|---|
+| Task ID | PRG-PYT-003-DO |
+| 유형 | D&O (문법 원리) + REF 표 + 예제 코드 |
+| 목적 | 정규 표현식 문법, Python `re` 모듈과 JavaScript `RegExp`의 사용법을 설명한다 |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정정했으며 이 환경에서 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-#### 정규 표현식의 필요성
+## 1. 정의
 
-* 주로 로직을 수행하기 전, 이용자가 입력한 값을 검증하기 위해 사용된다.
-* 이메일 뿐만 아니라 전화번호, 주민등록번호, 웹 사이트 주소 등 입력 값이 특정 형식이어야 하는 경우에 유용하게 쓰인다.
-* 매우 긴 문자열에서 원하는 형식의 문자열을 검색하여 추출할 때도 사용된다.
+정규 표현식(regular expression)은 특정한 패턴으로 문자열을 표현하는 식이다. 문자열에서 원하는 패턴을 찾거나 치환할 때 쓴다. 정규 표현식에 부합하는 문자열은 그 패턴에 "매치한다"고 한다.
 
-## 정규 표현식 구성
+| 용도 | 설명 |
+|---|---|
+| 입력값 검증 | 로직을 수행하기 전 이메일, 전화번호, 웹 사이트 주소 같은 입력값이 특정 형식인지 검사한다 |
+| 검색·추출 | 긴 문자열에서 원하는 형식의 문자열을 찾아 뽑는다 |
+| 치환 | 패턴에 매치한 부분을 다른 문자열로 바꾼다 |
 
-### 정규 표현식 패턴
+패턴은 `'패턴'` 또는 `/패턴/` 형태로 쓴다. `/`로 감싸면 뒤에 플래그를 붙일 수 있다(`/패턴/플래그`). `/패턴/` 표기는 JavaScript 등에서 쓰며 Python은 문자열로 쓴다.
 
-* 정규 표현식은 '패턴' 혹은 /패턴/ 의 형태로 작성한다.
-* /로 패턴을 감싸는 경우, / 뒤에 플래그를 작성할 수 있다.
+## 2. 구성 요소
 
-#### 매치
+### 2-1. 매치
 
-| **패턴**                                                                        | **설명**                                                                                   | **예시**                                                                                            |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 문자 혹은 문자열                                                                     | 해당 문자 혹은 문자열과 매치합니다.                                                                     | <p>dreamhack → Hello <strong>dreamhack</strong><br><br>/c/ → Hello dreamha<strong>c</strong>k</p> |
-| `.`                                                                           | 모든 문자와 매치합니다.                                                                            | d.eamhack → Hello **dxeamhack**                                                                   |
-| `\|`                                                                          | 앞 또는 뒤의 패턴과 매치합니다.                                                                       | hi\|dream → Hello **dream**hack                                                                   |
-| `[]`                                                                          | `[]`안의 문자와 매치합니다.                                                                        | \[aeiou] → H**i**                                                                                 |
-| `[^ ]`                                                                        | `^`뒤의 패턴을 제외한 나머지와 매치합니다.                                                                | \[^aeiou] → **H**i                                                                                |
-| `^`                                                                           | 어떤 문자열의 시작이 특정 패턴인 경우 매치합니다.                                                             | <p>^dream → <strong>dream</strong>hack Hello<br><br>^dream → Hello dreamhack</p>                  |
-| `$`                                                                           | 어떤 문자열의 끝이 특정 패턴인 경우 매치합니다.                                                              | <p>hack$ → dreamhack Hello<br><br>hack$ → Hello dream<strong>hack</strong></p>                    |
-| `\`                                                                           | <p><code>\</code>뒤의 특수 문자와 매치합니다.<br><br>특별한 목적으로 사용되는 특수 문자를 문자 그대로 쓰기 위한 이스케이핑입니다.</p> | hack$ → Hello dream**hack$**                                                                      |
-| <p><code>[a-z]</code><br><br><code>[A-Z]</code><br><br><code>[0-9]</code></p> | 두 문자 사이 범위의 문자와 매치합니다.                                                                   | \[b-d] → ha**c**k                                                                                 |
-| `\w`                                                                          | <p>알파벳 또는 숫자 또는 <code>_</code>와 매치합니다.<br><br><code>[A-Za-z0-9_]</code></p>              | \w → **a**!                                                                                       |
-| `\d`                                                                          | <p>숫자와 매치합니다.<br><br><code>[0-9]</code></p>                                              | \d → a**1**                                                                                       |
-| `\s`                                                                          | <p>공백 문자와 매치합니다.<br><br><code>[ \t\n\r\f\v]</code></p>                                  |                                                                                                   |
-
-#### 수량자
-
-| **패턴**     | **설명**                                                         | **예시**                                                                                                                                                                                                                                       |
-| ---------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `*`        | 앞에 나온 문자가 0개 이상이면 매치합니다.                                       | <p>Hac*k → <strong>Hak</strong><br><br>Hac*k → <strong>Hack</strong></p>                                                                                                                                                                     |
-| `+`        | 앞에 나온 문자가 1개 이상이면 매치합니다.                                       | <p>Hac+k → Hak<br><br>Hac+k → <strong>Hack</strong></p>                                                                                                                                                                                      |
-| `?`        | 앞에 나온 문자가 0개 혹은 1개이면 매치합니다.                                    | <p>Hac?k → <strong>Hak</strong><br><br>Hac?k → <strong>Hack</strong></p>                                                                                                                                                                     |
-| 수량자?       | <p>수량자 뒤에 <code>?</code>를 붙이면 게으른 수량자로,<br>최소한의 문자만 매치합니다.</p> | <p>&#x3C;p>.*&#x3C;/p> → <strong>&#x3C;p>Hello&#x3C;/p>&#x3C;p>Hi&#x3C;/p></strong><br><br>&#x3C;p>.*?&#x3C;/p> → <strong>&#x3C;p>Hello&#x3C;/p></strong>&#x3C;p>Hi&#x3C;/p><br><br>Hack+? → <strong>Hack</strong><br><br>Hack+? → Hackk</p> |
-| `{n}`      | 앞에 나온 문자가 정확히 n개이면 매치합니다.                                      | Hac{3}k → **Haccck**                                                                                                                                                                                                                         |
-| `{n,}`    | 앞에 나온 문자가 n개 이상이면 매치합니다.                                       | Hac{2,}k → **Haccck**                                                                                                                                                                                                                        |
-| `{n1,n2}` | 앞에 나온 문자가 n1개 이상, n2개 이하면 매치합니다.                               | <p>Hac{2,3}k → <strong>Hacck</strong><br><br>Hac{2,3}k → <strong>Haccck</strong></p>                                                                                                                                                         |
-
-#### 그룹화
-
-| **패턴** | **설명**                            | **예시**                 |
-| ------ | --------------------------------- | ---------------------- |
-| `()`   | `()`로 감싼 부분을 그룹화하여 하나의 문자처럼 여깁니다. | (ha)+ck → **hahahack** |
+| 패턴 | 설명 | 예시 |
+|---|---|---|
+| 문자 또는 문자열 | 해당 문자 또는 문자열과 매치한다 | `dreamhack` → Hello **dreamhack** |
+| `.` | 개행을 제외한 모든 문자 한 개와 매치한다(`s` 플래그 사용 시 개행 포함) | `d.eamhack` → Hello **dxeamhack** |
+| `\|` | 앞 또는 뒤의 패턴과 매치한다 | `hi\|dream` → Hello **dream**hack |
+| `[]` | 대괄호 안의 문자 중 하나와 매치한다 | `[aeiou]` → H**i** |
+| `[^ ]` | `^` 뒤에 나열한 문자를 제외한 문자 하나와 매치한다 | `[^aeiou]` → **H**i |
+| `^` | 문자열의 시작이 패턴인 경우 매치한다 | `^dream` → **dream**hack Hello (Hello dreamhack은 매치하지 않는다) |
+| `$` | 문자열의 끝이 패턴인 경우 매치한다 | `hack$` → Hello dream**hack** (dreamhack Hello는 매치하지 않는다) |
+| `\` | 뒤의 특수 문자를 문자 그대로 매치한다(이스케이프) | `hack\$` → Hello dream**hack$** |
+| `[a-z]` `[A-Z]` `[0-9]` | 두 문자 사이 범위의 문자와 매치한다 | `[b-d]` → ha**c**k |
+| `\w` | 단어 문자와 매치한다. ASCII 기준 `[A-Za-z0-9_]` | `\w` → **a**! |
+| `\d` | 숫자와 매치한다. ASCII 기준 `[0-9]` | `\d` → a**1** |
+| `\s` | 공백 문자와 매치한다. `[ \t\n\r\f\v]` | 공백, 탭, 개행 |
 
 {% hint style="info" %}
-탐욕적 수량자와 게으른 수량자
-
-기본적으로 정규 표현식의 수량자는 탐욕적(greedy) 수량자에 속한다. 탐욕적 수량자는 가능한 많은 문자를 매치한다. 과한 매치를 막기 위해 등장한 것이 게으른(lazy) 수량자다. 게으른 수량자는 기존 수량자의 뒤에 `?`를 붙인 형태로, 가능한 적은 문자를 매치한다.
+NOTE: Python 3의 `str` 패턴에서 `\w`와 `\d`는 기본적으로 유니코드 문자·숫자와 매치한다(한글 포함). 위 ASCII 범위는 `re.ASCII` 플래그를 줄 때와 JavaScript의 동작이다.
 {% endhint %}
 
-### 정규 표현식 플래그
+### 2-2. 수량자
 
-* 검색의 옵션을 지정하는 역할을 수행한다.
-* 일반적으로 /패턴/플래그 형식으로 작성한다.
+| 패턴 | 설명 | 예시 |
+|---|---|---|
+| `*` | 앞의 문자가 0개 이상이면 매치한다 | `Hac*k` → **Hak**, **Hack** |
+| `+` | 앞의 문자가 1개 이상이면 매치한다 | `Hac+k` → Hak(불일치), **Hack** |
+| `?` | 앞의 문자가 0개 또는 1개이면 매치한다 | `Hac?k` → **Hak**, **Hack** |
+| `{n}` | 정확히 n개이면 매치한다 | `Hac{3}k` → **Haccck** |
+| `{n,}` | n개 이상이면 매치한다 | `Hac{2,}k` → **Haccck** |
+| `{n1,n2}` | n1개 이상 n2개 이하이면 매치한다 | `Hac{2,3}k` → **Hacck**, **Haccck** |
+| 수량자 + `?` | 게으른(lazy) 수량자. 최소한의 문자만 매치한다 | `<p>.*?</p>` → **\<p>Hello\</p>**\<p>Hi\</p> |
 
-| **플래그** | **설명**                                                                               | **예시**                                                                                                                                                         |
-| ------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| g       | <p><strong>g</strong>lobal search<br><br>매치하는 모든 문자/문자열을 검색합니다.</p>                  | <p>/[aeiou]/ → H<strong>e</strong>llo dreamhack<br><br>/[aeiou]/g → H<strong>e</strong>ll<strong>o</strong> dr<strong>ea</strong>mh<strong>a</strong>ck</p>    |
-| i       | <p><strong>i</strong>gnore case<br><br>대소문자를 구분하지 않고 검색합니다.</p>                      | <p>/h/g → Hello dream<strong>h</strong>ack<br><br>/h/ig → <strong>H</strong>ello dream<strong>h</strong>ack</p>                                                |
-| m       | <p><strong>m</strong>ultiline<br><br>여러 줄에서 검색합니다.</p>                               | <p>/^Hello/g → <strong>Hello</strong> dream<br><br>Hello hack<br><br>/^Hello/gm → <strong>Hello</strong> dream<br><br><strong>Hello</strong> hack</p>          |
-| s       | <p><strong>s</strong>ingle line(dotall)<br><br>메타문자 <code>.</code>가 개행문자도 포함합니다.</p> | <p>/Hello.+hack/g → Hello dream<br><br><strong>Hello hack</strong><br><br>/Hello.+hack/s → <strong>Hello dream</strong><br><br><strong>Hello hack</strong></p> |
+{% hint style="warning" %}
+CAUTION: `{n,}`와 `{n1,n2}`의 쉼표 앞뒤에 공백을 넣으면 수량자로 해석되지 않고 글자 그대로 매치한다. `{2, 3}`이 아니라 `{2,3}`으로 쓴다.
+{% endhint %}
 
-### Python 정규 표현식
+탐욕적 수량자와 게으른 수량자는 다음과 같이 다르다.
 
-* Python에서는 re 모듈을 통해 정규 표현식을 사용할 수 있다.
-* re 모듈의 함수를 호출하여 패턴에 일치하는 문자열을 검색하거나 치환하는 등 다양한 동작을 수행한다.
+| 구분 | 패턴 | 입력 `<p>Hello</p><p>Hi</p>`에서 매치 |
+|---|---|---|
+| 탐욕적(greedy, 기본) | `<p>.*</p>` | `<p>Hello</p><p>Hi</p>` 전체 |
+| 게으른(lazy) | `<p>.*?</p>` | `<p>Hello</p>` |
 
-| **함수**                                 | **설명**                            | **반환 값**                                                                                                                |
-| -------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `re.compile(pattern, flags)`           | 정규 표현식 패턴을 컴파일합니다.                | 패턴 객체를 반환합니다. 만들어진 패턴 객체는 변수에 저장하여 사용할 수 있습니다.                                                                          |
-| `re.search(pattern, string, flags)`    | 문자열 내에서 패턴에 처음으로 매치하는 문자열을 검색합니다. | <p>매치하면 Match 객체를 반환하고, 없으면 None을 반환합니다.<br><br>Match 객체의 <code>group()</code> 메소드를 사용하여 매치된 문자열만 얻을 수 있습니다.</p> |
-| `re.match(pattern, string, flags)`     | 문자열 시작 부분에서 패턴에 매치하는 문자열을 검색합니다.  |                                                                                                                         |
-| `re.fullmatch(pattern, string, flags)` | 전체 문자열이 패턴과 정확하게 매치하는지 확인합니다.     |                                                                                                                         |
-| `re.findall(pattern, string, flags)`   | 문자열 내에서 패턴에 매치하는 모든 문자열을 검색합니다.   | 모든 문자열을 리스트 형식으로 반환합니다. 각 문자열은 리스트의 인덱스로 접근합니다.                                                                         |
-| `re.finditer(pattern, string, flags)`  | 모든 매치의 Match 객체를 이터레이터로 반환합니다.        |                                                                                                                         |
+### 2-3. 그룹화
 
-#### flags (Python)
+| 패턴 | 설명 | 예시 |
+|---|---|---|
+| `()` | 괄호로 감싼 부분을 하나의 단위로 묶는다 | `(ha)+ck` → **hahahack** |
 
-* python에서 정규 표현식 플래그는 함수의 flags 인자 값으로 지정하거나, 패턴에 인라인 형식으로 작성한다.
+### 2-4. 플래그
 
-| **플래그** | **flags 인자 값**       | **인라인 플래그** |
-| ------- | -------------------- | ----------- |
-| i       | re.I (re.IGNORECASE) | (?i)        |
-| m       | re.M (re.MULTILINE)  | (?m)        |
-| s       | re.S (re.DOTALL)     | (?s)        |
-| g       | 자동으로 적용됩니다.          |             |
+플래그는 검색 옵션이다. `/패턴/플래그` 형식으로 쓴다.
 
-#### Raw String (r-string)
+| 플래그 | 이름 | 설명 | 예시 |
+|---|---|---|---|
+| `g` | global | 매치하는 모든 부분을 검색한다 | `/[aeiou]/g` → H**e**ll**o** dr**ea**mh**a**ck |
+| `i` | ignore case | 대소문자를 구분하지 않는다 | `/h/ig` → **H**ello dream**h**ack |
+| `m` | multiline | `^`와 `$`가 각 줄의 시작과 끝에 매치한다 | `/^Hello/gm` → 줄마다 시작하는 Hello |
+| `s` | single line(dotall) | `.`가 개행 문자도 포함한다 | `/Hello.+hack/s` → 줄을 넘어 매치 |
 
-* python에서 사용하는 이스케이프 문자와의 충돌을 고려해 패턴을 작성할 때 Raw String을 활용한다.
-* Raw String은 문자열 앞에 'r'을 붙여 나타낸다.
-* Raw String은 이스케이프 문자를 문자 그대로 인식하는 특수한 문자열이다.
+## 3. Python 정규 표현식
+
+Python은 `re` 모듈로 정규 표현식을 쓴다.
+
+| 함수 | 설명 | 반환 값 |
+|---|---|---|
+| `re.compile(pattern, flags)` | 패턴을 컴파일한다 | 패턴 객체. 변수에 저장해 재사용한다 |
+| `re.search(pattern, string, flags)` | 문자열 안에서 처음 매치하는 곳을 찾는다 | 매치하면 Match 객체, 없으면 `None`. `group()`으로 매치된 문자열을 얻는다 |
+| `re.match(pattern, string, flags)` | 문자열의 시작에서 매치하는지 본다 | Match 객체 또는 `None` |
+| `re.fullmatch(pattern, string, flags)` | 전체 문자열이 패턴과 정확히 매치하는지 본다 | Match 객체 또는 `None` |
+| `re.findall(pattern, string, flags)` | 매치하는 모든 부분을 찾는다 | 문자열 리스트. 패턴에 그룹이 있으면 그룹 내용(그룹이 여럿이면 튜플)의 리스트 |
+| `re.finditer(pattern, string, flags)` | 매치하는 모든 부분을 찾는다 | Match 객체의 이터레이터 |
+| `re.sub(pattern, repl, string)` | 매치한 부분을 `repl`로 치환한다 | 치환된 문자열 |
+
+### 3-1. flags
+
+Python의 플래그는 함수의 `flags` 인자로 주거나 패턴 앞에 인라인으로 쓴다.
+
+| 플래그 | flags 인자 값 | 인라인 |
+|---|---|---|
+| `i` | `re.I` (`re.IGNORECASE`) | `(?i)` |
+| `m` | `re.M` (`re.MULTILINE`) | `(?m)` |
+| `s` | `re.S` (`re.DOTALL`) | `(?s)` |
+| `g` | 없음. `findall`, `finditer`, `sub`는 항상 모든 매치를 대상으로 한다 | 없음 |
+
+{% hint style="info" %}
+NOTE: Python 3.11 이상에서는 인라인 전역 플래그(`(?i)` 등)를 패턴의 맨 앞에만 쓸 수 있다.
+{% endhint %}
+
+### 3-2. 원시 문자열(raw string)
+
+Python 문자열의 이스케이프(`\t` 등)와 정규 표현식의 이스케이프(`\d` 등)가 충돌하므로 패턴은 원시 문자열로 쓴다. 문자열 앞에 `r`을 붙이면 `\`를 이스케이프로 해석하지 않는다.
 
 {% code title="예시.py" %}
 ```python
-print('\t'+'Hi')
-# 결과:        Hi
+print('\t' + 'Hi')
+# 결과: (탭)Hi
 
-# Raw String
-print(r'\t'+'Hi')
+# 원시 문자열
+print(r'\t' + 'Hi')
 # 결과: \tHi
 ```
 {% endcode %}
 
-아래 코드는 정규 표현식을 활용해 전체 문자열에서 알파벳 대문자만 출력하는 예시 코드다.
+### 3-3. 예제: 대문자만 추출
 
 {% code title="example.py" %}
 ```python
@@ -123,72 +137,96 @@ import re
 
 result = re.findall('[A-Z]', 'Hello, DreamHack!')
 
-#same
+# 위와 같은 결과
 pattern = re.compile('[A-Z]')
 result = pattern.findall('Hello, DreamHack!')
 
 print(result)
-
 # 결과: ['H', 'D', 'H']
 ```
 {% endcode %}
 
-### JavaScript 정규 표현식
+### 3-4. 예제: Match 객체 사용
 
-* 2가지 방법으로 정규 표현식을 사용할 수 있다.
+```python
+import re
 
-{% stepper %}
-{% step %}
-### 리터럴 방식
+m = re.search(r'\d+', 'abc 123 def')
+if m:
+    print(m.group())   # 123
+    print(m.span())    # (4, 7)
+```
 
-* `/패턴/` 혹은 `/패턴/플래그` 형태로 작성합니다.
-{% endstep %}
+## 4. JavaScript 정규 표현식
 
-{% step %}
-### RegExp 객체 생성 방식
+JavaScript는 두 가지 방법으로 정규 표현식을 만든다.
 
-* `new RegExp(정규 표현식 리터럴, '플래그')` 혹은 `new RegExp('패턴', '플래그')`로 객체를 생성합니다.
-{% endstep %}
-{% endstepper %}
+| 방식 | 형태 |
+|---|---|
+| 리터럴 | `/패턴/` 또는 `/패턴/플래그` |
+| `RegExp` 객체 | `new RegExp('패턴', '플래그')` 또는 `new RegExp(/패턴/, '플래그')` |
 
-아래 표에 있는 함수들을 호출하여 패턴에 매치하는 문자열을 검색한다.
-
-| **함수**                  | **설명**                                       |
-| ----------------------- | -------------------------------------------- |
-| `pattern.exec(string)`  | 패턴에 처음으로 매치하는 문자열의 일치 정보를 나타내는 결과 배열을 반환합니다. |
-| `pattern.test(string)`  | 패턴에 매치하는 부분이 있으면 `true`, 없으면 `false`를 반환합니다. |
-| `string.match(pattern)` | 패턴에 매치하는 모든 문자열을 배열 형태로 반환합니다.               |
-
-javascript 정규 표현식을 활용해 전체 문자열에서 숫자만 출력하는 예시 코드다.
+| 함수 | 설명 |
+|---|---|
+| `pattern.exec(string)` | 처음 매치한 부분의 정보(결과 배열)를 반환한다. 없으면 `null` |
+| `pattern.test(string)` | 매치하는 부분이 있으면 `true`, 없으면 `false` |
+| `string.match(pattern)` | `g` 플래그가 있으면 매치한 모든 문자열의 배열, 없으면 `exec`와 같은 결과 |
 
 {% code title="example.js" %}
 ```javascript
 const r = /\d/g;
-// same
-// const r = new RegExp('\\d','g');
-// const r = new RegExp(/\d/,'g');
+// 위와 같은 정규 표현식
+// const r = new RegExp('\\d', 'g');
+// const r = new RegExp(/\d/, 'g');
 
 const str = 'H3ll0, DreamH4ck!';
 const result = str.match(r);
 console.log(result);
-
 // 결과: ['3', '0', '4']
 ```
 {% endcode %}
 
-### 정규 표현식 연습
+## 5. 이메일 패턴 해설
 
-* 올바른 패턴 사용이 맞는지 검증이 필요하기에 아래 사이트를 활용한다.
-* https://regexr.com/ : 정규 표현식을 작성하고 문자열이 패턴에 매치하는지 확인할 수 있습니다. 패턴에 대한 해석도 제공합니다.
-* https://regexper.com/ : 정규 표현식 시각화 도구로, 작성한 패턴을 시각화하여 알기 쉽게 보여줍니다.
-* https://tools.dreamhack.games/cyberchef : 정규 표현식을 작성하고 문자열이 패턴에 매치하는지 확인하거나, 자주 쓰는 정규 표현식 목록을 확인할 수 있습니다. **Operations**에서 **Regular expression**을 선택하여 사용합니다.
-* 이메일 정규 표현식 `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`을 [Regexper](https://regexper.com/)를 사용해서 도식화한 모습
+원본의 이메일 패턴 `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`는 Python `re`에서 `[\w-\.]`의 `\w-\.`가 범위로 해석되어 `bad character range` 오류가 난다. 하이픈을 문자 클래스의 끝에 두어 정정한다.
 
-도식도 설명:
+```python
+import re
 
-* `^`: 문자열의 시작을 매치합니다. 도식도에서도 마찬가지로 Start of line으로 나타납니다.
-* `[\w-\.]+`: 이메일의 앞 부분을 매치합니다. word(`\w`)와 하이픈(`-`), 마침표(`.`) 문자 중 하나 이상이 여러 번 반복되는 문자열을 매치합니다. 여기서 word(`\w`)는 알파벳 소문자, 알파벳 대문자, 숫자, 그리고 언더스코어(`_`)를 나타냅니다.
-* `@`: 이메일 가운데에 위치한 `@` 문자를 매치합니다.
-* `([\w-]+\.)+`: `@` 문자 뒤의 도메인 부분을 매치합니다. word(`\w`)와 하이픈(`-`) 문자 중 하나 이상이 여러 번 반복되는 문자열인데, 마지막에 마침표(`.`)가 있는 문자열을 매치합니다. 그런데 이 자체가 여러 번 반복될 수 있도록 `(`와 `)`로 감싼 후 가장 우측에 `+` 기호를 사용했기 때문에 해당 정규 표현식은 `domain.`도 매치하고, `subdomain.domain.` 도 매치합니다.
-* `[\w-]{2,4}`: 이 부분은 도메인 이름의 최상위 도메인(`com`, `net` 등)을 매치합니다. word(`\w`)와 하이픈(-) 문자 중 하나 이상이 2개에서 4개까지 반복되는 문자열을 매치합니다.
-* `$`: 문자열의 끝을 매치합니다. 도식도에서도 마찬가지로 End of line으로 나타납니다.
+pattern = r'^[\w.-]+@([\w-]+\.)+[\w-]{2,}$'
+print(bool(re.fullmatch(pattern, 'user@example.com')))   # True
+```
+
+| 부분 | 의미 |
+|---|---|
+| `^` | 문자열의 시작 |
+| `[\w.-]+` | 이메일 앞부분. 단어 문자, 마침표, 하이픈이 1개 이상 |
+| `@` | `@` 문자 |
+| `([\w-]+\.)+` | 도메인 레이블과 마침표의 반복. `domain.`과 `sub.domain.` 모두 매치한다 |
+| `[\w-]{2,}` | 최상위 도메인(`com`, `net`, `museum` 등). 원본의 `{2,4}`는 `.museum` 같은 긴 TLD를 놓치므로 `{2,}`로 정정했다 |
+| `$` | 문자열의 끝 |
+
+{% hint style="warning" %}
+CAUTION: 정규 표현식으로 이메일 형식을 완전히 검증할 수 없다. 이 패턴은 형식 점검용이며 실제 존재 여부는 확인 메일로 검증한다.
+{% endhint %}
+
+{% hint style="info" %}
+NOTE: 정규 표현식 라이브러리는 문법이 조금씩 다르다. `\w`는 Python 3 `str`에서 유니코드, JavaScript에서 ASCII 기준이다.
+{% endhint %}
+
+## 6. 참조
+
+* [RegExr](https://regexr.com/): 패턴을 쓰고 매치를 확인한다. 패턴 해석도 제공한다.
+* [Regexper](https://regexper.com/): 패턴을 도식으로 보여 준다.
+* [CyberChef (드림핵 도구)](https://tools.dreamhack.games/cyberchef): Operations에서 Regular expression을 선택해 쓴다.
+* 이 문서의 개념 설명은 드림핵 정규 표현식 강의를 참고해 정리한 것이다.
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 탐욕적 수량자와 게으른 수량자의 차이를 HTML 태그 추출 예로 설명하면?
+- [ ] `re.search`, `re.match`, `re.fullmatch`를 어떤 상황에서 구분해 쓰는가?
+- [ ] 내가 직접 정규 표현식으로 검증하거나 추출해 본 데이터는 무엇인가?

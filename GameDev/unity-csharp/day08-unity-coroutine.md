@@ -1,17 +1,38 @@
 # Day 08 · Unity 코루틴의 내부 🎮
 
-> 2주차 비동기 · 60분 · 준비물: .NET SDK (`dotnet new console -o practice/day08`), 🎮 Unity 6 (실습 B, 선택)
+## 작업 식별
 
-## 오늘의 목표
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-UCS-009-DO |
+| 유형 | D&O (개념) + 확인 실습 |
+| 목적 | Unity 코루틴이 스레드가 아니라 Unity가 보관한 `IEnumerator`의 `MoveNext()` 호출임을 설명하고, 재개 시점·수명·한계를 정리한다. |
+| 적용 대상 | .NET SDK 8 이상 콘솔 앱(실습 A), Unity 6 (실습 B, 선택) |
+| 소요 시간 | 60분 (2주차 비동기) |
+| 준비물 | `dotnet new console -o practice/day08`, 🎮 Unity 6 (실습 B, 선택) |
+| 확인 상태 | 미검증 (코드를 읽고 작성했으며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
+
+## 1. 학습 목표
+
 - 코루틴이 스레드가 아니라 "Unity가 보관한 `IEnumerator`에 `MoveNext()`를 호출하는 것"임을 설명할 수 있다.
 - `yield return` 값에 따라 코루틴이 프레임 루프의 어디에서 재개되는지 순서대로 말할 수 있다.
 - 코루틴의 수명(`enabled = false`는 못 멈춘다)과 한계(반환값 없음, `try/catch` 안 `yield`, 할당)를 설명할 수 있다.
 
----
+## 2. 구성 요소
 
-## 1. 읽기 (20분)
+| 요소 | 위치 | 역할 |
+|---|---|---|
+| `StartCoroutine(IEnumerator)` | `MonoBehaviour` | 상태 기계를 보관하고 첫 `yield return`까지 동기 실행한 뒤 `Coroutine`을 돌려준다 |
+| `yield return` 값 | 코루틴 본문 | Unity가 다음 `MoveNext()` 시점을 정하는 기준 |
+| `YieldInstruction` 계열 | `WaitForSeconds`, `WaitForFixedUpdate`, `WaitForEndOfFrame` 등 | 대기 조건을 나타내는 객체 |
+| `CustomYieldInstruction` | 사용자 정의 | `keepWaiting`이 `false`가 될 때까지 대기 |
+| `StopCoroutine` / `StopAllCoroutines` | `MonoBehaviour` | 코루틴을 명시적으로 멈춘다 |
+| 소유자(`MonoBehaviour`) | 코루틴을 시작한 컴포넌트 | 게임 오브젝트의 활성·파괴 상태에 코루틴 수명이 묶인다 |
 
-### 1-1. 코루틴 = 보관된 `IEnumerator` + 정해진 시점의 `MoveNext()`
+## 3. 동작 원리
+
+### 3-1. 코루틴 = 보관된 `IEnumerator` + 정해진 시점의 `MoveNext()`
 
 [Day 07](day07-iterator-yield.md)에서 `yield return` 메서드는 상태 기계 객체(`IEnumerator`)를 돌려줄 뿐이고, 본문은 `MoveNext()`를 부를 때마다 조금씩 실행된다고 했다. Unity 코루틴은 그 **소비자를 Unity가 맡은 것**이다.
 
@@ -20,7 +41,7 @@
 3. `yield return`으로 나온 값(`Current`)을 보고 Unity가 "언제 다시 `MoveNext()`를 부를지" 정한다.
 4. 메인 스레드에서만 돈다. 스레드를 만들지 않는다. 한 프레임 안에서 코루틴 본문이 오래 걸리면 그만큼 프레임이 늦어진다.
 
-### 1-2. `yield return` 값과 재개 시점
+### 3-2. `yield return` 값과 재개 시점
 
 | `yield return` 값 | 재개 시점 |
 |---|---|
@@ -35,7 +56,7 @@
 
 `WaitForSeconds(0.1f)`는 "정확히 0.1초 뒤"가 아니라 "0.1초가 지난 **첫 프레임의** `Update` 뒤"다. 프레임 시간만큼 오차가 난다.
 
-### 1-3. 프레임 루프 안의 위치
+### 3-3. 프레임 루프 안의 위치
 
 ```
 FixedUpdate  ──▶ (WaitForFixedUpdate 재개) ──▶ 물리 ...
@@ -46,7 +67,7 @@ LateUpdate
 
 `FixedUpdate`는 프레임당 0번 이상 돈다(고정 시간 간격이라서). 전체 순서는 [Unity 공식 실행 순서 문서](https://docs.unity3d.com/Manual/execution-order.html)의 그림으로 확인한다.
 
-### 1-4. 수명: 누가 코루틴을 소유하나
+### 3-4. 수명: 누가 코루틴을 소유하나
 
 코루틴은 **시작한 `MonoBehaviour`가 소유**한다.
 
@@ -58,14 +79,14 @@ LateUpdate
 | `StopCoroutine(handle)` | 그 코루틴만 멈춘다. `StartCoroutine`이 돌려준 `Coroutine`을 보관해 두어야 한다 |
 | `StopAllCoroutines()` | 이 컴포넌트가 시작한 것을 모두 멈춘다 |
 
-### 1-5. 코루틴의 한계
+### 3-5. 코루틴의 한계
 
 - **반환값이 없다.** 결과를 받으려면 콜백이나 필드를 쓴다. (`IEnumerator`의 `Current`는 "기다릴 대상"을 넘기는 통로다.)
 - **`try`에 `catch`가 있으면 그 안에서 `yield return`을 못 쓴다.** `error CS1626`. `try/finally`는 된다.
 - **예외가 나면 그 코루틴만 끝난다.** 호출한 쪽으로 전파되지 않고, Unity가 콘솔에 로그를 남긴다. 다른 코루틴과 컴포넌트는 영향이 없다.
 - 시작한 오브젝트와 수명이 묶여 있어서 편하지만, 그 밖의 수명(씬 전환 너머, 여러 오브젝트가 공유)에는 쓰기 어렵다.
 
-### 1-6. 할당
+### 3-6. 할당
 
 - `StartCoroutine` 한 번: 상태 기계 객체 + `Coroutine` 객체. 코루틴이 `yield return`하는 값이 `new WaitForSeconds(...)`처럼 새 객체이면 그만큼 더 쌓인다.
 - 같은 대기 시간이면 **한 번 만들어 필드에 캐시**해서 재사용한다. 값이 바뀌지 않는 `WaitForSeconds`는 재사용해도 안전하다.
@@ -83,13 +104,26 @@ IEnumerator Blink()
 }
 ```
 
-> Unity 6 = C# 9 + Mono/IL2CPP. 코루틴 자체는 C# 버전과 무관하다. 위 필드 초기화처럼 C# 9 문법 안에서 쓴다. 반환값/취소/예외 처리가 필요할 때의 대안(`async`)은 Day 09–11에서 다룬다.
+{% hint style="info" %}
+NOTE: Unity 6 = C# 9 + Mono/IL2CPP. 코루틴 자체는 C# 버전과 무관하다. 위 필드 초기화처럼 C# 9 문법 안에서 쓴다. 반환값/취소/예외 처리가 필요할 때의 대안(`async`)은 Day 09–11에서 다룬다.
+{% endhint %}
 
----
+## 4. 약어·용어
 
-## 2. 손으로 확인 (30분)
+| 용어 | 뜻 |
+|---|---|
+| 코루틴(coroutine) | `IEnumerator`를 반환하고 `yield return`으로 실행을 나눠 프레임에 걸쳐 진행하는 Unity 메서드 |
+| `Coroutine` | `StartCoroutine`이 돌려주는 핸들 객체. `StopCoroutine`에 쓴다 |
+| scaled time | `Time.timeScale`의 영향을 받는 시간. `WaitForSeconds`가 쓴다 |
+| unscaled(real) time | `timeScale`을 무시한 시간. `WaitForSecondsRealtime`이 쓴다 |
+| 플레이어 루프(player loop) | `FixedUpdate`, `Update`, `LateUpdate`, 렌더링 등 프레임 처리 순서 |
+| CS1626 | `catch`가 있는 `try` 블록 안에서 `yield return`을 쓸 때 나는 컴파일 오류 |
 
-> AI, 자동완성, 검색 없이. 막히면 위의 읽기로 돌아간다.
+## 5. 확인 실습
+
+{% hint style="info" %}
+NOTE: AI, 자동완성, 검색 없이 한다. 막히면 `3. 동작 원리`로 돌아간다.
+{% endhint %}
 
 ### 실습 A: 미니 코루틴 스케줄러 만들기 (20분, 콘솔)
 
@@ -342,9 +376,7 @@ public class LifetimeProbe : MonoBehaviour
 
 </details>
 
----
-
-## 3. 면접 대비 (10분)
+## 6. 확인 문제
 
 소리 내어 30초 안에 답해 보고 펼쳐서 비교한다.
 
@@ -372,14 +404,22 @@ public class LifetimeProbe : MonoBehaviour
 
 </details>
 
----
+## 참조
 
-## 오늘의 한 줄
-> (내 말로 한 문장)
-
-## 더 보기
 - [Unity 매뉴얼 — 코루틴](https://docs.unity3d.com/Manual/Coroutines.html)
 - [Unity 매뉴얼 — 이벤트 함수의 실행 순서](https://docs.unity3d.com/Manual/execution-order.html)
 - [MonoBehaviour.StartCoroutine](https://docs.unity3d.com/ScriptReference/MonoBehaviour.StartCoroutine.html)
 - [CustomYieldInstruction](https://docs.unity3d.com/ScriptReference/CustomYieldInstruction.html)
 - [yield 문 (C# 참조)](https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/statements/yield)
+
+이전: [Day 07 · IEnumerator와 yield의 정체](day07-iterator-yield.md) · 다음: [Day 09 · Task와 async/await](day09-task-async-await.md)
+
+## 내 말로 채우기
+
+{% hint style="info" %}
+AI 없이 답을 적는다. 다 쓰면 체크하고, 이 안내는 지워도 된다.
+{% endhint %}
+
+- [ ] 오늘의 한 줄: 이 날의 핵심을 내 말로 한 문장
+- [ ] `enabled = false`와 `SetActive(false)`가 코루틴에 미치는 영향이 다른 이유를 내 말로 설명하면?
+- [ ] 내가 코루틴으로 만든 기능(또는 만들 기능)에서 `WaitForSeconds` 대신 `WaitForSecondsRealtime`이 필요한 경우는 언제인가?

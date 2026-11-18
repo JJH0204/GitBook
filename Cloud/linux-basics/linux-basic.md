@@ -1,74 +1,65 @@
----
-description: 리눅스 학습/운영을 위한 메인 대시보드. 설치부터 명령어, 보안, 운영까지 빠르게 이동.
----
-
 # 리눅스 기초 대시보드 (Linux Basic)
 
-## Linux Basic
+## 작업 식별
 
-리눅스 공부/운영 문서의 **메인 진입점**.
+| 항목 | 내용 |
+|---|---|
+| Task ID | CLD-LBS-001-REF |
+| 유형 | REF (링크 표) |
+| 목적 | 리눅스 기초 학습에 필요한 문서를 Linux 스페이스에서 찾아 연결한다 |
+| 확인 상태 | 미검증 (원본 페이지의 링크 목록을 정리한 것이며 문서 내용은 각 링크 문서를 따른다) |
+| 개정 | R1 (2026-11-18) |
 
-아래 카드에서 주제별로 바로 들어가면 돼.
+리눅스 상세 문서는 Linux 스페이스에 있다. 이 페이지는 클라우드 학습에 필요한 리눅스 문서로 가는 길만 모은다.
+
+## 1. 추천 학습 순서
+
+1. 개요와 설치: [리눅스 개요와 설치](../../Linux/guide/intro/README.md)
+2. 기본 사용: [리눅스 기본 사용](../../Linux/guide/basic-usage/README.md)
+3. 명령어: [리눅스 명령어](../../Linux/guide/commands/README.md)
+4. 운영 주제: [계정·권한](../../Linux/guide/accounts-permissions/README.md), [네트워크·원격](../../Linux/guide/network-remote/README.md), [보안](../../Linux/guide/security/README.md)
+
+## 2. 주제별 문서
+
+| 주제 | 문서 |
+|---|---|
+| 개요·설치 | [intro](../../Linux/guide/intro/README.md) |
+| 기본 사용 | [basic-usage](../../Linux/guide/basic-usage/README.md) |
+| 명령어 | [commands](../../Linux/guide/commands/README.md) |
+| 계정·권한 | [accounts-permissions](../../Linux/guide/accounts-permissions/README.md) |
+| 네트워크·원격 | [network-remote](../../Linux/guide/network-remote/README.md) |
+| 보안 | [security](../../Linux/guide/security/README.md) |
+| 서비스 | [services](../../Linux/guide/services/README.md) |
+| 스토리지·부팅 | [storage-boot](../../Linux/guide/storage-boot/README.md) |
+| 운영·관리 | [operations](../../Linux/guide/operations/README.md) |
+| 로깅·모니터링 | [logging-monitoring](../../Linux/guide/logging-monitoring/README.md) |
+| 스크립트·자동화 | [scripting](../../Linux/guide/scripting/README.md) |
+| 시험·학습 | [study](../../Linux/guide/study/README.md) |
+| 링크·참고 | [references](../../Linux/guide/references/README.md) |
+| 아카이브 | [archive](../../Linux/guide/archive/README.md) |
+
+## 3. 자주 쓰는 레퍼런스
+
+| 항목 | 문서 | Task ID |
+|---|---|---|
+| 기본 필수 명령어 | [리눅스 기본 필수 명령어](../../Linux/guide/commands/linuxcommand.md) | LNX-CMD-002-REF |
+| 권한과 소유권 | [파일 및 디렉터리 접근 권한](../../Linux/guide/accounts-permissions/permission.md) | LNX-ACC-008-DO |
+| 네트워크 명령어 | [네트워크 진단 명령어](../../Linux/guide/network-remote/networkcommands.md) | LNX-NRM-001-REF |
+| 원격 접속(SSH) | [VS Code 원격 SSH 연결](../../Linux/guide/network-remote/remote-ssh.md) | LNX-NRM-003-MP |
+| 마운트 | [파일 시스템 마운트 (mount)](../../Linux/guide/storage-boot/mount.md) | LNX-STB-008-REF |
+| 작업 예약(cron) | [작업 예약 스케줄러 (cron)](../../Linux/guide/scripting/cron.md) | LNX-SCR-006-DO |
+| 패키지 관리(dnf, rpm) | [패키지 관리 도구 (RPM, DNF)](../../Linux/guide/operations/linuxpackagemanagementtool.md) | LNX-OPS-002-REF |
+
+## 4. 참조
+
+| 참조 문서 | 비고 |
+|---|---|
+| [가상 머신 복제 (VirtualBox)](https://www.whatwant.com/entry/VirtualBox-Copy) | 외부 문서 |
+| [가상 머신 공유 폴더와 파일 복사](https://www.wookoa.com/2024/01/how-to-share-and-copy-vmware-virtual-machine-files.html) | 외부 문서 |
+| [리눅스 마스터 기출 문제](https://www.ihd.or.kr/guidequestion.do) | 외부 문서 |
 
 {% hint style="info" %}
-처음이면 **개요 · 설치 → 기본 사용 → 명령어** 순서가 제일 빠릅니다.
+NOTE: 아래 두 표현은 같은 디렉터리를 가리킨다. 사용자 이름이 `<사용자명>`일 때 `cd /home/<사용자명>`과 `cd ~<사용자명>`은 같다.
 {% endhint %}
 
-### 추천 학습 순서
-
-{% stepper %}
-{% step %}
-### 1) 개요/설치부터
-
-* 개요 · 설치
-{% endstep %}
-
-{% step %}
-### 2) 기본 사용 감 잡기
-
-* 기본 사용
-{% endstep %}
-
-{% step %}
-### 3) 자주 쓰는 명령어 묶음
-
-* 명령어
-{% endstep %}
-
-{% step %}
-### 4) 운영에 필요한 주제 확장
-
-* 계정 · 권한
-* 네트워크 · 원격
-* 보안
-{% endstep %}
-{% endstepper %}
-
-### 주제별 문서 바로가기
-
-<table data-view="cards"><thead><tr><th>주제</th><th data-card-target data-type="content-ref">바로가기</th></tr></thead><tbody><tr><td>개요 · 설치</td><td>undefined</td></tr><tr><td>기본 사용</td><td>undefined-1</td></tr><tr><td>명령어</td><td>undefined-2</td></tr><tr><td>계정 · 권한</td><td>undefined-3</td></tr><tr><td>네트워크 · 원격</td><td>undefined-4</td></tr><tr><td>보안</td><td>undefined-5</td></tr><tr><td>서비스</td><td>undefined-6</td></tr><tr><td>스토리지 · 부팅</td><td>undefined-7</td></tr><tr><td>운영 · 관리</td><td>undefined-8</td></tr><tr><td>로깅 · 모니터링</td><td>undefined-9</td></tr><tr><td>스크립트 · 자동화</td><td>undefined-10</td></tr><tr><td>시험 · 학습</td><td>undefined-11</td></tr><tr><td>링크 · 참고</td><td>undefined-12</td></tr><tr><td>아카이브</td><td>undefined-13</td></tr></tbody></table>
-
-### 자주 쓰는 레퍼런스
-
-<table data-view="cards"><thead><tr><th>항목</th><th data-card-target data-type="content-ref">바로가기</th></tr></thead><tbody><tr><td>기본 명령어 모음</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/commands/linuxcommand">linux_basic_commands.md</a></td></tr><tr><td>명령어 정리(상세)</td><td>linuxcommand.md</td></tr><tr><td>권한/소유권</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/accounts-permissions/permission">permission.md</a></td></tr><tr><td>네트워크 명령어</td><td>networkcommands.md</td></tr><tr><td>원격 접속(SSH)</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/network-remote/remote-ssh">remote-ssh.md</a></td></tr><tr><td>마운트</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/storage-boot/mount">mount.md</a></td></tr><tr><td>스케줄러(cron)</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/scripting/cron">cron.md</a></td></tr><tr><td>패키지 관리(dnf/yum/rpm)</td><td><a href="https://krjaeh0.gitbook.io/j-log/linux/guide/operations/linuxpackagemanagementtool">linuxpackagemanagementtool.md</a></td></tr></tbody></table>
-
-{% hint style="info" %}
-아래 디렉토리 표현은 같음\
-`cd /home/jang` = `cd ~jang`
-{% endhint %}
-
-<details>
-
-<summary>외부 참고 링크</summary>
-
-* [tip. 가상머신 복제](https://www.whatwant.com/entry/VirtualBox-Copy)
-* [가상 머신 공유 폴더 생성](https://www.wookoa.com/2024/01/how-to-share-and-copy-vmware-virtual-machine-files.html)
-* [리눅스 마스터 기출 문제](https://www.ihd.or.kr/guidequestion.do)
-
-</details>
-
-***
-
-다음 단계:
-
-* 서버 운영 쪽으로 넘어가기: LinuxServer
+다음 단계: 서버 운영은 [운영·관리](../../Linux/guide/operations/README.md)로 이어진다.

@@ -1,36 +1,65 @@
 # Day 13. 외곽선 ① — 뒤집힌 풍선
 
-> ⏱ **약 1시간** — 개념 10분 · 코드 25분 · 실험 25분
-> 🧸 **오늘의 비유**: 몸보다 살짝 큰 **검은 풍선을 뒤집어 씌우면**, 몸 뒤로 테두리만 삐죽 보여요.
+## 작업 식별
 
-![Day 13 결과](../.gitbook/assets/day13-outline.png)
+| 항목 | 내용 |
+|---|---|
+| Task ID | GMD-TSL-013-MP |
+| 목적 | 정점을 노멀 방향으로 부풀린 뒷면만 그리는 두 번째 패스로 인버티드 헐(법선 확장, 역면) 외곽선을 만든다 |
+| 적용 대상 | Unity 6000.3, URP 17.x, Forward 렌더링. Day 12 완료 상태의 `MyToon.shader` |
+| 소요 시간 | 약 60분 (개념 10분, 코드 25분, 실험 25분) |
+| 확인 상태 | 미검증 (원본 코드를 읽고 정리한 것이며 이 환경에서 컴파일·실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-## 오늘 만들 것
+{% hint style="info" %}
+NOTE: `LightMode = "SRPDefaultUnlit"` 패스가 URP에서 추가로 그려지는 동작은 URP 버전과 렌더링 경로(Forward, Forward+, Deferred), Render Graph 사용 여부에 따라 달라질 수 있다. Deferred에서는 이 패스가 그려지지 않는다. URP 버전 확인 필요.
+{% endhint %}
 
-물체에 **검은 외곽선**이 생겨요(오른쪽). 만화 그림의 마지막 퍼즐 조각이에요.
+## 1. 참조
 
-## 오늘 배울 것
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [day02-vertex-shader.md](day02-vertex-shader.md) | GMD-TSL-002-MP | 노멀 방향으로 밀기 |
+| [day09-cast-shadows.md](day09-cast-shadows.md) | GMD-TSL-009-MP | `ClipAlpha`와 `HLSLINCLUDE` |
+| [day12-rim-light.md](day12-rim-light.md) | GMD-TSL-012-MP | 이전: 림 라이트 |
+| [day14-outline-pixels.md](day14-outline-pixels.md) | GMD-TSL-014-MP | 다음: 외곽선 2 |
+| [toon-shader-study Day 12](../toon-shader-study/day12-outline-inverted-hull.md) | - | 스무스 노멀 (짝꿍 과정) |
+| [LearnOpenGL Face culling](https://learnopengl.com/Advanced-OpenGL/Face-culling), [Unity Cull](https://docs.unity3d.com/Manual/SL-Cull.html), [lilToon](https://github.com/lilxyzw/lilToon) | - | 컬링, 참고 구현 |
 
-- [ ] 한 셰이더에 **두 번째 색칠 패스**를 만든다
-- [ ] `Cull Front`(뒷면만 그리기)로 외곽선을 만드는 원리를 안다
-- [ ] Day 02의 "노멀 방향으로 밀기"를 다시 쓴다
-- [ ] 각진 모델에서 외곽선이 갈라지는 이유를 안다
+## 2. 필요 장비와 자재
 
----
+| 번호 | 이름 | 사양·버전 | 비고 |
+|---|---|---|---|
+| 1 | `Assets/MyToon/MyToon.shader` | Day 12 완료 상태 | |
 
-## 1. 뒤집힌 풍선 (개념 10분)
+## 3. 안전 사항
 
-![인버티드 헐](../.gitbook/assets/concept-inverted-hull.png)
+{% hint style="warning" %}
+CAUTION: `Cull Front`를 `Cull Back`으로 바꾸면 부푼 껍질의 앞면이 몸을 덮어 물체 전체가 외곽선 색이 된다. 외곽선 패스의 컬링 방향을 확인한다.
+{% endhint %}
 
-1. 물체를 **한 번 더** 그려요. 이번엔 점마다 **노멀 방향으로 살짝 밀어서** 부풀려요(Day 02의 숨쉬기와 같은 기술!).
-2. 부푼 껍질의 **앞면은 버리고 뒷면만** 그려요(`Cull Front`).
-3. 검은색으로 칠해요.
+## 4. 준비
 
-정면에서 보면 부푼 껍질의 뒷면은 **원래 몸에 가려지고**, 몸 밖으로 삐져나온 **가장자리만** 보여요. 이 방식을 "인버티드 헐(뒤집힌 껍질)"이라고 불러요.
+| 번호 | 항목 | 확인 방법 |
+|---|---|---|
+| 1 | Day 12 코드가 컴파일된다 | Console 오류 0건 |
+| 2 | `HLSLINCLUDE`에 `ClipAlpha`가 있다 | Day 09 상태 확인 |
 
-## 2. 코드 고치기 (25분)
+## 5. 절차
 
-### ① Properties (Rim 묶음 다음, Debug 위) + CBUFFER
+### A. 개념 확인
+
+인버티드 헐(inverted hull) 외곽선의 순서는 다음과 같다.
+
+1. 물체를 한 번 더 그린다. 이번에는 정점을 노멀 방향으로 살짝 밀어 부풀린다(Day 02와 같은 기술).
+2. 부푼 껍질의 앞면은 버리고 뒷면만 그린다(`Cull Front`).
+3. 외곽선 색으로 칠한다.
+
+정면에서 보면 부푼 껍질의 뒷면은 원래 몸에 가려지고 몸 밖으로 삐져나온 가장자리만 보인다.
+
+### B. Properties와 CBUFFER
+
+1. (5-B-01) `Rim` 묶음 다음, `Debug` 위에 Properties를 추가한다. → 결과: Inspector에 `Outline` 묶음이 나타난다. 색은 완전한 검정 대신 어두운 보라를 쓰면 덜 딱딱하다.
 
 ```shaderlab
 
@@ -39,14 +68,16 @@
         _OutlineWidth ("Outline Width (cm)", Range(0, 5)) = 1
 ```
 
+2. (5-B-02) `HLSLINCLUDE`의 CBUFFER에서 `_RimStrength` 아래에 추가한다.
+
 ```hlsl
             half4  _OutlineColor;     // CBUFFER, _RimStrength 아래
             half   _OutlineWidth;
 ```
 
-외곽선 색을 완전한 검정 대신 **어두운 보라**로 하면 덜 딱딱해 보여요.
+### C. Outline 패스 추가
 
-### ② Outline 패스 (Forward 패스 바로 다음)
+1. (5-C-01) Forward 패스 바로 다음에 새 패스를 추가한다. → 결과: 컴파일 오류가 없다.
 
 ```hlsl
         // 외곽선: 살짝 부풀린 몸을 뒷면만 그려서 테두리만 보이게 한다 (뒤집힌 풍선)
@@ -96,45 +127,54 @@
         }
 ```
 
-| 부분 | 뜻 |
+| 부분 | 의미 |
 |---|---|
-| `LightMode = SRPDefaultUnlit` | URP가 물체를 그릴 때 **덤으로 한 번 더** 그려 주는 이름표. 따로 설정할 게 없어요 |
-| `Cull Front` | **뒷면만** 그리기. 기본은 `Cull Back`(앞면만) |
-| `_OutlineWidth * 0.01` | 슬라이더는 cm, 계산은 m |
-| `ClipAlpha` | 공용 가위 — 오려 낸 곳엔 외곽선도 없게 |
-| `MixFog` | 외곽선도 안개에 묻히게 |
+| `LightMode = SRPDefaultUnlit` | URP가 물체를 그릴 때 추가로 한 번 더 그리는 패스 이름표 |
+| `Cull Front` | 뒷면만 그린다. 기본값은 `Cull Back`(앞면만) |
+| `_OutlineWidth * 0.01` | 슬라이더는 cm 단위, 계산은 m 단위 |
+| `ClipAlpha` | 공용 가위. 오려 낸 곳에는 외곽선도 없다 |
+| `MixFog` | 외곽선도 안개에 묻힌다 |
 
-정답: [`Assets/Solutions/Day13/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day13/MyToon.shader)
+정답 파일: [`Assets/Solutions/Day13/MyToon.shader`](https://github.com/JJH0204/toon-shader-lab/blob/main/Assets/Solutions/Day13/MyToon.shader)
 
-## 3. 확인하기
+### D. 화면 확인
 
-구와 캡슐에 **어두운 외곽선**이 생겨요. 이제 큐브의 모서리를 가까이 보세요.
+1. (5-D-01) Sphere와 Capsule을 본다. → 결과: 어두운 외곽선이 생긴다.
 
-![각진 큐브의 모서리](../.gitbook/assets/day13-cube-corner.png)
+![Day 13 결과: 외곽선](../.gitbook/assets/day13-outline.png)
 
-**선이 끊기고 점선처럼** 보여요. 큐브는 모서리의 점이 **면마다 따로** 있어서(노멀이 다르니까) 노멀 방향으로 밀면 면들이 **각자 다른 쪽으로 벌어져요.** Day 02에서 숨쉬기를 크게 했을 때 큐브가 쪼개지던 것과 같은 이유예요.
+2. (5-D-02) Cube의 모서리를 가까이서 본다. → 결과: 선이 끊겨 점선처럼 보인다. Cube는 모서리 정점이 면마다 따로 있어 노멀이 다르고, 노멀 방향으로 밀면 면들이 각자 다른 쪽으로 벌어지기 때문이다. Day 02에서 숨쉬기를 크게 했을 때 Cube가 쪼개진 것과 같은 원인이다.
+
+![Day 13 큐브 모서리](../.gitbook/assets/day13-cube-corner.png)
 
 {% hint style="info" %}
-실제 게임에서는 같은 위치 점들의 노멀을 **평균 낸 "스무스 노멀"** 을 따로 구워 두고 외곽선에만 써요. 메시 데이터를 고치는 C# 도구가 필요해서 이 과정에서는 다루지 않아요. 궁금하면 [toon-shader-study Day 12](../toon-shader-study/day12-outline-inverted-hull.md)를 보세요.
+NOTE: 실제 게임에서는 같은 위치 정점들의 노멀을 평균낸 스무스 노멀을 따로 저장해 외곽선에만 쓴다. 메시 데이터를 수정하는 C# 도구가 필요하므로 이 과정에서는 다루지 않는다. 상세는 [toon-shader-study Day 12](../toon-shader-study/day12-outline-inverted-hull.md)를 본다.
 {% endhint %}
 
-## 4. 실험해 보기 (25분)
+### E. 실험
 
-1. **Cull Back으로** — `Cull Front`를 `Cull Back`으로 바꾸면? 부푼 껍질의 **앞면**이 몸을 덮어서 물체가 통째로 검게 돼요. 되돌려요.
-2. **두께** — Outline Width를 5로 올려 보세요. 그리고 **Scene 뷰에서 카메라를 멀리** 빼 보세요. 멀어질수록 외곽선이 가늘어지다가 **끊기고 반짝거려요.** 월드 단위(cm)로 밀었으니 멀리서는 1픽셀보다 얇아지거든요. 내일(Day 14) 해결해요.
-3. **색** — Outline Color를 진한 주황으로 하면 부드러운 선이 돼요.
-4. 커밋: `git commit -am "Day 13: 외곽선 패스"`
+1. (5-E-01) `Cull Front`를 `Cull Back`으로 바꾼다. → 결과: 물체 전체가 외곽선 색이 된다. 확인 후 되돌린다.
+2. (5-E-02) `Outline Width`를 5로 올리고 Scene 뷰 카메라를 멀리 뺀다. → 결과: 멀어질수록 외곽선이 가늘어지다가 끊기고 반짝인다. 월드 단위(cm)로 밀었으므로 멀리서는 1픽셀보다 얇아진다. Day 14에서 해결한다.
+3. (5-E-03) `Outline Color`를 진한 주황으로 바꾼다. → 결과: 부드러운 선이 된다.
+4. (5-E-04) 커밋한다: `git commit -am "Day 13: 외곽선 패스"`
 
-## 5. 오늘의 액기스
+## 6. 기능 확인
 
-👉 [ESSENCE.md — Day 13](essence.md#day-13)
+| 번호 | 확인 동작 | 기대 결과 | 합격 기준 |
+|---|---|---|---|
+| 1 | Sphere, Capsule을 본다 | 둘레에 일정한 외곽선 | 끊김 없음 |
+| 2 | Cube 모서리를 본다 | 모서리에서 선이 갈라진다 | 5-D-02의 설명과 일치 |
+| 3 | `Cull Back`으로 바꾼다 | 물체 전체가 외곽선 색 | 되돌리면 정상 |
 
-## 더 읽을거리
+## 7. 복구
 
-- [LearnOpenGL — Face culling](https://learnopengl.com/Advanced-OpenGL/Face-culling) · [Unity — Cull](https://docs.unity3d.com/Manual/SL-Cull.html)
-- [lilToon (GitHub)](https://github.com/lilxyzw/lilToon) — 인버티드 헐 외곽선을 정교하게 다루는 유명한 툰 셰이더
-- 더 깊이: [toon-shader-study Day 12 — 외곽선 ① 인버티드 헐](../toon-shader-study/day12-outline-inverted-hull.md)
+1. (7-01) 변경을 되돌린다: `Ctrl+Z` 또는 `git restore Assets/MyToon/MyToon.shader`.
+2. (7-02) 외곽선만 끄려면 `Outline Width`를 0으로 설정한다.
 
----
+## 8. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 기존 Day 13 페이지를 AMM 형식으로 재작성. `SRPDefaultUnlit` 의존 NOTE 추가 |
 
 [← Day 12](day12-rim-light.md) · [목차](README.md) · [다음: Day 14 →](day14-outline-pixels.md)

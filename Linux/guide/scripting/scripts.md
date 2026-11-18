@@ -1,49 +1,94 @@
 # 쉘 스크립트 작성 실습 예제
 
-Description This Nmap NSE script performs brute force password auditing against WordPress CMS/blog installations.
+## 작업 식별
 
-It uses the unpwdb and brute libraries to perform password guessing. Any successful guesses are stored using the credentials library.
+| 항목 | 내용 |
+|---|---|
+| Task ID | LNX-SCR-005-REF |
+| 유형 | REF (스크립트 사양·사용 예) |
+| 목적 | Nmap NSE 스크립트 `http-wordpress-brute`의 인자, 출력, 동작 방식을 참조한다 |
+| 확인 상태 | 미검증 (원본 페이지와 스크립트 코드를 읽고 정리한 것이며 이 환경에서 실행하지 않았다) |
+| 개정 | R1 (2026-11-18) |
 
-WordPress defaults:
+{% hint style="info" %}
+NOTE: 이 페이지의 내용은 쉘 스크립트가 아니라 Nmap이 쓰는 Lua 기반 NSE(Nmap Scripting Engine) 스크립트다. 쉘 스크립트 실습은 [LNX-SCR-003-MP](shell-script-practice.md)와 [LNX-SCR-004-MP](shell-script-logclean.md)를 따른다. 원본 페이지 제목과 SUMMARY 항목은 바꾸지 않았다.
+{% endhint %}
 
-* Default URI: `wp-login.php`
-* Default user variable: `log`
-* Default pass variable: `pwd`
+{% hint style="danger" %}
+WARNING: 이 스크립트는 로그인 폼에 비밀번호를 반복해 대입한다(분류: `intrusive`, `brute`). 소유자가 서면으로 허가한 시스템에만 사용한다. 무허가 사용은 불법이며, 대상의 계정 잠금과 서비스 부하를 일으킬 수 있다.
+{% endhint %}
 
-Usage examples
+## 1. 개요
 
-* nmap -sV --script http-wordpress-brute
-* nmap -sV --script http-wordpress-brute --script-args 'userdb=users.txt,passdb=passwds.txt,http-wordpress-brute.hostname=domain.com, http-wordpress-brute.threads=3,brute.firstonly=true'
+WordPress 설치 대상에 대해 무작위 대입(brute force) 방식으로 비밀번호를 점검한다. `unpwdb`와 `brute` 라이브러리로 추측을 수행하고, 성공한 계정은 `creds` 라이브러리에 저장한다. 같은 계열의 스크립트로 `http-form-brute.nse`가 있다.
 
-Example output PORT STATE SERVICE REASON 80/tcp open http syn-ack | http-wordpress-brute: | Accounts | 0xdeadb33f:god => Login correct | Statistics |\_ Perfomed 103 guesses in 17 seconds, average tps: 6
+| 항목 | 내용 |
+|---|---|
+| 포트 규칙 | HTTP 서비스(`shortport.http`)를 대상으로 한다 |
+| 분류 | `intrusive`, `brute` |
+| 기본 URI | `/wp-login.php` |
+| 사용자 이름 폼 변수 | `log` |
+| 비밀번호 폼 변수 | `pwd` |
+| 라이선스 | Nmap 라이선스를 따른다(<https://nmap.org/book/man-legal.html>) |
 
-Script arguments
+## 2. 사용 방법
 
-* `http-wordpress-brute.uri` — points to the file `wp-login.php`. Default `/wp-login.php`
-* `http-wordpress-brute.hostname` — sets the Host header in case of virtual hosting
-* `http-wordpress-brute.uservar` — HTTP variable name that holds the username. Default: `log`
-* `http-wordpress-brute.passvar` — HTTP variable name that holds the password. Default: `pwd`
-* `http-wordpress-brute.threads` — number of threads. Default: `3`
+```
+nmap -sV --script http-wordpress-brute <대상>
+nmap -sV --script http-wordpress-brute --script-args 'userdb=users.txt,passdb=passwds.txt,http-wordpress-brute.hostname=<도메인>,http-wordpress-brute.threads=3,brute.firstonly=true' <대상>
+```
 
-Other useful arguments when using this script:
+`<대상>`은 호스트 이름 또는 IP 주소다. 원본 예시에는 `<대상>`이 빠져 있어 보충했다.
 
-* `http.useragent` = String — User Agent used in HTTP requests
-* `brute.firstonly` = Boolean — Stop attack when the first credentials are found
-* `brute.mode` = user/creds/pass — Username/password iterator
-* `passdb` = String — Path to password list
-* `userdb` = String — Path to user list
+### 스크립트 인자
 
-See also: `http-form-brute.nse`
+| 인자 | 뜻 | 기본값 |
+|---|---|---|
+| `http-wordpress-brute.uri` | `wp-login.php` 경로 | `/wp-login.php` |
+| `http-wordpress-brute.hostname` | 가상 호스팅일 때 Host 헤더 값 | 없음 |
+| `http-wordpress-brute.uservar` | 사용자 이름을 담는 HTTP 변수 이름 | `log` |
+| `http-wordpress-brute.passvar` | 비밀번호를 담는 HTTP 변수 이름 | `pwd` |
+| `http-wordpress-brute.threads` | 스레드 수 | `3` |
 
-Author Paulino Calderon [calderon@websec.mx](mailto:calderon@websec.mx)
+### 함께 쓰는 인자
 
-License Same as Nmap--See https://nmap.org/book/man-legal.html
+| 인자 | 뜻 |
+|---|---|
+| `http.useragent` | HTTP 요청의 User-Agent 문자열 |
+| `brute.firstonly` | `true`이면 첫 성공 자격 증명을 찾을 때 중단한다 |
+| `brute.mode` | `user`, `creds`, `pass` 중 사용자·비밀번호 순회 방식 |
+| `passdb` | 비밀번호 목록 파일 경로 |
+| `userdb` | 사용자 목록 파일 경로 |
 
-Categories intrusive, brute
+## 3. 출력 예
 
-Port rule This script targets HTTP services (shortport.http).
+```
+PORT     STATE SERVICE REASON
+80/tcp   open  http    syn-ack
+| http-wordpress-brute:
+|   Accounts
+|     0xdeadb33f:god => Login correct
+|   Statistics
+|_    Perfomed 103 guesses in 17 seconds, average tps: 6
+```
 
-Full script
+`Perfomed`는 스크립트 원문의 철자다.
+
+## 4. 동작 방식 (코드 기준)
+
+| 단계 | 함수 | 동작 |
+|---|---|---|
+| 사전 점검 | `check` | `GET <uri>`의 응답이 200이고 본문에 `type='password'` 입력란이 있으면 공격을 시작한다. 아니면 중단한다 |
+| 로그인 시도 | `login` | `POST <uri>`에 `<uservar>=<사용자>`, `<passvar>=<비밀번호>`를 보낸다. 응답 상태가 302(`/wp-admin`으로 리디렉션)이면 성공으로 판정한다 |
+| 실행 | `action` | 인자를 읽고 `brute.Engine`을 만들어 스레드 수를 정한 뒤 시작한다 |
+
+{% hint style="info" %}
+NOTE: 응답이 302이면 성공으로 보는 방식이라, 다른 이유로 302를 돌려주는 사이트(예: 로그인 페이지로 되돌리는 보안 플러그인)에서는 오탐이 날 수 있다. 이 설명은 코드를 읽고 추론한 것이며 미검증이다.
+{% endhint %}
+
+## 5. 전체 스크립트
+
+원본 코드를 그대로 보존했다.
 
 {% code title="http-wordpress-brute.nse" %}
 ```lua
@@ -99,7 +144,7 @@ Wordpress default uri and form names:
 --
 -- @see http-form-brute.nse
 
-author = "Paulino Calderon <calderon@websec.mx>"
+author = "Paulino Calderon <이메일 생략>"
 license = "Same as Nmap--See https://nmap.org/book/man-legal.html"
 categories = {"intrusive", "brute"}
 
@@ -190,7 +235,15 @@ end
 ```
 {% endcode %}
 
-요약 (한국어)
+## 6. 참조
 
-* WordPress 대상 무작위(브루트포스) 스캐닝을 진행하는 엔진입니다.
-* 설명, 사용 방법, 예시 결과를 포함하고 있습니다.
+| 참조 문서 | Task ID | 제목 |
+|---|---|---|
+| [shell-script-practice.md](shell-script-practice.md) | LNX-SCR-003-MP | 쉘 스크립트 작성과 실행 |
+| [Nmap NSE 문서(외부)](https://nmap.org/nsedoc/scripts/http-wordpress-brute.html) | | 스크립트 공식 문서 |
+
+## 7. 개정 이력
+
+| 개정 | 날짜 | 변경 내용 |
+|---|---|---|
+| R1 | 2026-11-18 | 원본(Nmap 스크립트 설명을 번역·복사한 페이지)을 REF 형식으로 재작성. 허가 범위 경고, 인자 표, 동작 방식 표를 추가하고 저자 연락처와 한국어 요약 절을 정리했다 |
