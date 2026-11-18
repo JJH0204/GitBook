@@ -2,7 +2,7 @@
 
 ## 시작하기
 
-* [Linux](README.md)
+* [[생성형 AI] Linux](README.md)
 
 ## 리눅스
 
