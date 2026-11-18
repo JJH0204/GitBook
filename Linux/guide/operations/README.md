@@ -13,6 +13,7 @@ description: 운영 관리 출제 범위, 패키지 관리, 라우팅 재분배,
 | LNX-OPS-001-REF | 표 | [리눅스 운영 관리 출제 기준](linuxopsandmanagement.md) | 운영 관리 시험 범위를 확인한다 |
 | LNX-OPS-002-REF | 표 | [패키지 관리 도구 (RPM, DNF)](linuxpackagemanagementtool.md) | `rpm`, `dnf` 명령과 패치 갱신 명령을 찾는다 |
 | LNX-OPS-003-MP | 절차 | [라우팅 프로토콜 재분배](redistribution.md) | RIP와 EIGRP 사이에 경로를 재분배한다 |
+| LNX-OPS-004-REF | 표 | [[생성형 AI] 패키지 관리 도구 (APT, dpkg)](apt-dpkg.md) | `apt`, `dpkg` 명령과 RPM 계열 대응을 찾는다 |
 | (소개) | 목차 | [리눅스 관리자 가이드](linux_admin/README.md) | 기본 명령어, 접근 제어, 서비스, 디스크 관리 하위 문서를 찾는다 |
 
 ## 읽는 순서

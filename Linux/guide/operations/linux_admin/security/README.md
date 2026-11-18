@@ -11,7 +11,8 @@ description: 접근 제어 목록(ACL) 개념
 | Task ID | 유형 | 문서 | 용도 |
 |---|---|---|---|
 | LNX-LAS-001-DO | 개념 | [라우터 접근 제어 목록 (ACL)](acl.md) | 라우터 ACL의 종류, 적용 위치, 평가 순서를 이해한다 |
+| LNX-LAS-005-MP | 절차 | [[생성형 AI] 파일 ACL 설정 (setfacl, getfacl)](file-acl.md) | 사용자별 파일 권한을 ACL로 부여하고 제거한다 |
 
 {% hint style="info" %}
-NOTE: 이 그룹의 ACL 문서는 라우터의 트래픽 필터를 다룬다. 리눅스 파일 ACL(`setfacl`, `getfacl`)은 아직 문서가 없다(작성 예정). 파일 권한의 기본은 [파일 및 디렉터리 접근 권한](../../../accounts-permissions/permission.md)(LNX-ACC-008-DO)을 따른다.
+NOTE: 이 그룹의 ACL 문서는 라우터의 트래픽 필터를 다룬다. 리눅스 파일 ACL(`setfacl`, `getfacl`)은 LNX-LAS-005-MP에 있다. 파일 권한의 기본은 [파일 및 디렉터리 접근 권한](../../../accounts-permissions/permission.md)(LNX-ACC-008-DO)을 따른다.
 {% endhint %}

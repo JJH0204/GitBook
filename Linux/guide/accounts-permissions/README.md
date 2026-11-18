@@ -23,6 +23,7 @@ description: 사용자, 그룹, 비밀번호 정책, 파일 권한
 | LNX-ACC-011-MP | 절차 | [비밀번호 복잡성 정책 설정](passwordpolicy.md) | pwquality를 설정한다 |
 | LNX-ACC-012-MP | 절차 | [로그인 실패 계정 잠금 설정](accountlock.md) | faillock을 설정하고 잠금을 푼다 |
 | LNX-ACC-013-MP | 절차 | [비밀번호 만료 설정과 강제 변경](passwordexpiry.md) | chage로 만료를 관리한다 |
+| LNX-ACC-014-MP | 절차 | [[생성형 AI] sudo 권한 위임 설정](sudo-config.md) | sudo 권한을 그룹 또는 규칙 파일로 위임한다 |
 
 ## 읽는 순서
 

@@ -9,3 +9,4 @@
 | [Python 개요 (Overview)](pythonoverview.md) | PRG-PYT-001-DO | Python의 실행 방식과 언어 특성을 확인한다 |
 | [Python 개발 환경 및 문법](python.md) | PRG-PYT-002-REF | 개발 환경 설정 문서, 프로젝트 목록, 클래스 문법을 찾는다 |
 | [정규 표현식 상세 (Regex)](regularexpression.md) | PRG-PYT-003-DO | 정규 표현식 문법과 Python `re` 모듈 사용법을 확인한다 |
+| [[생성형 AI] Python 컬렉션 (list, tuple, dict, set)](python-collections.md) | PRG-PYT-004-DO | 기본 컬렉션 네 가지의 특성, 복잡도, 얕은 복사를 확인한다 (생성형 AI 초안, 사람 검토 전) |

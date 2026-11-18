@@ -16,6 +16,8 @@ description: 네트워크 진단, SSH 보안, 원격 접속, VPN, VLAN
 | LNX-NRM-004-MP | 절차 | [스위치 및 라우터 원격 접속 설정](remoteterminalaccess.md) | VTY 라인과 관리 IP를 설정해 `telnet`으로 접속한다 |
 | LNX-NRM-005-MP | 절차 | [pfSense 기반 OpenVPN](open-vpn.md) | pfSense 가상 머신을 준비한다 (작성 중) |
 | LNX-NRM-006-MP | 절차 | [스위치 기반 VLAN 구성](switch-based.md) | 포트 기반 VLAN, 트렁크, 라우터 게이트웨이를 설정한다 |
+| LNX-NRM-007-MP | 절차 | [[생성형 AI] SSH 키 인증 설정](ssh-key-auth.md) | SSH 키 쌍을 만들고 키로 로그인한다 |
+| LNX-NRM-008-REF | 표 | [[생성형 AI] 네트워크 설정 명령어 (ip, ss, nmcli)](ip-nmcli.md) | 주소, 경로, 소켓을 조회하고 nmcli로 설정한다 |
 
 ## 읽는 순서
 

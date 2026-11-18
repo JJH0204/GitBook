@@ -15,6 +15,8 @@ MariaDB 서버를 설정하고 운영하는 문서를 모았다. 문서 번호(T
 | DB-OPS-003-REF | 표 | [DB 서버 자원 확인과 성능 튜닝](dbperformanceinfo.md) | 메모리, swap, CPU, 디스크를 확인하고 swappiness를 조정한다 |
 | DB-OPS-004-MP | 절차 | [DB 사용자 계정 생성과 권한 관리](dbusermanagement.md) | 계정을 만들고 권한을 부여·회수하고 계정을 삭제한다 |
 | DB-OPS-005-MP | 절차 | [MariaDB 원격 접속 허용 설정](mariadb-remote-access.md) | `bind-address`, 포트, 방화벽을 설정해 원격 접속을 연다 |
+| DB-OPS-006-MP | 절차 | [[생성형 AI] MariaDB 논리 백업과 복원](mariadb-backup-restore.md) | `mysqldump`로 백업하고 새 데이터베이스에 복원해 확인한다 |
+| DB-OPS-007-DO | 개념 | [[생성형 AI] SQL 인젝션 방어](sql-injection-defense.md) | 바인딩과 최소 권한으로 SQL 인젝션을 막는 방법을 이해한다 |
 
 ## 읽는 순서
 
