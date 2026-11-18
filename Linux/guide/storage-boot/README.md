@@ -23,6 +23,7 @@ WARNING: 이 그룹의 문서 중 `/etc/fstab`, 부트 로더, 기본 런레벨(
 | LNX-STB-007-REF | 표 | [df 명령어 참조](df-command.md) | `df` 옵션과 출력 열을 찾는다 |
 | LNX-STB-008-REF | 표 | [파일 시스템 마운트 (mount)](mount.md) | `mount`, `umount` 옵션과 `/etc/fstab` 필드를 찾는다 |
 | LNX-STB-009-MP | 절차 | [파일 시스템 마운트와 fstab 등록](mount-fstab.md) | 장치를 마운트하고 부팅 때 자동 마운트하게 한다 |
+| LNX-STB-010-DO | 개념 | [[생성형 AI] 논리 볼륨 관리자 (LVM) 개념](lvm.md) | PV, VG, LV 구조를 이해한다 |
 
 ## 읽는 순서
 

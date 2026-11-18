@@ -18,6 +18,11 @@ SQL을 관계 언어 개요, 명령 분류별 문법 표, 실습 절차로 나�
 | DB-SQL-006-MP | 절차 | [테이블 생성·입력·조회·수정·삭제 실습](sql_table_practice.md) | 테이블 한 개로 DDL과 DML 전 과정을 실습한다 |
 | DB-SQL-007-MP | 절차 | [트랜잭션 COMMIT·ROLLBACK·SAVEPOINT 실습](sql_transaction_practice.md) | 변경을 확정하거나 취소하는 동작을 실습한다 |
 | DB-SQL-008-MP | 절차 | [사용자 권한 부여·회수 실습](sql_privilege_practice.md) | GRANT와 REVOKE의 효과를 실습한다 |
+| DB-SQL-009-DO | 개념 | [[생성형 AI] 조인 종류와 결과 비교](sql_join_types.md) | INNER, LEFT, CROSS, 자기 조인의 결과를 비교한다 |
+| DB-SQL-010-DO | 개념 | [[생성형 AI] 서브쿼리](sql_subquery.md) | IN, EXISTS, 상관 서브쿼리와 NOT IN의 함정을 이해한다 |
+| DB-SQL-011-DO | 개념 | [[생성형 AI] 뷰 (VIEW)](sql_view.md) | 뷰의 정의, 용도, 한계를 이해한다 |
+| DB-SQL-012-REF | 표 | [[생성형 AI] NULL 처리 규칙](sql_null.md) | NULL의 비교, 논리, 집계 동작을 찾는다 |
+| DB-SQL-013-DO | 개념 | [[생성형 AI] 트랜잭션 격리 수준과 교착 상태](sql_isolation_deadlock.md) | 동시성 이상, 격리 수준, 교착 상태 대응을 이해한다 |
 
 ## 읽는 순서
 

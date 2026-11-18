@@ -15,6 +15,7 @@ description: macOS/Windows 개발 환경, Python/IDE 세팅
 | DEV-ENV-003-MP | 절차 | [Windows Python 환경 설정 (pyenv)](pythonsettingwin.md) | Windows에 pyenv-win과 venv 가상환경을 만든다 |
 | DEV-ENV-004-DO | 개념 | [Poetry 패키지 관리자](poetry.md) | Poetry의 역할과 pip + venv와의 차이를 이해한다 |
 | DEV-ENV-005-MP | 절차 | [Poetry 설치와 사용](poetryinstallation.md) | Poetry를 설치하고 프로젝트를 만든다 |
+| DEV-ENV-006-MP | 절차 | [[생성형 AI] Python 가상환경(venv) 만들기](python-venv.md) | 표준 `venv`로 프로젝트별 환경을 만든다 |
 
 ## 읽는 순서
 

@@ -21,6 +21,7 @@
 | SEC-DEF-013-REF | 표 | [Linux 침해 분석 아티팩트](linuxintrusionanalysis.md) | Linux 점검 명령을 찾는다 |
 | SEC-DEF-014-MP | 절차 | [침해사고 이벤트 분석 절차](intrusioneventanalysis.md) | Windows 아티팩트를 수집·분석한다 |
 | SEC-DEF-015-DO | 개념 | [침해사고 분석 및 대응 절차](securityincidentanalysisresponse.md) | 분석 환경과 대응 흐름을 이해한다 |
+| SEC-DEF-016-INS | 점검 | [[생성형 AI] 웹 취약점 방어 점검표](web-defense-checklist.md) | 웹 취약점별 방어 조치를 점검한다 |
 
 ## 읽는 순서
 

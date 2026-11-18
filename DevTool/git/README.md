@@ -4,7 +4,7 @@ description: 기본 설정, SSH 키, GitHub Desktop, 명령어, VS Code 연동
 
 # Git 가이드 (Git)
 
-Git을 처음 쓰는 PC에서 필요한 절차를 모았다. 문서 번호(Task ID)는 `DEV-GIT-<번호>-<유형>` 형식이다. 유형은 MP(절차), REF(참조)다.
+Git을 처음 쓰는 PC에서 필요한 절차를 모았다. 문서 번호(Task ID)는 `DEV-GIT-<번호>-<유형>` 형식이다. 유형은 D&O(개념), MP(절차), TS(문제 해결), REF(참조)다.
 
 ## 문서 목록
 
@@ -16,6 +16,14 @@ Git을 처음 쓰는 PC에서 필요한 절차를 모았다. 문서 번호(Task 
 | DEV-GIT-004-MP | 절차 | [Git 사용법 (GitHub Desktop)](how2usegit.md) | GitHub Desktop으로 저장소를 만들고 커밋·푸시한다 |
 | DEV-GIT-005-REF | 참조 | [Git Bash 기본 명령어](gitbashcommands.md) | clone, add, commit, push, pull 명령을 참조한다 |
 | DEV-GIT-006-REF | 참조 | [VS Code Git 및 GitHub 연동](vscodegithubintegration.md) | VS Code의 Git 연동 자료를 참조한다 |
+| DEV-GIT-007-DO | 개념 | [[생성형 AI] Git 기본 개념 — 작업 트리·스테이징·커밋](git-concepts.md) | 세 영역과 커밋이 만들어지는 흐름을 이해한다 |
+| DEV-GIT-008-MP | 절차 | [[생성형 AI] 브랜치 만들기와 병합](git-branch-merge.md) | 브랜치에서 작업하고 `main`에 병합한다 |
+| DEV-GIT-009-TS | 문제 해결 | [[생성형 AI] 병합 충돌 해결](git-merge-conflict.md) | `CONFLICT`가 났을 때 해결하거나 취소한다 |
+| DEV-GIT-010-REF | 참조 | [[생성형 AI] 변경 되돌리기 명령 정리](git-undo.md) | `restore`, `reset`, `revert`, `reflog`를 상황별로 고른다 |
+| DEV-GIT-011-MP | 절차 | [[생성형 AI] .gitignore 작성](gitignore.md) | 커밋하지 않을 파일을 지정한다 |
+| DEV-GIT-012-MP | 절차 | [[생성형 AI] 변경 임시 저장 (stash)](git-stash.md) | 커밋 전 변경을 치워 두었다가 꺼낸다 |
+| DEV-GIT-013-MP | 절차 | [[생성형 AI] 원격 저장소와 push·pull](git-remote-sync.md) | `push`, `fetch`, `pull`의 차이를 로컬 원격으로 연습한다 |
+| DEV-GIT-014-REF | 참조 | [[생성형 AI] 상태·이력 확인 명령 정리](git-inspect.md) | `status`, `diff`, `log`, `blame` 등 읽기 명령을 참조한다 |
 
 ## 읽는 순서
 

@@ -28,6 +28,11 @@ description: 도커 개념, 설치, 명령어, Dockerfile, Docker Hub, 배포 �
 | CLD-DKR-016-MP | 절차 | [도커 컨테이너 이미지화와 Compose 공유](docker-hub-compose-share.md) | 여러 컨테이너를 이미지로 저장해 Compose로 공유한다 |
 | CLD-DKR-017-MP | 절차 | [도커 허브 이미지 공유 실습](docker-hub-image-share.md) | WordPress 컨테이너를 이미지로 저장해 공유한다 |
 | CLD-DKR-018-MP | 절차 | [Ubuntu 워드프레스 도커 배포](ubuntu-wordpress-docker.md) | 단일 Ubuntu 컨테이너에 WordPress와 MariaDB를 구성한다 |
+| CLD-DKR-019-DO | 개념 | [[생성형 AI] 도커 네트워크 — 브리지와 포트 게시](docker-network.md) | 컨테이너 통신과 포트 게시를 이해한다 |
+| CLD-DKR-020-DO | 개념 | [[생성형 AI] 도커 볼륨과 데이터 보존](docker-volume.md) | 볼륨, 바인드 마운트, 백업을 이해한다 |
+| CLD-DKR-021-REF | 표 | [[생성형 AI] Docker Compose 파일 작성법](docker-compose-file.md) | Compose 키와 명령을 찾는다 |
+| CLD-DKR-022-INS | 점검 | [[생성형 AI] Dockerfile·이미지 보안 점검표](docker-security-checklist.md) | 이미지와 실행 옵션을 점검한다 |
+| CLD-DKR-023-TS | 문제 해결 | [[생성형 AI] 컨테이너 장애 진단](docker-troubleshooting.md) | 시작 실패·접속 불가 원인을 좁힌다 |
 
 하위 실습: [도커 실습 (Docker Practice)](docker-1/README.md)
 

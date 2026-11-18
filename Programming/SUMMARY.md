@@ -52,6 +52,7 @@
   * [Python 개요 (Overview)](languages/python/pythonoverview.md)
   * [Python 개발 환경 및 문법](languages/python/python.md)
   * [정규 표현식 상세 (Regex)](languages/python/regularexpression.md)
+  * [[생성형 AI] Python 컬렉션 (list, tuple, dict, set)](languages/python/python-collections.md)
 * [Swift 및 iOS (Swift & iOS)](languages/swift-and-ios/README.md)
   * [Swift 언어 특징](languages/swift-and-ios/swiftcharacteristics.md)
   * [Swift 기본 문법 예제](languages/swift-and-ios/swiftbasicsyntax.md)
@@ -83,6 +84,7 @@
 * [CS 기본 개요 (Overviews)](cs-fundamentals/overviews/README.md)
   * [알고리즘 개요 (Algorithm)](cs-fundamentals/overviews/algorithmoverview.md)
   * [자료구조 및 알고리즘 개요](cs-fundamentals/overviews/datastructurealgorithmoverview.md)
+  * [[생성형 AI] 시간 복잡도와 빅오 표기법 (Big-O)](cs-fundamentals/overviews/big-o-notation.md)
   * [자료구조 및 알고리즘 모음](cs-fundamentals/overviews/datastructuresalgorithms/README.md)
     * [정렬 알고리즘 비교 (Sort)](cs-fundamentals/overviews/datastructuresalgorithms/sortalgorithmoverview.md)
     * [탐색 알고리즘 개요 (Search)](cs-fundamentals/overviews/datastructuresalgorithms/searchalgorithmoverview.md)
@@ -95,9 +97,25 @@
   * [스택 (Stack)](cs-fundamentals/data-structures/stack.md)
   * [희소 행렬 (Sparse Matrix)](cs-fundamentals/data-structures/set-sparse-matrix.md)
   * [연결 리스트 상세 (Linked List)](cs-fundamentals/data-structures/linkedlists_kr.md)
+  * [[생성형 AI] 큐 (Queue)](cs-fundamentals/data-structures/queue.md)
+  * [[생성형 AI] 해시 테이블 (Hash Table)](cs-fundamentals/data-structures/hash-table.md)
+  * [[생성형 AI] 힙과 우선순위 큐 (Heap)](cs-fundamentals/data-structures/heap.md)
+  * [[생성형 AI] 그래프 (Graph)](cs-fundamentals/data-structures/graph.md)
+  * [[생성형 AI] 이진 탐색 트리 (BST)](cs-fundamentals/data-structures/binary-search-tree.md)
+  * [[생성형 AI] 유니온 파인드 (Union-Find)](cs-fundamentals/data-structures/union-find.md)
 * [알고리즘 (Algorithms)](cs-fundamentals/algorithms/README.md)
   * [선택 정렬 (Selection Sort)](cs-fundamentals/algorithms/selection-sort.md)
   * [깊이 우선 탐색 (DFS)](cs-fundamentals/algorithms/depthfirstsearch.md)
+  * [[생성형 AI] 삽입 정렬 (Insertion Sort)](cs-fundamentals/algorithms/insertion-sort.md)
+  * [[생성형 AI] 병합 정렬 (Merge Sort)](cs-fundamentals/algorithms/merge-sort.md)
+  * [[생성형 AI] 퀵 정렬 (Quick Sort)](cs-fundamentals/algorithms/quick-sort.md)
+  * [[생성형 AI] 힙 정렬 (Heap Sort)](cs-fundamentals/algorithms/heap-sort.md)
+  * [[생성형 AI] 이진 탐색 (Binary Search)](cs-fundamentals/algorithms/binary-search.md)
+  * [[생성형 AI] 너비 우선 탐색 (BFS)](cs-fundamentals/algorithms/breadth-first-search.md)
+  * [[생성형 AI] 다익스트라 최단 경로 (Dijkstra)](cs-fundamentals/algorithms/dijkstra.md)
+  * [[생성형 AI] 동적 계획법 (Dynamic Programming)](cs-fundamentals/algorithms/dynamic-programming.md)
+  * [[생성형 AI] 탐욕법 (Greedy)](cs-fundamentals/algorithms/greedy.md)
+  * [[생성형 AI] 백트래킹 (Backtracking)](cs-fundamentals/algorithms/backtracking.md)
 
 ## CS Basics
 
@@ -211,6 +229,8 @@
   * [럼바우 분석 모델 (Rumbaugh)](software-design/architecture-and-patterns/rumbaughooa/README.md)
     * [동적 모델 (Dynamic Model)](software-design/architecture-and-patterns/rumbaughooa/dynamic-model.md)
     * [기능 모델 (Functional Model)](software-design/architecture-and-patterns/rumbaughooa/functional-model.md)
+  * [[생성형 AI] 옵저버 패턴 (Observer)](software-design/architecture-and-patterns/observer-pattern.md)
+  * [[생성형 AI] 전략 패턴 (Strategy)](software-design/architecture-and-patterns/strategy-pattern.md)
 
 ## Practice Problems
 

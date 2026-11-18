@@ -49,6 +49,7 @@ NOTE: 이진 탐색의 O(log n)은 인덱스 접근이 O(1)인 배열을 전제�
 | 문서 | Task ID | 내용 |
 |---|---|---|
 | [깊이 우선 탐색 (DFS)](../../algorithms/depthfirstsearch.md) | PRG-ALG-002-DO | DFS의 원리와 구현 |
+| [[생성형 AI] 너비 우선 탐색 (BFS)](../../algorithms/breadth-first-search.md) | PRG-ALG-008-DO | BFS의 원리와 구현(생성형 AI 초안) |
 | [이진 트리 (Binary Tree)](../../data-structures/binarytrees_kr.md) | PRG-DST-001-DO | 이진 트리의 구조와 순회 |
 
 ## 5. 약어·용어

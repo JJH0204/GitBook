@@ -59,6 +59,7 @@ NOTE: 퀵 정렬의 추가 메모리 O(log n)은 재귀 호출 깊이가 평균�
 |---|---|---|
 | [버블 정렬 (Bubble Sort)](bubble-sort.md) | PRG-DSA-005-DO | 버블 정렬의 원리와 C 구현 |
 | [선택 정렬 (Selection Sort)](../../algorithms/selection-sort.md) | PRG-ALG-001-DO | 선택 정렬의 원리와 C 구현 |
+| [[생성형 AI] 삽입·병합·퀵·힙 정렬](../../algorithms/README.md) | PRG-ALG-003~006-DO | 알고리즘 그룹의 정렬 문서 목록(생성형 AI 초안) |
 
 ## 6. 약어·용어
 

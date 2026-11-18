@@ -12,6 +12,7 @@ description: 알고리즘과 자료구조의 전체 개요
 |---|---|---|---|
 | PRG-OVW-001-DO | 개념 | [알고리즘 개요 (Algorithm)](algorithmoverview.md) | 알고리즘의 조건, 표현 방법, 분류를 확인한다 |
 | PRG-OVW-002-DO | 개념 | [자료구조 및 알고리즘 개요](datastructurealgorithmoverview.md) | 자료구조의 분류와 선택 기준을 확인한다 |
+| PRG-OVW-003-DO | 개념 | [[생성형 AI] 시간 복잡도와 빅오 표기법 (Big-O)](big-o-notation.md) | 증가율 표기 규칙과 코드에서 복잡도 읽는 법을 확인한다 (생성형 AI 초안, 사람 검토 전) |
 
 ## 하위 그룹
 
