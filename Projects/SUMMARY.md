@@ -74,11 +74,3 @@
   * [등급분류와 표시 의무](projects/dormireve-launch/rating-and-compliance.md)
 * [배교자 APOSTATE (가제)](projects/apostate/README.md)
 * [바다 (Bada)](projects/bada/README.md)
-
-## 보류
-
-* [앱 및 자동화 (Apps & Automation)](wait/apps-and-automation/README.md)
-  * [통합 캘린더 앱 기획](wait/apps-and-automation/integratedcalendarappdevelopment.md)
-  * [인터파크 티켓팅 자동화 기획](wait/apps-and-automation/interparkticketingautomation.md)
-* [트레이딩 (Trading)](wait/trading/README.md)
-  * [가상화폐 자동매매 (Crypto)](wait/trading/cryptotrading.md)
