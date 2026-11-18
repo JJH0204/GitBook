@@ -48,6 +48,7 @@ description: PC방 주방 매니지먼트 프로그램 구현
 | PRJ-ALB-002-DO | [올반 프로젝트 기획](planning.md) | 문제 인식, 문제 정의, 기술 스택 선정 |
 | PRJ-ALB-003-DO | [UI/UX 디자인 초안](ui-ux/README.md) | 화면 설계와 활용 예시 |
 | (그룹) | [개발 및 배포 개요](dev-and-deploy/README.md) | 패킷 수집, 큐, 로깅, 임베디드 파이썬, 인스톨러 |
+| PRJ-ALB-100-DO | [Allban 해체 분석](teardown/README.md) | 소스 구조, 큐 동기화, 패킷 분석, 인스톨러를 따라 만들 수 있게 해체 |
 
 ## 4. 프로젝트 의의
 
