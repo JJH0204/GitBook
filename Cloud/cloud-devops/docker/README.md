@@ -33,6 +33,8 @@ description: 도커 개념, 설치, 명령어, Dockerfile, Docker Hub, 배포 �
 | CLD-DKR-021-REF | 표 | [[생성형 AI] Docker Compose 파일 작성법](docker-compose-file.md) | Compose 키와 명령을 찾는다 |
 | CLD-DKR-022-INS | 점검 | [[생성형 AI] Dockerfile·이미지 보안 점검표](docker-security-checklist.md) | 이미지와 실행 옵션을 점검한다 |
 | CLD-DKR-023-TS | 문제 해결 | [[생성형 AI] 컨테이너 장애 진단](docker-troubleshooting.md) | 시작 실패·접속 불가 원인을 좁힌다 |
+| CLD-DKR-024-DO | 개념 | [[생성형 AI] 멀티 스테이지 빌드와 이미지 경량화](docker-multistage-build.md) | 빌드 단계를 나눠 이미지를 작게 만든다 |
+| CLD-DKR-025-REF | 표 | [[생성형 AI] 컨테이너 로그와 리소스 제한](docker-logs-resources.md) | 로그 조회·보관과 CPU·메모리 제한 옵션을 찾는다 |
 
 하위 실습: [도커 실습 (Docker Practice)](docker-1/README.md)
 

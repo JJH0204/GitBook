@@ -16,6 +16,12 @@
 | CLD-K8T-008-REF | 표 | [[생성형 AI] 쿠버네티스 매니페스트 기본 — 파드·디플로이먼트·서비스](manifest-basics.md) | YAML 필드와 예를 찾는다 |
 | CLD-K8T-009-DO | 개념 | [[생성형 AI] 컨피그맵과 시크릿](configmap-secret.md) | 설정과 비밀값 전달 방식을 이해한다 |
 | CLD-K8T-010-TS | 문제 해결 | [[생성형 AI] 파드 장애 진단](pod-troubleshooting.md) | 파드 상태별 원인을 좁힌다 |
+| CLD-K8T-011-DO | 개념 | [[생성형 AI] 인그레스 (Ingress)](ingress.md) | 호스트·경로 기반 라우팅을 이해한다 |
+| CLD-K8T-012-DO | 개념 | [[생성형 AI] 영구 볼륨과 클레임 (PV·PVC)](persistent-volume.md) | 파드와 분리된 저장소를 이해한다 |
+| CLD-K8T-013-DO | 개념 | [[생성형 AI] 쿠버네티스 RBAC — 역할 기반 접근 제어](rbac.md) | 역할과 바인딩으로 권한을 제한한다 |
+| CLD-K8T-014-DO | 개념 | [[생성형 AI] 헬름 (Helm)](helm.md) | 차트로 설치·갱신·되돌리는 방식을 이해한다 |
+| CLD-K8T-015-DO | 개념 | [[생성형 AI] 리소스 요청·제한과 오토스케일링 (HPA)](resources-hpa.md) | 자원 요청·제한과 파드 수 자동 조절을 이해한다 |
+| CLD-K8T-016-DO | 개념 | [[생성형 AI] 네트워크 정책 (NetworkPolicy)](network-policy.md) | 파드 사이 통신을 제한한다 |
 
 ## 읽는 순서
 

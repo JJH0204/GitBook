@@ -17,6 +17,8 @@ MariaDB 서버를 설정하고 운영하는 문서를 모았다. 문서 번호(T
 | DB-OPS-005-MP | 절차 | [MariaDB 원격 접속 허용 설정](mariadb-remote-access.md) | `bind-address`, 포트, 방화벽을 설정해 원격 접속을 연다 |
 | DB-OPS-006-MP | 절차 | [[생성형 AI] MariaDB 논리 백업과 복원](mariadb-backup-restore.md) | `mysqldump`로 백업하고 새 데이터베이스에 복원해 확인한다 |
 | DB-OPS-007-DO | 개념 | [[생성형 AI] SQL 인젝션 방어](sql-injection-defense.md) | 바인딩과 최소 권한으로 SQL 인젝션을 막는 방법을 이해한다 |
+| DB-OPS-008-DO | 개념 | [[생성형 AI] 이진 로그와 시점 복구](mariadb-binlog-recovery.md) | 백업과 이진 로그로 특정 시점까지 복구하는 흐름을 이해한다 |
+| DB-OPS-009-DO | 개념 | [[생성형 AI] 복제와 고가용성 개요](mariadb-replication-overview.md) | 복제 구조, 용도, 백업과의 차이를 이해한다 |
 
 ## 읽는 순서
 

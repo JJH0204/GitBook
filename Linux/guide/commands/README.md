@@ -18,6 +18,8 @@ description: 도움말, 전원, 텍스트 처리, find 시간 옵션 등 기본 
 | LNX-CMD-006-REF | 표 | [find 시간 옵션 및 파일 속성](find_time.md) | atime, mtime, ctime과 `find` 시간 조건을 찾는다 |
 | LNX-CMD-007-REF | 표 | [[생성형 AI] 프로세스 관리 명령어 (ps, top, kill, nice)](process-commands.md) | 프로세스를 조회, 종료하고 우선순위를 바꾼다 |
 | LNX-CMD-008-REF | 표 | [[생성형 AI] 입출력 리다이렉션과 파이프](redirect-pipe.md) | `>`, `2>`, `|` 문법을 찾는다 |
+| LNX-CMD-009-REF | 표 | [[생성형 AI] sed·awk 기본](sed-awk.md) | 치환, 열 추출, 집계 문법을 찾는다 |
+| LNX-CMD-010-REF | 표 | [[생성형 AI] 시스템 상태 조회 명령어 (free, du, lsblk, uptime)](system-status.md) | 메모리, 용량, 블록 장치, 부하를 조회한다 |
 
 ## 읽는 순서
 

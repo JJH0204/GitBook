@@ -22,6 +22,11 @@
 | SEC-DEF-014-MP | 절차 | [침해사고 이벤트 분석 절차](intrusioneventanalysis.md) | Windows 아티팩트를 수집·분석한다 |
 | SEC-DEF-015-DO | 개념 | [침해사고 분석 및 대응 절차](securityincidentanalysisresponse.md) | 분석 환경과 대응 흐름을 이해한다 |
 | SEC-DEF-016-INS | 점검 | [[생성형 AI] 웹 취약점 방어 점검표](web-defense-checklist.md) | 웹 취약점별 방어 조치를 점검한다 |
+| SEC-DEF-017-DO | 개념 | [[생성형 AI] 취약점 관리와 패치 절차](vulnerability-management.md) | 취약점 관리 순환과 우선순위를 이해한다 |
+| SEC-DEF-018-DO | 개념 | [[생성형 AI] 사회공학과 피싱 방어](social-engineering-defense.md) | 사회공학 유형과 방어를 이해한다 |
+| SEC-DEF-019-DO | 개념 | [[생성형 AI] 보안 로깅 설계](security-logging-design.md) | 기록 대상과 운영 기준을 이해한다 |
+| SEC-DEF-020-DO | 개념 | [[생성형 AI] 백업과 랜섬웨어 방어](backup-ransomware-defense.md) | 랜섬웨어 예방·탐지·복구를 이해한다 |
+| SEC-DEF-021-INS | 점검 | [[생성형 AI] Linux 서버 기본 하드닝 점검표](linux-hardening-checklist.md) | Linux 서버 기본 보안 설정을 점검한다 |
 
 ## 읽는 순서
 

@@ -18,6 +18,7 @@ description: 요구사항 분석부터 구현·운영까지 데이터베이스 �
 | DB-DSN-006-DO | 개념 | [데이터베이스 정규화 (Normalization)](databasenormalization.md) | 함수적 종속, 이상 현상, 1NF~5NF를 파악한다 |
 | DB-DSN-007-DO | 개념 | [물리적 설계 (Physical Design)](physical-design.md) | 저장 구조, 인덱스, 파티셔닝 등 성능 설계 항목을 파악한다 |
 | DB-DSN-008-DO | 개념 | [데이터베이스 구현 및 운영](implementation-and-maintenance.md) | 구축, 마이그레이션, 연동, 튜닝, 보안, 유지보수를 파악한다 |
+| DB-DSN-009-DO | 개념 | [[생성형 AI] 반정규화 (Denormalization)](denormalization.md) | 성능을 위해 중복을 허용하는 기법과 대가를 파악한다 |
 
 ## 읽는 순서
 

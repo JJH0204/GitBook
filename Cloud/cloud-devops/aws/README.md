@@ -15,6 +15,8 @@ AWS(Amazon Web Services) 계정 구성, 주요 서비스, EC2 인스턴스 생�
 | CLD-AWS-003-MP | 절차 | [AWS EC2 가이드 (EC2)](aws_ec2.md) | EC2 인스턴스를 만들고 접속한다 (과금 발생) |
 | CLD-AWS-004-DO | D&O | [[생성형 AI] AWS VPC — 서브넷과 라우팅](aws-vpc.md) | VPC, 서브넷, 라우팅, 게이트웨이의 관계를 이해한다 |
 | CLD-AWS-005-INS | 점검 | [[생성형 AI] AWS 계정 보안·비용 점검표](aws-account-checklist.md) | 계정 보안과 과금 항목을 점검한다 |
+| CLD-AWS-006-DO | D&O | [[생성형 AI] AWS S3 — 버킷과 객체 저장소](aws-s3.md) | 버킷, 객체, 접근 제어, 보호 기능을 이해한다 |
+| CLD-AWS-007-DO | D&O | [[생성형 AI] AWS CloudWatch — 지표·로그·알람](aws-cloudwatch.md) | 지표, 로그, 알람으로 모니터링하는 방법을 이해한다 |
 
 ## 읽는 순서
 

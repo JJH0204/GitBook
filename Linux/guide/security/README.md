@@ -20,6 +20,8 @@ WARNING: 이 폴더의 절차는 방화벽 규칙과 접근 제어를 바꾼다.
 | LNX-SEC-004-MP | 절차 | [SELinux 모드 변경](selinux-mode.md) | SELinux 모드를 임시 또는 영구로 바꾼다 |
 | LNX-SEC-005-MP | 절차 | [SELinux 파일 컨텍스트 변경](selinux-context.md) | 파일 유형(type) 레이블을 바꾸고 복원한다 |
 | LNX-SEC-006-MP | 절차 | [TCP 래퍼 접근 제어](tcpwrapper.md) | hosts.allow, hosts.deny로 접근을 제어한다 |
+| LNX-SEC-007-DO | 개념 | [[생성형 AI] nftables 개요](nftables.md) | 테이블, 체인, 규칙 구조를 이해한다 |
+| LNX-SEC-008-DO | 개념 | [[생성형 AI] auditd 감사 개요](auditd.md) | 감사 시스템과 규칙 개념을 이해한다 |
 
 ## 읽는 순서
 
