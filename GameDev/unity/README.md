@@ -14,6 +14,10 @@ Unity 컴포넌트로 캐릭터 이동과 공격을 구현한 노트를 모은 �
 | GMD-UNI-002-MP | MP + 참조 표 | [리지드바디 캐릭터 이동 구현](rigidbody.md) | `Rigidbody`로 이동, 점프, 대시를 구현한다 |
 | GMD-UNI-003-MP | MP + 참조 표 | [내비메시 에이전트 클릭 이동](navmeshagent.md) | `NavMeshAgent`로 마우스 클릭 이동을 구현한다 |
 | GMD-UNI-004-DO | D&O | [전투 시스템 투사체 발사 설계](battlesystemdesign.md) | 대상 지정, 발사, 사거리 제한의 설계 의도를 확인한다 |
+| GMD-UNI-005-DO | D&O + 예제 | [\[생성형 AI\] 물리 질의와 충돌 이벤트](physics-queries.md) | `Raycast`, `OverlapSphere`, `OnCollision`, `OnTrigger`의 사용과 발생 조건을 이해한다 |
+| GMD-UNI-006-DO | D&O + 예제 | [\[생성형 AI\] 시간: deltaTime, fixedDeltaTime, timeScale](time-deltatime.md) | 프레임 독립 이동과 `timeScale`의 적용 범위를 이해한다 |
+| GMD-UNI-007-DO | D&O + 예제 | [\[생성형 AI\] 새 Input System 기초](input-system.md) | 액션 기반 입력과 기존 Input Manager와의 차이를 이해한다 |
+| GMD-UNI-008-DO | D&O + 예제 | [\[생성형 AI\] 프리팹과 Instantiate, Destroy](prefab-instantiate.md) | 프리팹 구조와 런타임 생성·삭제의 동작과 비용을 이해한다 |
 
 ## 읽는 순서
 

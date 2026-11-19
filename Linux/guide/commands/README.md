@@ -16,6 +16,8 @@ description: 도움말, 전원, 텍스트 처리, find 시간 옵션 등 기본 
 | LNX-CMD-004-REF | 표 | [기타 유용한 명령어](misccommands.md) | cal, date, time, wall, su 등 단일 명령을 찾는다 |
 | LNX-CMD-005-REF | 표 | [텍스트 파일 처리 명령어](textfilecommands.md) | cat, grep, sort, cut 등 텍스트 처리 명령을 찾는다 |
 | LNX-CMD-006-REF | 표 | [find 시간 옵션 및 파일 속성](find_time.md) | atime, mtime, ctime과 `find` 시간 조건을 찾는다 |
+| LNX-CMD-007-REF | 표 | [[생성형 AI] 프로세스 관리 명령어 (ps, top, kill, nice)](process-commands.md) | 프로세스를 조회, 종료하고 우선순위를 바꾼다 |
+| LNX-CMD-008-REF | 표 | [[생성형 AI] 입출력 리다이렉션과 파이프](redirect-pipe.md) | `>`, `2>`, `|` 문법을 찾는다 |
 
 ## 읽는 순서
 

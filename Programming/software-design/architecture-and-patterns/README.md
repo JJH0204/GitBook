@@ -1,6 +1,6 @@
 # 아키텍처 및 패턴 (Architecture)
 
-소프트웨어 설계 분석 기법을 정리한 그룹이다. 현재 수록된 내용은 럼바우 객체지향 분석(OMT)뿐이다. 디자인 패턴과 아키텍처 스타일 문서는 아직 없다. 문서 번호(Task ID)는 `PRG-ARP-<번호>-<유형>` 형식이다.
+소프트웨어 설계 분석 기법을 정리한 그룹이다. 현재 수록된 내용은 럼바우 객체지향 분석(OMT)뿐이다. 디자인 패턴은 옵저버와 전략 두 가지만 수록했고(PRG-ARP-005~006은 생성형 AI 초안, 사람 검토 전), 아키텍처 스타일 문서는 아직 없다. 문서 번호(Task ID)는 `PRG-ARP-<번호>-<유형>` 형식이다.
 
 ## 문서 목록
 
@@ -10,6 +10,8 @@
 | PRG-ARP-002-DO | D&O | [객체 모델 (Object Model)](object-model.md) | 클래스, 속성, 연산, 관계로 구조를 표현한다 |
 | PRG-ARP-003-DO | D&O | [동적 모델 (Dynamic Model)](rumbaughooa/dynamic-model.md) | 상태, 이벤트, 전이로 시간에 따른 변화를 표현한다 |
 | PRG-ARP-004-DO | D&O | [기능 모델 (Functional Model)](rumbaughooa/functional-model.md) | 데이터 흐름도로 처리 흐름을 표현한다 |
+| PRG-ARP-005-DO | D&O | [[생성형 AI] 옵저버 패턴 (Observer)](observer-pattern.md) | 상태 변화를 여러 객체에 알리는 구조를 이해한다 |
+| PRG-ARP-006-DO | D&O | [[생성형 AI] 전략 패턴 (Strategy)](strategy-pattern.md) | 알고리즘을 객체로 분리해 교체하는 구조를 이해한다 |
 
 ## 읽는 순서
 

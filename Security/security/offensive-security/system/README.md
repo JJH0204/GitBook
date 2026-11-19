@@ -9,5 +9,6 @@
 * [Encryption](../../fundamentals/theory/encryptionndeencryption.md)
 * [FormatStringAttack](formatstringattack.md)
 * [Pwnable](pwnable.md)
+* [[생성형 AI] 메모리 보호 기법](memory-protections.md)
 * [SystemHackingTechniques](bof.md)
 * [WindowsVulnerabilityAnalysis](windowsvulnerabilityanalysis.md)

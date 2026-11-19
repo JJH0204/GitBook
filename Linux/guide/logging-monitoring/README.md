@@ -15,6 +15,7 @@ description: 로그 파일, 로그 회전, 로그 보고서, 성능 통계
 | LNX-LOG-003-MP | 절차 | [로그 분석 및 보고 (Logwatch)](logwatch.md) | logwatch를 설치하고 보고서를 만든다 |
 | LNX-LOG-004-MP | 절차 | [시스템 성능 모니터링 (sysstat)](sysstat.md) | sysstat을 설치하고 수집을 확인한다 |
 | LNX-LOG-005-REF | 표 | [sar·iostat 명령 참조 (sysstat)](sysstatcommands.md) | 성능 통계 명령과 옵션을 찾는다 |
+| LNX-LOG-006-MP | 절차 | [[생성형 AI] journalctl로 systemd 로그 조회](journalctl.md) | 서비스, 부팅, 시간, 우선순위별 로그를 조회한다 |
 
 ## 읽는 순서
 

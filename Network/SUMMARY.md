@@ -20,6 +20,9 @@
 * [네트워크 토폴로지 (Topology)](fundamentals/topology.md)
 * [UTP 케이블 배선 (UTP Cabling)](fundamentals/utp_cabling.md)
 * [UTP 케이블 제작](fundamentals/utp_crimping.md)
+* [[생성형 AI] 이더넷 프레임과 MAC 주소](fundamentals/ethernet-mac.md)
+* [[생성형 AI] 네트워크 장비 — 허브·스위치·라우터](fundamentals/network-devices.md)
+* [[생성형 AI] 무선 LAN (Wi-Fi) 기초](fundamentals/wireless-lan.md)
 
 ## IP Addressing & NAT
 
@@ -32,6 +35,7 @@
 * [게이트웨이 설정 (Gateway Setup)](ip-addressing-and-nat/gatewaysetup.md)
 * [동적 호스트 설정 프로토콜 (DHCP)](ip-addressing-and-nat/dhcp.md)
 * [사이더 표기법 (CIDR)](ip-addressing-and-nat/cidr.md)
+* [[생성형 AI] 유니캐스트·브로드캐스트·멀티캐스트](ip-addressing-and-nat/cast-types.md)
 
 ## Protocols
 
@@ -49,6 +53,10 @@
 * [HTTP 상태 코드 (HTTP Status Code)](protocols/httpstatuscode.md)
 * [네트워크 포트 번호 (Port)](protocols/port.md)
 * [도메인 이름 (Domain Name)](protocols/domain_name.md)
+* [[생성형 AI] ARP — IP 주소를 MAC 주소로 바꾸기](protocols/arp.md)
+* [[생성형 AI] ICMP와 ping·traceroute](protocols/icmp.md)
+* [[생성형 AI] FTP와 메일 프로토콜 (SMTP·POP3·IMAP)](protocols/ftp-mail.md)
+* [[생성형 AI] SNMP — 장비 감시](protocols/snmp.md)
 
 ## Routing & Switching
 
@@ -66,6 +74,7 @@
 * [VLAN 트렁킹 프로토콜 (VTP)](routing-and-switching/vtp.md)
 * [VLAN, 트렁크, VTP 설정](routing-and-switching/vlan-config.md)
 * [라우팅·스위칭 확인 명령 요약](routing-and-switching/routing-show-commands.md)
+* [[생성형 AI] EtherChannel — 링크 묶기](routing-and-switching/etherchannel.md)
 
 ## Security
 
@@ -76,6 +85,8 @@
 * [SSH 원격 서버 접속](security/ssh-connection.md)
 * [방화벽 장치 유형 (Firewall)](security/firewall.md)
 * [Cisco 가상 방화벽 (ASAv)](security/asav.md)
+* [[생성형 AI] 네트워크 ACL — 표준·확장](security/acl.md)
+* [[생성형 AI] DMZ와 네트워크 분리](security/dmz.md)
 
 ## Tools & Operations
 
@@ -84,6 +95,7 @@
 * [프록시 도구와 Burp Suite](tools-and-operations/proxytool.md)
 * [서버 상태 점검 스크립트](tools-and-operations/servercheckscript.md)
 * [리눅스 보안 점검 스크립트 오류 정정](tools-and-operations/linuxsecuritycheckscript.md)
+* [[생성형 AI] 네트워크 장애 진단 절차](tools-and-operations/troubleshooting.md)
 
 ## Servers & Storage
 

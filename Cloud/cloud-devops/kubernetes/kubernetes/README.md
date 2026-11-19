@@ -12,6 +12,10 @@
 | CLD-K8T-004-MP | 절차 | [Kind 클러스터 도커 이미지 배포](kubernetes-on-dockerimage.md) | Kind 노드에 이미지를 로드해 배포한다 |
 | CLD-K8T-005-MP | 절차 | [AWS EKS 구축 및 운영](eks.md) | `eksctl`로 EKS 클러스터를 만들고 정리한다 |
 | CLD-K8T-006-DO | 개념 | [보안 중심 SDLC와 SAST/DAST](devsecops-sdlc.md) | 단계별 보안 활동과 정적·동적 분석을 이해한다 |
+| CLD-K8T-007-REF | 표 | [[생성형 AI] kubectl 명령 정리](kubectl-reference.md) | 자주 쓰는 `kubectl` 명령을 찾는다 |
+| CLD-K8T-008-REF | 표 | [[생성형 AI] 쿠버네티스 매니페스트 기본 — 파드·디플로이먼트·서비스](manifest-basics.md) | YAML 필드와 예를 찾는다 |
+| CLD-K8T-009-DO | 개념 | [[생성형 AI] 컨피그맵과 시크릿](configmap-secret.md) | 설정과 비밀값 전달 방식을 이해한다 |
+| CLD-K8T-010-TS | 문제 해결 | [[생성형 AI] 파드 장애 진단](pod-troubleshooting.md) | 파드 상태별 원인을 좁힌다 |
 
 ## 읽는 순서
 

@@ -11,3 +11,5 @@ description: 데이터베이스 저장 구조와 파일 조직 방식
 | Task ID | 유형 | 문서 | 용도 |
 |---|---|---|---|
 | DB-STO-001-DO | 개념 | [색인 순차 파일 (ISAM)](index_sequential_file.md) | 색인 순차 파일의 구조와 동작을 이해한다 |
+| DB-STO-002-DO | 개념 | [[생성형 AI] B+트리 인덱스와 실행 계획](btree-index.md) | B+트리 구조, 복합 인덱스 규칙, 실행 계획을 이해한다 |
+| DB-STO-003-DO | 개념 | [[생성형 AI] 파일 조직 방식 비교](file-organization.md) | 힙·순차·색인 순차·해시 파일을 비교한다 |
