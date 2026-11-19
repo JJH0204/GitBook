@@ -4,7 +4,7 @@
 
 ## SECURITY
 
-* [보안 기초 (Fundamentals)](security/fundamentals/README.md)
+* [[생성형 AI] 보안 기초 (Fundamentals)](security/fundamentals/README.md)
   * [보안 이론 (Theory)](security/fundamentals/theory/README.md)
     * [공개키 암호 시스템 (Public Key)](security/fundamentals/theory/publickeysystem.md)
     * [암호화 및 복호화 (Encryption)](security/fundamentals/theory/encryptionndeencryption.md)
@@ -31,7 +31,7 @@
     * [포너블 개요 (Pwnable)](security/offensive-security/system/pwnable.md)
     * [[생성형 AI] 메모리 보호 기법](security/offensive-security/system/memory-protections.md)
     * [[생성형 AI] Windows 취약점 분석](security/offensive-security/system/windowsvulnerabilityanalysis.md)
-* [방어 보안 (Defensive Security)](security/defensive-security/README.md)
+* [[생성형 AI] 방어 보안 (Defensive Security)](security/defensive-security/README.md)
   * [보안 방어 기술 (Defense)](security/defensive-security/defense/README.md)
     * [침입 탐지 시스템 (IDS)](security/defensive-security/defense/ids.md)
     * [호스트 침입 탐지 시스템 (HIDS)](security/defensive-security/defense/hids.md)
@@ -51,7 +51,7 @@
     * [[생성형 AI] 웹 취약점 방어 점검표](security/defensive-security/defense/web-defense-checklist.md)
 * [악성코드 및 리버싱 개요](security/malware-and-reversing/README.md)
   * [악성코드 분석 단계 (Overview)](security/malware-and-reversing/overview/README.md)
-    * [보안 학습 리소스 링크](security/malware-and-reversing/overview/securelearninglink.md)
+    * [[생성형 AI] 보안 학습 리소스 링크](security/malware-and-reversing/overview/securelearninglink.md)
     * [악성코드 분석 개요](security/malware-and-reversing/overview/malwareanalysis.md)
     * [리버스 엔지니어링 개요 (Reversing)](security/malware-and-reversing/overview/reversing.md)
     * [정적 분석 (Static Analysis)](security/malware-and-reversing/overview/staticanalysis.md)

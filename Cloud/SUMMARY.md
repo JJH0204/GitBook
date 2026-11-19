@@ -2,7 +2,7 @@
 
 ## 시작하기
 
-* [Cloud · DevOps](README.md)
+* [[생성형 AI] Cloud · DevOps](README.md)
 
 ## 리눅스 기초
 
@@ -41,9 +41,9 @@
   * [[생성형 AI] Docker Compose 파일 작성법](cloud-devops/docker/docker-compose-file.md)
   * [[생성형 AI] Dockerfile·이미지 보안 점검표](cloud-devops/docker/docker-security-checklist.md)
   * [[생성형 AI] 컨테이너 장애 진단](cloud-devops/docker/docker-troubleshooting.md)
-  * [도커 실습 (Docker Practice)](cloud-devops/docker/docker-1/README.md)
+  * [[생성형 AI] 도커 실습 (Docker Practice)](cloud-devops/docker/docker-1/README.md)
     * [Docker Compose 워드프레스 실습](cloud-devops/docker/docker-1/dockerpractice.md)
-* [쿠버네티스 (Kubernetes)](cloud-devops/kubernetes/README.md)
+* [[생성형 AI] 쿠버네티스 (Kubernetes)](cloud-devops/kubernetes/README.md)
   * [Windows 환경 Kind 쿠버네티스 설치](cloud-devops/kubernetes/kubernetes_in_windows.md)
   * [쿠버네티스 클러스터 구축](cloud-devops/kubernetes/kubernetes/README.md)
     * [AWS EKS 구축 및 운영](cloud-devops/kubernetes/kubernetes/eks.md)
@@ -60,8 +60,8 @@
   * [DevSecOps 파이프라인 개요](cloud-devops/ci-cd-devsecops/devsecops-overview.md)
   * [Jenkins CI/CD 파이프라인](cloud-devops/ci-cd-devsecops/jenkins.md)
   * [[생성형 AI] CI/CD 기본 개념 — 통합·전달·배포](cloud-devops/ci-cd-devsecops/cicd-basics.md)
-* [프라이빗 클라우드 (Private Cloud)](cloud-devops/private-cloud/README.md)
+* [[생성형 AI] 프라이빗 클라우드 (Private Cloud)](cloud-devops/private-cloud/README.md)
   * [VMware 기반 프라이빗 클라우드 구축](cloud-devops/private-cloud/vmwareprivatecloud.md)
-* [클라우드 이론 및 실습 과제](cloud-devops/theory-assignments/README.md)
+* [[생성형 AI] 클라우드 이론 및 실습 과제](cloud-devops/theory-assignments/README.md)
   * [클라우드 컴퓨팅 핵심 이론](cloud-devops/theory-assignments/cloudtheory.md)
   * [클라우드 보안 시스템 관리 실습 과제](cloud-devops/theory-assignments/cloudsecuritysystemmanagementassignment.md)

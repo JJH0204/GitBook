@@ -44,6 +44,6 @@
   * [MariaDB 원격 접속 허용 설정](operations/mariadb-remote-access.md)
   * [\[생성형 AI\] MariaDB 논리 백업과 복원](operations/mariadb-backup-restore.md)
   * [\[생성형 AI\] SQL 인젝션 방어](operations/sql-injection-defense.md)
-* [실습 및 과제](assignments/README.md)
+* [[생성형 AI] 실습 및 과제](assignments/README.md)
   * [데이터베이스 실습 과제](assignments/dbassignment.md)
   * [데이터베이스 보안 실습 과제](assignments/dbsecurityassignment.md)

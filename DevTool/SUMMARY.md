@@ -17,7 +17,7 @@
   * [GDB 명령어 표](compiler-debug/gdbreference.md)
   * [\[생성형 AI\] gcc 빌드 4단계와 자주 쓰는 옵션](compiler-debug/gcc-build-stages.md)
   * [\[생성형 AI\] 컴파일·링크 오류 진단](compiler-debug/build-error-diagnosis.md)
-* [문서 작성 가이드 (Documentation)](documentation/README.md)
+* [[생성형 AI] 문서 작성 가이드 (Documentation)](documentation/README.md)
   * [마크다운 문법 (Markdown Syntax)](documentation/markdownsyntax.md)
   * [GitBook 확장 문법](documentation/gitbooksyntax.md)
 * [개발 환경 설정 (Environment Setup)](env-setup/README.md)
