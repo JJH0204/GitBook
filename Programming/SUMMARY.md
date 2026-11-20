@@ -53,6 +53,12 @@
   * [Python 개발 환경 및 문법](languages/python/python.md)
   * [정규 표현식 상세 (Regex)](languages/python/regularexpression.md)
   * [[생성형 AI] Python 컬렉션 (list, tuple, dict, set)](languages/python/python-collections.md)
+  * [[생성형 AI] Python 함수 (Functions)](languages/python/python-functions.md)
+  * [[생성형 AI] Python 클래스와 객체 (Classes)](languages/python/python-classes.md)
+  * [[생성형 AI] Python 예외 처리 (Exceptions)](languages/python/python-exceptions.md)
+  * [[생성형 AI] Python 이터레이터와 제너레이터 (Generators)](languages/python/python-generators.md)
+  * [[생성형 AI] Python 파일 입출력 (File I/O)](languages/python/python-files.md)
+  * [[생성형 AI] Python 가상환경 (venv)](languages/python/python-venv.md)
 * [Swift 및 iOS (Swift & iOS)](languages/swift-and-ios/README.md)
   * [[생성형 AI] Swift 언어 특징](languages/swift-and-ios/swiftcharacteristics.md)
   * [Swift 기본 문법 예제](languages/swift-and-ios/swiftbasicsyntax.md)
@@ -103,6 +109,9 @@
   * [[생성형 AI] 그래프 (Graph)](cs-fundamentals/data-structures/graph.md)
   * [[생성형 AI] 이진 탐색 트리 (BST)](cs-fundamentals/data-structures/binary-search-tree.md)
   * [[생성형 AI] 유니온 파인드 (Union-Find)](cs-fundamentals/data-structures/union-find.md)
+  * [[생성형 AI] 덱 (Deque)](cs-fundamentals/data-structures/deque.md)
+  * [[생성형 AI] 트라이 (Trie)](cs-fundamentals/data-structures/trie.md)
+  * [[생성형 AI] AVL 트리 (AVL Tree)](cs-fundamentals/data-structures/avl-tree.md)
 * [알고리즘 (Algorithms)](cs-fundamentals/algorithms/README.md)
   * [선택 정렬 (Selection Sort)](cs-fundamentals/algorithms/selection-sort.md)
   * [깊이 우선 탐색 (DFS)](cs-fundamentals/algorithms/depthfirstsearch.md)
@@ -231,6 +240,9 @@
     * [기능 모델 (Functional Model)](software-design/architecture-and-patterns/rumbaughooa/functional-model.md)
   * [[생성형 AI] 옵저버 패턴 (Observer)](software-design/architecture-and-patterns/observer-pattern.md)
   * [[생성형 AI] 전략 패턴 (Strategy)](software-design/architecture-and-patterns/strategy-pattern.md)
+  * [[생성형 AI] 싱글턴 패턴 (Singleton)](software-design/architecture-and-patterns/singleton-pattern.md)
+  * [[생성형 AI] 팩토리 메서드 패턴 (Factory)](software-design/architecture-and-patterns/factory-pattern.md)
+  * [[생성형 AI] 데코레이터 패턴 (Decorator)](software-design/architecture-and-patterns/decorator-pattern.md)
 
 ## Practice Problems
 

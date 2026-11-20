@@ -4,7 +4,7 @@ description: 공개키 암호, 암호화·복호화, 시스템 보안, AWS 클�
 
 # 보안 이론 (Theory)
 
-보안 기초 이론 6개 문서의 목차다. 문서 번호(Task ID)는 `SEC-FND-<번호>-<유형>` 형식이다.
+보안 기초 이론 10개 문서의 목차다. 문서 번호(Task ID)는 `SEC-FND-<번호>-<유형>` 형식이다.
 
 ## 문서 목록
 
@@ -16,6 +16,10 @@ description: 공개키 암호, 암호화·복호화, 시스템 보안, AWS 클�
 | SEC-FND-004-DO | 개념 | [AWS 클라우드 보안 (Cloud Security)](awscloudsecurity.md) | AWS 네트워크 격리, 방화벽, 로깅·탐지 서비스를 이해한다 |
 | SEC-FND-005-DO | 개념 | [[생성형 AI] 보안 기본 원칙과 위협 모델링](security-principles.md) | CIA, 설계 원칙, STRIDE를 이해한다 |
 | SEC-FND-006-DO | 개념 | [[생성형 AI] 패스워드 저장과 해시 방어](password-storage.md) | 비밀번호 저장 방식과 이유를 이해한다 |
+| SEC-FND-007-DO | 개념 | [[생성형 AI] TLS와 인증서 개요](tls-certificates.md) | TLS 핸드셰이크와 인증서 검증을 이해한다 |
+| SEC-FND-008-DO | 개념 | [[생성형 AI] 해시 함수와 무결성](hash-integrity.md) | 해시의 성질과 무결성 검증을 이해한다 |
+| SEC-FND-009-DO | 개념 | [[생성형 AI] 인증과 다중 인증 (MFA)](authentication.md) | 인증 요소, MFA, 세션 관리를 이해한다 |
+| SEC-FND-010-DO | 개념 | [[생성형 AI] 접근 통제 모델](access-control.md) | DAC, MAC, RBAC, ABAC를 비교한다 |
 
 ## 읽는 순서
 

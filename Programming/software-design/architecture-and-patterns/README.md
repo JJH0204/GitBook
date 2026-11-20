@@ -1,6 +1,6 @@
 # 아키텍처 및 패턴 (Architecture)
 
-소프트웨어 설계 분석 기법을 정리한 그룹이다. 현재 수록된 내용은 럼바우 객체지향 분석(OMT)뿐이다. 디자인 패턴은 옵저버와 전략 두 가지만 수록했고(PRG-ARP-005~006은 생성형 AI 초안, 사람 검토 전), 아키텍처 스타일 문서는 아직 없다. 문서 번호(Task ID)는 `PRG-ARP-<번호>-<유형>` 형식이다.
+소프트웨어 설계 분석 기법을 정리한 그룹이다. 현재 수록된 내용은 럼바우 객체지향 분석(OMT)뿐이다. 디자인 패턴은 옵저버, 전략, 싱글턴, 팩토리, 데코레이터를 수록했고(PRG-ARP-005~009는 생성형 AI 초안, 사람 검토 전), 아키텍처 스타일 문서는 아직 없다. 문서 번호(Task ID)는 `PRG-ARP-<번호>-<유형>` 형식이다.
 
 ## 문서 목록
 
@@ -12,6 +12,9 @@
 | PRG-ARP-004-DO | D&O | [기능 모델 (Functional Model)](rumbaughooa/functional-model.md) | 데이터 흐름도로 처리 흐름을 표현한다 |
 | PRG-ARP-005-DO | D&O | [[생성형 AI] 옵저버 패턴 (Observer)](observer-pattern.md) | 상태 변화를 여러 객체에 알리는 구조를 이해한다 |
 | PRG-ARP-006-DO | D&O | [[생성형 AI] 전략 패턴 (Strategy)](strategy-pattern.md) | 알고리즘을 객체로 분리해 교체하는 구조를 이해한다 |
+| PRG-ARP-007-DO | D&O | [[생성형 AI] 싱글턴 패턴 (Singleton)](singleton-pattern.md) | 인스턴스를 하나로 제한하는 구조를 이해한다 |
+| PRG-ARP-008-DO | D&O | [[생성형 AI] 팩토리 메서드 패턴 (Factory)](factory-pattern.md) | 객체 생성 책임을 분리하는 구조를 이해한다 |
+| PRG-ARP-009-DO | D&O | [[생성형 AI] 데코레이터 패턴 (Decorator)](decorator-pattern.md) | 래퍼로 기능을 겹쳐 쌓는 구조를 이해한다 |
 
 ## 읽는 순서
 

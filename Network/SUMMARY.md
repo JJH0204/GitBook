@@ -23,6 +23,8 @@
 * [[생성형 AI] 이더넷 프레임과 MAC 주소](fundamentals/ethernet-mac.md)
 * [[생성형 AI] 네트워크 장비 — 허브·스위치·라우터](fundamentals/network-devices.md)
 * [[생성형 AI] 무선 LAN (Wi-Fi) 기초](fundamentals/wireless-lan.md)
+* [[생성형 AI] PoE — 이더넷으로 전원 공급](fundamentals/poe.md)
+* [[생성형 AI] 광케이블 기초](fundamentals/fiber-optic.md)
 
 ## IP Addressing & NAT
 
@@ -36,6 +38,7 @@
 * [동적 호스트 설정 프로토콜 (DHCP)](ip-addressing-and-nat/dhcp.md)
 * [사이더 표기법 (CIDR)](ip-addressing-and-nat/cidr.md)
 * [[생성형 AI] 유니캐스트·브로드캐스트·멀티캐스트](ip-addressing-and-nat/cast-types.md)
+* [[생성형 AI] IPv6 전환 기술](ip-addressing-and-nat/ipv6-transition.md)
 
 ## Protocols
 
@@ -57,6 +60,7 @@
 * [[생성형 AI] ICMP와 ping·traceroute](protocols/icmp.md)
 * [[생성형 AI] FTP와 메일 프로토콜 (SMTP·POP3·IMAP)](protocols/ftp-mail.md)
 * [[생성형 AI] SNMP — 장비 감시](protocols/snmp.md)
+* [[생성형 AI] NTP — 시간 동기화](protocols/ntp.md)
 
 ## Routing & Switching
 
@@ -75,6 +79,8 @@
 * [VLAN, 트렁크, VTP 설정](routing-and-switching/vlan-config.md)
 * [라우팅·스위칭 확인 명령 요약](routing-and-switching/routing-show-commands.md)
 * [[생성형 AI] EtherChannel — 링크 묶기](routing-and-switching/etherchannel.md)
+* [[생성형 AI] QoS — 트래픽 우선순위](routing-and-switching/qos.md)
+* [[생성형 AI] BGP 개요](routing-and-switching/bgp.md)
 
 ## Security
 
@@ -96,6 +102,7 @@
 * [서버 상태 점검 스크립트](tools-and-operations/servercheckscript.md)
 * [리눅스 보안 점검 스크립트 오류 정정](tools-and-operations/linuxsecuritycheckscript.md)
 * [[생성형 AI] 네트워크 장애 진단 절차](tools-and-operations/troubleshooting.md)
+* [[생성형 AI] 패킷 캡처 개념 (Wireshark·tcpdump)](tools-and-operations/packet-capture.md)
 
 ## Servers & Storage
 
@@ -103,6 +110,7 @@
 * [복수 배열 독립 디스크 (RAID)](servers-and-storage/raid.md)
 * [RAID 레벨 비교](servers-and-storage/raid-levels.md)
 * [스토리지 연결 방식 (DAS, NAS, SAN)](servers-and-storage/storage-types.md)
+* [[생성형 AI] 로드 밸런서](servers-and-storage/load-balancer.md)
 
 ## 강의 (Lectures)
 

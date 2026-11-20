@@ -18,6 +18,11 @@ Unity 컴포넌트로 캐릭터 이동과 공격을 구현한 노트를 모은 �
 | GMD-UNI-006-DO | D&O + 예제 | [\[생성형 AI\] 시간: deltaTime, fixedDeltaTime, timeScale](time-deltatime.md) | 프레임 독립 이동과 `timeScale`의 적용 범위를 이해한다 |
 | GMD-UNI-007-DO | D&O + 예제 | [\[생성형 AI\] 새 Input System 기초](input-system.md) | 액션 기반 입력과 기존 Input Manager와의 차이를 이해한다 |
 | GMD-UNI-008-DO | D&O + 예제 | [\[생성형 AI\] 프리팹과 Instantiate, Destroy](prefab-instantiate.md) | 프리팹 구조와 런타임 생성·삭제의 동작과 비용을 이해한다 |
+| GMD-UNI-009-DO | D&O + 예제 | [\[생성형 AI\] 씬 로딩: SceneManager와 비동기 로드](scene-loading.md) | `SceneManager`의 동기·비동기·Additive 로드와 로딩 화면을 이해한다 |
+| GMD-UNI-010-DO | D&O + 예제 | [\[생성형 AI\] 오디오 기초: AudioSource, AudioMixer](audio-basics.md) | `AudioSource`, `AudioMixer` 사용과 dB 환산을 이해한다 |
+| GMD-UNI-011-DO | D&O + 예제 | [\[생성형 AI\] uGUI 기초: Canvas와 이벤트](ugui-basics.md) | Canvas, 앵커, `EventSystem`, 버튼 이벤트 연결을 이해한다 |
+| GMD-UNI-012-DO | D&O + 예제 | [\[생성형 AI\] 고정 타임스텝 누산기와 보간](fixed-timestep-loop.md) | 누산기로 고정 간격 로직을 돌리고 렌더를 보간하는 구조를 이해한다 |
+| GMD-UNI-013-DO | D&O + 예제 | [\[생성형 AI\] 쿨타임과 타이머 패턴](cooldown-timer.md) | 시각 비교와 카운트다운으로 쿨타임·타이머를 구현하는 패턴을 이해한다 |
 
 ## 읽는 순서
 

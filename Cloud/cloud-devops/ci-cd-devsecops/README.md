@@ -13,6 +13,8 @@ CI/CD 파이프라인과 DevSecOps(개발 단계에 보안 점검을 넣는 방�
 | CLD-CIC-001-DO | D&O | [DevSecOps 파이프라인 개요](devsecops-overview.md) | 파이프라인 구성 요소와 흐름을 이해한다 |
 | CLD-CIC-002-MP | 절차 | [Jenkins CI/CD 파이프라인](jenkins.md) | Jenkins 파이프라인과 SonarQube 연동을 설정한다 |
 | CLD-CIC-003-DO | D&O | [[생성형 AI] CI/CD 기본 개념 — 통합·전달·배포](cicd-basics.md) | CI, 전달, 배포와 배포 전략을 이해한다 |
+| CLD-CIC-004-REF | 표 | [[생성형 AI] GitHub Actions 워크플로 기본](github-actions-basics.md) | 워크플로 파일의 키와 예를 찾는다 |
+| CLD-CIC-005-DO | D&O | [[생성형 AI] 코드형 인프라 (IaC)와 Terraform 기본](iac-terraform-basics.md) | IaC의 개념과 Terraform 흐름을 이해한다 |
 
 ## 읽는 순서
 

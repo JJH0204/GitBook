@@ -4,7 +4,7 @@
 
 * [Backdoor Attack](backdoor-attack.md)
 * [BOF](bof.md)
-* DACL
+* [[생성형 AI] DACL (Windows 접근 통제 목록)](dacl.md)
 * [DDoS](ddos.md)
 * [Encryption](../../fundamentals/theory/encryptionndeencryption.md)
 * [FormatStringAttack](formatstringattack.md)

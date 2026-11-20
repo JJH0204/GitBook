@@ -17,6 +17,7 @@ description: 컴파일러/인터프리터 개요, 디버깅, GDB, MinGW 등
 | DEV-CMP-005-REF | 표 | [GDB 명령어 표](gdbreference.md) | 자주 쓰는 gdb 명령을 참조한다 |
 | DEV-CMP-006-DO | 개념 | [[생성형 AI] gcc 빌드 4단계와 자주 쓰는 옵션](gcc-build-stages.md) | 전처리·컴파일·어셈블·링크와 gcc 옵션을 이해한다 |
 | DEV-CMP-007-TS | 문제 해결 | [[생성형 AI] 컴파일·링크 오류 진단](build-error-diagnosis.md) | 대표 gcc 오류의 원인을 구분하고 고친다 |
+| DEV-CMP-008-MP | 절차 | [[생성형 AI] 메모리 오류 찾기 (AddressSanitizer)](sanitizers.md) | `-fsanitize`로 메모리 오류와 정수 오버플로를 실행 중에 잡는다 |
 
 컴파일러와 인터프리터의 차이는 [Programming 스페이스의 컴파일 문서](../../Programming/languages/c-and-c++/build-and-tooling/compile.md)를 참고한다.
 

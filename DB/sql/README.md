@@ -23,6 +23,9 @@ SQL을 관계 언어 개요, 명령 분류별 문법 표, 실습 절차로 나�
 | DB-SQL-011-DO | 개념 | [[생성형 AI] 뷰 (VIEW)](sql_view.md) | 뷰의 정의, 용도, 한계를 이해한다 |
 | DB-SQL-012-REF | 표 | [[생성형 AI] NULL 처리 규칙](sql_null.md) | NULL의 비교, 논리, 집계 동작을 찾는다 |
 | DB-SQL-013-DO | 개념 | [[생성형 AI] 트랜잭션 격리 수준과 교착 상태](sql_isolation_deadlock.md) | 동시성 이상, 격리 수준, 교착 상태 대응을 이해한다 |
+| DB-SQL-014-REF | 표 | [[생성형 AI] 집합 연산 (UNION, INTERSECT, EXCEPT)](sql_set_operations.md) | 합집합·교집합·차집합 연산자의 규칙을 찾는다 |
+| DB-SQL-015-DO | 개념 | [[생성형 AI] 윈도 함수 (Window Function)](sql_window_functions.md) | 순위와 그룹 계산을 행 수 변화 없이 붙이는 방법을 이해한다 |
+| DB-SQL-016-DO | 개념 | [[생성형 AI] 트리거와 저장 프로시저](sql_trigger_procedure.md) | 자동 실행 코드와 호출 코드의 차이를 이해한다 |
 
 ## 읽는 순서
 

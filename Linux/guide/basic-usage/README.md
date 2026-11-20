@@ -15,6 +15,7 @@ description: 리눅스 디렉터리 구조와 vi 편집기
 | LNX-BAS-003-MP | 절차 | [vi 편집기 사용법](vi.md) | 파일을 열고 편집해 저장하고 종료한다 |
 | LNX-BAS-004-REF | 표 | [vi 명령 키 표](vireference.md) | 이동, 편집, 검색, 치환 키를 참조한다 |
 | LNX-BAS-005-DO | 개념 | [[생성형 AI] 환경 변수와 셸 시작 파일](environment-variables.md) | 환경 변수, PATH, 시작 파일을 이해한다 |
+| LNX-BAS-006-DO | 개념 | [[생성형 AI] 파일 시스템 종류와 inode](filesystem-inode.md) | 파일 시스템 종류와 inode를 이해한다 |
 
 ## 읽는 순서
 

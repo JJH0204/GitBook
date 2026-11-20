@@ -24,6 +24,15 @@ Git을 처음 쓰는 PC에서 필요한 절차를 모았다. 문서 번호(Task 
 | DEV-GIT-012-MP | 절차 | [[생성형 AI] 변경 임시 저장 (stash)](git-stash.md) | 커밋 전 변경을 치워 두었다가 꺼낸다 |
 | DEV-GIT-013-MP | 절차 | [[생성형 AI] 원격 저장소와 push·pull](git-remote-sync.md) | `push`, `fetch`, `pull`의 차이를 로컬 원격으로 연습한다 |
 | DEV-GIT-014-REF | 참조 | [[생성형 AI] 상태·이력 확인 명령 정리](git-inspect.md) | `status`, `diff`, `log`, `blame` 등 읽기 명령을 참조한다 |
+| DEV-GIT-015-MP | 절차 | [[생성형 AI] 브랜치 재배치와 커밋 정리 (rebase)](git-rebase.md) | 최신 `main` 위로 옮기고 커밋을 합치거나 지운다 |
+| DEV-GIT-016-MP | 절차 | [[생성형 AI] 태그로 버전 표시 (tag)](git-tag.md) | 커밋에 버전 이름을 붙이고 원격에 올린다 |
+| DEV-GIT-017-MP | 절차 | [[생성형 AI] 커밋 하나만 가져오기 (cherry-pick)](git-cherry-pick.md) | 다른 브랜치의 커밋 하나를 복사한다 |
+| DEV-GIT-018-MP | 절차 | [[생성형 AI] 버그가 생긴 커밋 찾기 (bisect)](git-bisect.md) | 이진 탐색으로 오류가 처음 생긴 커밋을 찾는다 |
+| DEV-GIT-019-MP | 절차 | [[생성형 AI] 다른 저장소를 하위 폴더로 포함 (submodule)](git-submodule.md) | 저장소를 특정 커밋에 고정해 포함한다 |
+| DEV-GIT-020-MP | 절차 | [[생성형 AI] 브랜치별 작업 폴더 분리 (worktree)](git-worktree.md) | 브랜치를 별도 폴더에 열어 동시에 작업한다 |
+| DEV-GIT-021-MP | 절차 | [[생성형 AI] 커밋 전 자동 검사 (Git 훅)](git-hooks.md) | 커밋 메시지를 검사하는 훅을 만들고 공유한다 |
+| DEV-GIT-022-REF | 참조 | [[생성형 AI] Git 설정 범위와 별칭 (config·alias)](git-config-alias.md) | `git config` 범위와 자주 쓰는 설정·별칭을 참조한다 |
+| DEV-GIT-023-REF | 참조 | [[생성형 AI] 커밋 메시지 작성 규칙](git-commit-message.md) | 메시지 구조와 접두어 관례를 참조한다 |
 
 ## 읽는 순서
 
